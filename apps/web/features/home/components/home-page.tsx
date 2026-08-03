@@ -18,6 +18,8 @@ import {
   Lock,
 } from 'lucide-react';
 
+import { Footer } from './footer';
+
 export default function HomePage() {
   const { data: sessionData, isLoading: isSessionLoading } = useSession();
   const storedUser = useUserStore((state) => state.user);
@@ -309,9 +311,7 @@ export default function HomePage() {
         </motion.section>
       </main>
 
-      <footer className="border-t border-slate-200 py-8 text-center text-xs text-slate-500 bg-white">
-        <p>© {new Date().getFullYear()} Writara AI. Built with Next.js App Router, Better Auth & TanStack Query.</p>
-      </footer>
+      <Footer />
     </div>
   );
 }
