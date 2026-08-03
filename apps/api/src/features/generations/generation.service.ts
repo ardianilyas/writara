@@ -23,15 +23,7 @@ export class GenerationService {
   async createGeneration(userId: string, input: CreateGenerationInput) {
     // 1. Resolve selected AI model from database
     const selectedModel = await modelsService.getModelByIdOrSlug(input.modelId || 'nemotron-30b');
-    const totalChapters = input.totalChapters && input.totalChapters > 0 ? input.totalChapters : 5;
-
-    // 2. Max chapters validation per model capability
-    if (totalChapters > selectedModel.maxChapters) {
-      throw new BadRequestError(
-        `Model '${selectedModel.name}' supports up to ${selectedModel.maxChapters} chapters. You requested ${totalChapters}.`
-      );
-    }
-
+    const totalChapters = selectedModel.maxChapters;
     const requiredCredits = selectedModel.creditCost;
     const model = selectedModel.modelKey;
 

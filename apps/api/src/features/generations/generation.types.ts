@@ -49,6 +49,5 @@ export type ModelTier = 'FREE' | 'PAID';
 export interface CreateGenerationInput {
   topic: string;
   template?: GenerationTemplate;
-  totalChapters?: number;
   modelId?: string;
 }
