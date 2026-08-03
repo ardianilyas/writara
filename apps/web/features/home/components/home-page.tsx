@@ -18,6 +18,7 @@ import {
   Lock,
 } from 'lucide-react';
 
+import { HowItWorksScroll } from './how-it-works-scroll';
 import { Footer } from './footer';
 
 export default function HomePage() {
@@ -270,45 +271,7 @@ export default function HomePage() {
         </motion.section>
 
         {/* 3-STEP PROCESS SECTION */}
-        <motion.section
-          id="how-it-works"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6 }}
-          className="bg-slate-50 border border-slate-200 rounded-3xl p-8 md:p-10 text-center space-y-8"
-        >
-          <div className="space-y-2 max-w-md mx-auto">
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900">How Writara Works</h2>
-            <p className="text-xs text-slate-500">From topic input to structured presentation slides in 3 simple steps.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-            <motion.div whileHover={{ y: -4 }} className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3">
-              <div className="w-8 h-8 rounded-full bg-sky-500 text-white flex items-center justify-center font-bold text-xs">
-                01
-              </div>
-              <h4 className="font-bold text-slate-900 text-sm">Select Topic & Model</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">Enter your subject topic and pick your AI model (Nemotron or DeepSeek V4).</p>
-            </motion.div>
-
-            <motion.div whileHover={{ y: -4 }} className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3">
-              <div className="w-8 h-8 rounded-full bg-sky-500 text-white flex items-center justify-center font-bold text-xs">
-                02
-              </div>
-              <h4 className="font-bold text-slate-900 text-sm">AI Slide Structuring</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">AI engine builds chapter topics, slide layouts, speaker notes, and visual suggestions.</p>
-            </motion.div>
-
-            <motion.div whileHover={{ y: -4 }} className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3">
-              <div className="w-8 h-8 rounded-full bg-sky-500 text-white flex items-center justify-center font-bold text-xs">
-                03
-              </div>
-              <h4 className="font-bold text-slate-900 text-sm">Present & Share</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">Review your slide deck in the interactive presentation viewer.</p>
-            </motion.div>
-          </div>
-        </motion.section>
+        <HowItWorksScroll />
       </main>
 
       <Footer />
