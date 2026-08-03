@@ -3,11 +3,14 @@ import { prisma } from '../../lib/prisma.js';
 import { openRouter } from '../../lib/openrouter.js';
 import { env } from '../../lib/env.js';
 import { logger } from '../../lib/logger.js';
-import { NotFoundError } from '../../errors/index.js';
+import { NotFoundError, BadRequestError } from '../../errors/index.js';
 import { GeneratedContentPayload, CreateGenerationInput } from './generation.types.js';
 
 /** Timeout for OpenRouter AI calls (in milliseconds). */
 const AI_TIMEOUT_MS = 120_000; // 2 minutes
+
+/** Stale job timeout threshold for cleanup (3 minutes). */
+const STALE_JOB_THRESHOLD_MS = 3 * 60 * 1000;
 
 export class GenerationService {
   /**
@@ -16,7 +19,6 @@ export class GenerationService {
    * the HTTP response is fast.
    */
   async createGeneration(userId: string, input: CreateGenerationInput) {
-    // 1. Create DB record with PENDING status — returned to client immediately
     const generation = await prisma.generation.create({
       data: {
         userId,
@@ -26,7 +28,7 @@ export class GenerationService {
       },
     });
 
-    // 2. Fire-and-forget background processing (not awaited)
+    // Fire-and-forget background processing
     this.processGeneration(generation.id, input).catch((error) => {
       logger.error({ generationId: generation.id, error: error.message }, 'Background generation failed');
     });
@@ -35,12 +37,75 @@ export class GenerationService {
   }
 
   /**
+   * Retries a previously failed (or interrupted) generation.
+   */
+  async retryGeneration(id: string, userId: string) {
+    const existing = await this.getGenerationById(id, userId);
+
+    if (existing.status === GenerationStatus.IN_PROGRESS || existing.status === GenerationStatus.PENDING) {
+      throw new BadRequestError('Generation is currently in progress.');
+    }
+
+    const updated = await prisma.generation.update({
+      where: { id },
+      data: {
+        status: GenerationStatus.PENDING,
+        errorMessage: null,
+      },
+    });
+
+    this.processGeneration(updated.id, {
+      topic: updated.topic,
+      template: updated.template,
+    }).catch((error) => {
+      logger.error({ generationId: updated.id, error: error.message }, 'Background retry generation failed');
+    });
+
+    return updated;
+  }
+
+  /**
+   * Deletes a generation record owned by the user.
+   */
+  async deleteGeneration(id: string, userId: string) {
+    await this.getGenerationById(id, userId);
+
+    return prisma.generation.delete({
+      where: { id },
+    });
+  }
+
+  /**
+   * Cleans up stale/orphaned generations stuck in PENDING or IN_PROGRESS
+   * for longer than 3 minutes (e.g. after server restart or crash).
+   */
+  async cleanupStaleGenerations(): Promise<number> {
+    const cutoffTime = new Date(Date.now() - STALE_JOB_THRESHOLD_MS);
+
+    const result = await prisma.generation.updateMany({
+      where: {
+        status: { in: [GenerationStatus.PENDING, GenerationStatus.IN_PROGRESS] },
+        updatedAt: { lt: cutoffTime },
+      },
+      data: {
+        status: GenerationStatus.FAILED,
+        errorMessage: 'Generation process was interrupted or timed out.',
+      },
+    });
+
+    if (result.count > 0) {
+      logger.warn({ count: result.count }, 'Cleaned up stale interrupted generation records');
+    }
+
+    return result.count;
+  }
+
+  /**
    * Background worker: calls OpenRouter, parses JSON, and updates
    * the DB record to COMPLETED or FAILED.
    */
   private async processGeneration(generationId: string, input: CreateGenerationInput): Promise<void> {
     try {
-      // Mark as IN_PROGRESS
       await prisma.generation.update({
         where: { id: generationId },
         data: { status: GenerationStatus.IN_PROGRESS },
@@ -72,7 +137,6 @@ Return ONLY valid JSON matching this exact structure:
   ]
 }`;
 
-      // Call OpenRouter with timeout via AbortController
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
 
@@ -92,7 +156,6 @@ Return ONLY valid JSON matching this exact structure:
         clearTimeout(timeout);
       }
 
-      // Extract and clean JSON response
       const rawText = (result as any).choices?.[0]?.message?.content || '';
       const cleanedJsonText = rawText
         .replace(/<think>[\s\S]*?<\/think>/gi, '')
@@ -110,7 +173,6 @@ Return ONLY valid JSON matching this exact structure:
         throw new Error(`Failed to parse AI JSON response: ${(parseError as Error).message}`);
       }
 
-      // Update DB record to COMPLETED
       await prisma.generation.update({
         where: { id: generationId },
         data: {

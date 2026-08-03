@@ -6,7 +6,7 @@ import { env } from './lib/env.js';
 import { logger, httpLogger } from './lib/logger.js';
 import { auth } from './lib/auth.js';
 import { userRouter } from './features/users/index.js';
-import { generationRouter } from './features/generations/index.js';
+import { generationRouter, generationService } from './features/generations/index.js';
 import { errorMiddleware } from './middleware/error.middleware.js';
 import { sendSuccess } from './utils/response.js';
 import { NotFoundError } from './errors/index.js';
@@ -67,9 +67,14 @@ app.use((_req: Request, _res: Response, next: NextFunction) => {
 // Global Error Middleware
 app.use(errorMiddleware);
 
-// Start Server
+// Start Server & Cleanup Stale Jobs
 app.listen(env.PORT, () => {
   logger.info(`⚡️ [server]: Express TS Server running at http://localhost:${env.PORT}`);
+
+  // Auto-cleanup stale interrupted generations on startup
+  generationService.cleanupStaleGenerations().catch((err: any) => {
+    logger.error({ error: err.message }, 'Failed to run startup generation cleanup');
+  });
 });
 
 export default app;

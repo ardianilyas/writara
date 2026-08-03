@@ -38,6 +38,30 @@ export class GenerationController {
       next(error);
     }
   }
+
+  async retryGeneration(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const userId = req.user!.id;
+
+      const generation = await generationService.retryGeneration(id as string, userId);
+      sendSuccess(res, generation, 200, 'Generation retry queued.');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteGeneration(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const userId = req.user!.id;
+
+      await generationService.deleteGeneration(id as string, userId);
+      sendSuccess(res, { id }, 200, 'Generation record deleted successfully.');
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const generationController = new GenerationController();
