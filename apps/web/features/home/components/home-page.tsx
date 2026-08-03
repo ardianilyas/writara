@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 
 import { HowItWorksScroll } from './how-it-works-scroll';
+import { ModelsCatalog } from './models-catalog';
 import { FeaturesBento } from './features-bento';
 import { Footer } from './footer';
 
@@ -118,97 +119,7 @@ export default function HomePage() {
         )}
 
         {/* AI MODEL CATALOG SHOWCASE */}
-        <motion.section
-          id="models"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6 }}
-          className="space-y-6 pt-8"
-        >
-          <div className="text-center space-y-2 max-w-xl mx-auto">
-            <h2 className="text-3xl font-black tracking-tight text-slate-900">AI Model Catalog</h2>
-            <p className="text-sm text-slate-600">Choose between fast reasoning or deep exhaustive presentation generation.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Free Tier Model Card */}
-            <motion.div
-              whileHover={{ y: -6 }}
-              className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-6 flex flex-col justify-between hover:border-slate-300 transition"
-            >
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-900">
-                      <Cpu className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-slate-900 text-base">Nemotron 30B Nano</h3>
-                      <p className="text-xs text-slate-400">nvidia/nemotron-3-nano-30b-a3b:free</p>
-                    </div>
-                  </div>
-                  <span className="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700">
-                    Free Tier
-                  </span>
-                </div>
-
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Fast, lightweight reasoning model suited for quick overview decks and concise 5-chapter presentations.
-                </p>
-              </div>
-
-              <div className="pt-4 border-t border-slate-100 grid grid-cols-2 gap-4 text-xs">
-                <div>
-                  <span className="text-slate-400 block text-[11px]">Credit Usage</span>
-                  <span className="font-bold text-slate-900">1 Credit / Deck</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[11px]">Chapter Limit</span>
-                  <span className="font-bold text-slate-900">5 Chapters</span>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Paid Tier Model Card */}
-            <motion.div
-              whileHover={{ y: -6 }}
-              className="bg-white border-2 border-sky-500 rounded-3xl p-8 shadow-md space-y-6 flex flex-col justify-between relative overflow-hidden"
-            >
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-sky-500 flex items-center justify-center text-white shadow-md shadow-sky-500/30">
-                      <Zap className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-slate-900 text-base">DeepSeek V4 Flash</h3>
-                      <p className="text-xs text-slate-400">deepseek/deepseek-v4-flash</p>
-                    </div>
-                  </div>
-                  <span className="text-xs font-semibold px-3 py-1 rounded-full bg-sky-50 text-sky-600 border border-sky-100">
-                    Pro Model
-                  </span>
-                </div>
-
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  High-capacity flagship AI model engineered for exhaustive 20-chapter deep dives with rich speaker notes and visual suggestions.
-                </p>
-              </div>
-
-              <div className="pt-4 border-t border-slate-100 grid grid-cols-2 gap-4 text-xs">
-                <div>
-                  <span className="text-slate-400 block text-[11px]">Credit Usage</span>
-                  <span className="font-bold text-slate-900">5 Credits / Deck</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[11px]">Chapter Limit</span>
-                  <span className="font-bold text-slate-900">Up to 20 Chapters</span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </motion.section>
+        <ModelsCatalog />
 
         {/* FEATURES BENTO GRID */}
         <FeaturesBento />
