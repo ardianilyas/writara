@@ -12,6 +12,10 @@ const geistMono = localFont({
 });
 
 import { QueryProvider } from "../providers/query-provider";
+import { Inter } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: "Writara — AI Presentation & Content Generator",
@@ -24,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="light">
+    <html lang="en" className={cn("light", "font-sans", inter.variable)}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-slate-50 text-slate-900`}>
         <QueryProvider>{children}</QueryProvider>
       </body>
