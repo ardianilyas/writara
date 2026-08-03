@@ -20,9 +20,9 @@ export class GenerationService {
    * and kicks off AI processing in the background.
    */
   async createGeneration(userId: string, input: CreateGenerationInput) {
-    const totalChapters = input.totalChapters && input.totalChapters >= 10 ? 10 : 5;
-    const requiredCredits = totalChapters >= 10 ? 5 : 1;
-    const model = totalChapters >= 10 ? env.OPENROUTER_PAID_MODEL : env.OPENROUTER_FREE_MODEL;
+    const totalChapters = input.totalChapters && input.totalChapters > 0 ? input.totalChapters : 5;
+    const requiredCredits = totalChapters > 5 ? 5 : 1;
+    const model = totalChapters > 5 ? env.OPENROUTER_PAID_MODEL : env.OPENROUTER_FREE_MODEL;
 
     // 1. Deduct credits upfront (throws BadRequestError if insufficient)
     const deduction = await creditService.deductCredits(

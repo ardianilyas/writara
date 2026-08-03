@@ -10,4 +10,11 @@ export const createGenerationSchema = z.object({
     .nativeEnum(GenerationTemplate)
     .optional()
     .default(GenerationTemplate.PRESENTATION),
+  totalChapters: z
+    .number()
+    .int('Total chapters must be an integer')
+    .min(1, 'Minimum 1 chapter is required')
+    .max(20, 'Maximum 20 chapters allowed')
+    .optional()
+    .default(5),
 });
