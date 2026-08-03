@@ -2,344 +2,270 @@
 
 import Link from 'next/link';
 import { UserHeader } from './user-header';
-import { useSession, useLogout, useUserStore } from '@/features/auth';
-import { useCredits } from '@/features/credits';
+import { KineticText } from './kinetic-text';
+import { HeroUnboxingCards } from './hero-unboxing-cards';
+import { useSession, useUserStore } from '@/features/auth';
 import { Button } from '@/components/ui/button';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import {
   Sparkles,
-  Coins,
   Presentation,
-  LogOut,
   ArrowRight,
-  ShieldCheck,
   Zap,
   Cpu,
-  Layers,
-  FileCheck2,
   RefreshCw,
   LayoutGrid,
-  CheckCircle2,
+  FileCheck2,
   Lock,
 } from 'lucide-react';
 
 export default function HomePage() {
   const { data: sessionData, isLoading: isSessionLoading } = useSession();
-  const { data: creditsData, isLoading: isCreditsLoading } = useCredits();
-  const logoutMutation = useLogout();
   const storedUser = useUserStore((state) => state.user);
 
   const user = sessionData?.user || (storedUser?.email ? storedUser : null);
-  const freeCredits = creditsData?.freeCredits ?? (sessionData?.user?.freeCredits || 0);
-  const purchasedCredits = creditsData?.purchasedCredits ?? (sessionData?.user?.purchasedCredits || 0);
-  const totalCredits = creditsData?.totalCredits ?? (freeCredits + purchasedCredits);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-primary selection:text-primary-foreground relative overflow-hidden">
+    <div className="min-h-screen bg-white text-slate-900 flex flex-col selection:bg-sky-500 selection:text-white relative overflow-hidden bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:24px_24px]">
       <UserHeader />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-24">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-20 space-y-24">
         {/* HERO SECTION */}
         {isSessionLoading ? (
-          <div className="flex flex-col items-center justify-center space-y-4 py-24 text-muted-foreground">
-            <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          <div className="flex flex-col items-center justify-center space-y-4 py-24 text-slate-400">
+            <div className="w-10 h-10 border-2 border-sky-500 border-t-transparent rounded-full animate-spin" />
             <p className="text-sm font-medium">Checking authentication...</p>
           </div>
         ) : user ? (
-          /* LOGGED IN USER DASHBOARD HERO */
-          <section className="w-full space-y-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-gradient-to-br from-card via-card to-muted/40 border border-border rounded-3xl p-8 md:p-10 shadow-sm relative overflow-hidden">
-              <div className="space-y-4 max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  <span>Authenticated Session</span>
-                </div>
+          /* LOGGED IN USER HERO */
+          <section className="w-full space-y-8 text-center pt-6">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold uppercase tracking-wider">
+              <Sparkles className="h-3.5 w-3.5 text-sky-500" />
+              <span>Authenticated Session</span>
+            </div>
 
-                <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-foreground leading-tight">
-                  Welcome back, <span className="text-primary">{user.name || 'Creator'}</span>
-                </h1>
-                <p className="text-base text-muted-foreground leading-relaxed">
-                  Your workspace is ready. Select an AI model, specify your topic, and generate presentation-native slide decks in seconds.
-                </p>
+            <div className="space-y-4 max-w-3xl mx-auto">
+              <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-900 leading-[1.15]">
+                Welcome back, <span className="text-sky-500">{user.name || 'Creator'}</span>
+              </h1>
+              <p className="text-base text-slate-600 max-w-xl mx-auto leading-relaxed">
+                Generate tailored <KineticText /> with automated slide layouts and speaker notes.
+              </p>
+            </div>
 
-                <div className="flex flex-wrap items-center gap-3 pt-2">
-                  <Button size="lg" disabled className="gap-2 cursor-not-allowed opacity-90">
-                    <Presentation className="h-4 w-4" />
-                    <span>Create Presentation Deck</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-
-                  <AlertDialog>
-                    <AlertDialogTrigger
-                      render={
-                        <Button variant="destructive" size="lg" disabled={logoutMutation.isPending} className="gap-2">
-                          <LogOut className="h-4 w-4" />
-                          <span>Sign Out</span>
-                        </Button>
-                      }
-                    />
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          You will be logged out of your session on Writara AI. You can sign back in at any time.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => logoutMutation.mutate()}>
-                          Sign Out
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              </div>
-
-              {/* LIVE CREDITS BALANCE CARD */}
-              <div className="bg-background border rounded-2xl p-6 shadow-sm min-w-[280px] space-y-4 flex flex-col justify-between">
-                <div className="flex items-center justify-between border-b pb-3">
-                  <div className="flex items-center gap-2">
-                    <Coins className="h-5 w-5 text-amber-500" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Credit Balance</span>
-                  </div>
-                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600">
-                    Active
-                  </span>
-                </div>
-
-                <div className="space-y-1">
-                  {isCreditsLoading ? (
-                    <div className="h-9 w-24 bg-muted animate-pulse rounded-md" />
-                  ) : (
-                    <p className="text-4xl font-black text-foreground tracking-tight">
-                      {totalCredits} <span className="text-sm font-medium text-muted-foreground">Credits</span>
-                    </p>
-                  )}
-                  <p className="text-xs text-muted-foreground">
-                    {freeCredits} Free Trial + {purchasedCredits} Lifetime Top-Up
-                  </p>
-                </div>
-
-                <div className="text-[11px] text-muted-foreground bg-muted/50 p-2.5 rounded-lg border flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
-                  <span>Credits never expire. Auto-refunded if generation fails.</span>
-                </div>
-              </div>
+            {/* ACTION BUTTON (NO SIGN OUT & NO CREDITS IN HERO) */}
+            <div className="flex items-center justify-center pt-2">
+              <Button size="lg" disabled className="rounded-full bg-sky-500 text-white shadow-lg shadow-sky-500/25 px-8 gap-2 cursor-not-allowed opacity-90 h-12 text-sm font-bold">
+                <Presentation className="h-4 w-4" />
+                <span>Create Presentation Deck</span>
+                <ArrowRight className="h-4 w-4" />
+              </Button>
             </div>
           </section>
         ) : (
           /* GUEST HERO LANDING VIEW */
-          <section className="w-full space-y-8 py-6">
-            <div className="space-y-6 max-w-3xl">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-muted border text-muted-foreground text-xs font-semibold">
-                <Zap className="h-3.5 w-3.5 text-amber-500" />
-                <span>Next-Gen Presentation Engine</span>
-              </div>
+          <section className="w-full space-y-8 text-center pt-6">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-xs font-semibold uppercase tracking-wider">
+              <span>WRITARA AI PRESENTATION ENGINE</span>
+            </div>
 
-              <h1 className="text-5xl sm:text-6xl font-black tracking-tight text-foreground leading-[1.1]">
-                Generate structured, presentation-native decks in seconds.
+            <div className="space-y-4 max-w-3xl mx-auto">
+              <h1 className="text-5xl sm:text-6xl font-black tracking-tight text-slate-900 leading-[1.12]">
+                Generate tailored <br className="hidden sm:inline" />
+                <KineticText />
               </h1>
 
-              <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
-                Writara transforms your topics into complete educational presentation decks with slide layouts, speaker notes, and learning takeaways powered by DeepSeek V4 Flash & Nemotron 30B.
+              <p className="text-base text-slate-600 max-w-xl mx-auto leading-relaxed">
+                Writara helps educators and creators structure topics, automate slide layouts, and guide every presenter with clarity.
               </p>
-
-              <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
-                <Button variant="default" size="lg" asChild className="w-full sm:w-auto gap-2">
-                  <Link href="/register">
-                    <span>Get Started Free (+3 Credits)</span>
-                    <ArrowRight className="h-5 w-5" />
-                  </Link>
-                </Button>
-
-                <Button variant="outline" size="lg" asChild className="w-full sm:w-auto">
-                  <Link href="/login">
-                    <span>Sign In to Account</span>
-                  </Link>
-                </Button>
-              </div>
             </div>
+
+            {/* DUAL ACTION PILL BUTTONS */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+              <Button size="lg" asChild className="rounded-full bg-sky-500 hover:bg-sky-600 text-white shadow-xl shadow-sky-500/20 px-8 h-12 text-sm font-bold gap-2">
+                <Link href="/register">
+                  <span>Schedule a demo</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+
+              <Button variant="outline" size="lg" asChild className="rounded-full bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200 px-8 h-12 text-sm font-semibold">
+                <Link href="/register">
+                  <span>Start free for 3 credits</span>
+                </Link>
+              </Button>
+            </div>
+
+            {/* HERO 3D UNBOXING CARDS VISUAL */}
+            <HeroUnboxingCards />
           </section>
         )}
 
         {/* AI MODEL CATALOG SHOWCASE */}
-        <section className="space-y-6">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-bold tracking-tight text-foreground">Available AI Generation Models</h2>
-            <p className="text-sm text-muted-foreground">Select the model suited for your presentation depth and detail.</p>
+        <section id="models" className="space-y-6 pt-8">
+          <div className="text-center space-y-2 max-w-xl mx-auto">
+            <h2 className="text-3xl font-black tracking-tight text-slate-900">AI Model Catalog</h2>
+            <p className="text-sm text-slate-600">Choose between fast reasoning or deep exhaustive presentation generation.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Free Tier Model Card */}
-            <div className="bg-card border rounded-2xl p-6 shadow-xs space-y-5 flex flex-col justify-between relative overflow-hidden">
-              <div className="space-y-3">
+            <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-6 flex flex-col justify-between hover:border-slate-300 transition">
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-muted text-foreground">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-900">
                       <Cpu className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-foreground">Nemotron 30B Nano</h3>
-                      <p className="text-xs text-muted-foreground">nvidia/nemotron-3-nano-30b-a3b:free</p>
+                      <h3 className="font-bold text-slate-900 text-base">Nemotron 30B Nano</h3>
+                      <p className="text-xs text-slate-400">nvidia/nemotron-3-nano-30b-a3b:free</p>
                     </div>
                   </div>
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600">
+                  <span className="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700">
                     Free Tier
                   </span>
                 </div>
 
-                <p className="text-xs text-muted-foreground leading-relaxed">
+                <p className="text-xs text-slate-600 leading-relaxed">
                   Fast, lightweight reasoning model suited for quick overview decks and concise 5-chapter presentations.
                 </p>
               </div>
 
-              <div className="pt-4 border-t grid grid-cols-2 gap-4 text-xs">
+              <div className="pt-4 border-t border-slate-100 grid grid-cols-2 gap-4 text-xs">
                 <div>
-                  <span className="text-muted-foreground block text-[11px]">Credit Cost</span>
-                  <span className="font-bold text-foreground">1 Credit / Deck</span>
+                  <span className="text-slate-400 block text-[11px]">Credit Usage</span>
+                  <span className="font-bold text-slate-900">1 Credit / Deck</span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground block text-[11px]">Max Chapters</span>
-                  <span className="font-bold text-foreground">5 Chapters</span>
+                  <span className="text-slate-400 block text-[11px]">Chapter Limit</span>
+                  <span className="font-bold text-slate-900">5 Chapters</span>
                 </div>
               </div>
             </div>
 
             {/* Paid Tier Model Card */}
-            <div className="bg-card border-2 border-primary/30 rounded-2xl p-6 shadow-xs space-y-5 flex flex-col justify-between relative overflow-hidden">
-              <div className="space-y-3">
+            <div className="bg-white border-2 border-sky-500 rounded-3xl p-8 shadow-md space-y-6 flex flex-col justify-between relative overflow-hidden">
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-primary text-primary-foreground">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-sky-500 flex items-center justify-center text-white shadow-md shadow-sky-500/30">
                       <Zap className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-foreground">DeepSeek V4 Flash</h3>
-                      <p className="text-xs text-muted-foreground">deepseek/deepseek-v4-flash</p>
+                      <h3 className="font-bold text-slate-900 text-base">DeepSeek V4 Flash</h3>
+                      <p className="text-xs text-slate-400">deepseek/deepseek-v4-flash</p>
                     </div>
                   </div>
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary">
+                  <span className="text-xs font-semibold px-3 py-1 rounded-full bg-sky-50 text-sky-600 border border-sky-100">
                     Pro Model
                   </span>
                 </div>
 
-                <p className="text-xs text-muted-foreground leading-relaxed">
+                <p className="text-xs text-slate-600 leading-relaxed">
                   High-capacity flagship AI model engineered for exhaustive 20-chapter deep dives with rich speaker notes and visual suggestions.
                 </p>
               </div>
 
-              <div className="pt-4 border-t grid grid-cols-2 gap-4 text-xs">
+              <div className="pt-4 border-t border-slate-100 grid grid-cols-2 gap-4 text-xs">
                 <div>
-                  <span className="text-muted-foreground block text-[11px]">Credit Cost</span>
-                  <span className="font-bold text-foreground">5 Credits / Deck</span>
+                  <span className="text-slate-400 block text-[11px]">Credit Usage</span>
+                  <span className="font-bold text-slate-900">5 Credits / Deck</span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground block text-[11px]">Max Chapters</span>
-                  <span className="font-bold text-foreground">Up to 20 Chapters</span>
+                  <span className="text-slate-400 block text-[11px]">Chapter Limit</span>
+                  <span className="font-bold text-slate-900">Up to 20 Chapters</span>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* BENTO FEATURE GRID */}
-        <section className="space-y-6">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-bold tracking-tight text-foreground">Built for Presentation-Native Content</h2>
-            <p className="text-sm text-muted-foreground">Everything you need to deliver engaging educational slide decks.</p>
+        {/* FEATURES BENTO GRID */}
+        <section id="features" className="space-y-6 pt-4">
+          <div className="text-center space-y-2 max-w-xl mx-auto">
+            <h2 className="text-3xl font-black tracking-tight text-slate-900">Presentation-Native Capabilities</h2>
+            <p className="text-sm text-slate-600">Engineered specifically for presentation structure, learning takeaways, and speaker clarity.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Bento Cell 1 */}
-            <div className="bg-card border rounded-2xl p-6 space-y-3 md:col-span-2">
-              <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-foreground mb-2">
+            <div className="bg-white border border-slate-200 rounded-3xl p-6 space-y-3 md:col-span-2 shadow-xs">
+              <div className="w-10 h-10 rounded-2xl bg-sky-50 flex items-center justify-center text-sky-500 mb-1">
                 <LayoutGrid className="h-5 w-5" />
               </div>
-              <h3 className="text-lg font-bold text-foreground">Structured Slide Layouts</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
+              <h3 className="text-lg font-bold text-slate-900">Structured Slide Layouts</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
                 Generates native slide structures including Title slides, Bullet Points, 2-Column Comparisons, Key Metrics, and Summary takeaways.
               </p>
             </div>
 
-            {/* Bento Cell 2 */}
-            <div className="bg-card border rounded-2xl p-6 space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-foreground mb-2">
+            <div className="bg-white border border-slate-200 rounded-3xl p-6 space-y-3 shadow-xs">
+              <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-900 mb-1">
                 <FileCheck2 className="h-5 w-5" />
               </div>
-              <h3 className="text-lg font-bold text-foreground">Speaker Notes & Takeaways</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
+              <h3 className="text-lg font-bold text-slate-900">Speaker Notes & Takeaways</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
                 Every slide includes comprehensive speaker notes and key learning takeaways for presenters.
               </p>
             </div>
 
-            {/* Bento Cell 3 */}
-            <div className="bg-card border rounded-2xl p-6 space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-foreground mb-2">
+            <div className="bg-white border border-slate-200 rounded-3xl p-6 space-y-3 shadow-xs">
+              <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-900 mb-1">
                 <RefreshCw className="h-5 w-5" />
               </div>
-              <h3 className="text-lg font-bold text-foreground">Auto-Refund Guarantee</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
+              <h3 className="text-lg font-bold text-slate-900">Auto-Refund Guarantee</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
                 If background AI generation encounters a timeout, credits are automatically refunded to your balance.
               </p>
             </div>
 
-            {/* Bento Cell 4 */}
-            <div className="bg-card border rounded-2xl p-6 space-y-3 md:col-span-2">
-              <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-foreground mb-2">
+            <div className="bg-white border border-slate-200 rounded-3xl p-6 space-y-3 md:col-span-2 shadow-xs">
+              <div className="w-10 h-10 rounded-2xl bg-sky-50 flex items-center justify-center text-sky-500 mb-1">
                 <Lock className="h-5 w-5" />
               </div>
-              <h3 className="text-lg font-bold text-foreground">Lifetime Credit Pool</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
+              <h3 className="text-lg font-bold text-slate-900">Lifetime Credit Pool</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
                 Your credits never expire. 3 Free trial credits are awarded on registration, and top-ups remain active indefinitely.
               </p>
             </div>
           </div>
         </section>
 
-        {/* 3-STEP PROCESS */}
-        <section className="bg-muted/40 border rounded-3xl p-8 space-y-6">
-          <h2 className="text-2xl font-bold tracking-tight text-foreground text-center">How Writara Works</h2>
+        {/* 3-STEP PROCESS SECTION */}
+        <section id="how-it-works" className="bg-slate-50 border border-slate-200 rounded-3xl p-8 md:p-10 text-center space-y-8">
+          <div className="space-y-2 max-w-md mx-auto">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900">How Writara Works</h2>
+            <p className="text-xs text-slate-500">From topic input to structured presentation slides in 3 simple steps.</p>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-            <div className="space-y-2">
-              <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">
-                1
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3">
+              <div className="w-8 h-8 rounded-full bg-sky-500 text-white flex items-center justify-center font-bold text-xs">
+                01
               </div>
-              <h4 className="font-bold text-foreground text-sm">Input Topic & Model</h4>
-              <p className="text-xs text-muted-foreground">Enter your topic, template, and choose your preferred AI model.</p>
+              <h4 className="font-bold text-slate-900 text-sm">Select Topic & Model</h4>
+              <p className="text-xs text-slate-500 leading-relaxed">Enter your subject topic and pick your AI model (Nemotron or DeepSeek V4).</p>
             </div>
 
-            <div className="space-y-2">
-              <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">
-                2
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3">
+              <div className="w-8 h-8 rounded-full bg-sky-500 text-white flex items-center justify-center font-bold text-xs">
+                02
               </div>
-              <h4 className="font-bold text-foreground text-sm">AI Deck Generation</h4>
-              <p className="text-xs text-muted-foreground">AI structures chapters, slide layouts, notes, and visual suggestions.</p>
+              <h4 className="font-bold text-slate-900 text-sm">AI Slide Structuring</h4>
+              <p className="text-xs text-slate-500 leading-relaxed">AI engine builds chapter topics, slide layouts, speaker notes, and visual suggestions.</p>
             </div>
 
-            <div className="space-y-2">
-              <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">
-                3
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3">
+              <div className="w-8 h-8 rounded-full bg-sky-500 text-white flex items-center justify-center font-bold text-xs">
+                03
               </div>
-              <h4 className="font-bold text-foreground text-sm">Present & Export</h4>
-              <p className="text-xs text-muted-foreground">View your presentation deck in the interactive slide viewer.</p>
+              <h4 className="font-bold text-slate-900 text-sm">Present & Share</h4>
+              <p className="text-xs text-slate-500 leading-relaxed">Review your slide deck in the interactive presentation viewer.</p>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="border-t py-6 text-center text-xs text-muted-foreground bg-background">
+      <footer className="border-t border-slate-200 py-8 text-center text-xs text-slate-500 bg-white">
         <p>© {new Date().getFullYear()} Writara AI. Built with Next.js App Router, Better Auth & TanStack Query.</p>
       </footer>
     </div>

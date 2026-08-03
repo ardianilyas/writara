@@ -27,49 +27,57 @@ export function UserHeader() {
   const totalCredits = creditsData?.totalCredits ?? (sessionData?.user?.freeCredits || 0);
 
   return (
-    <header className="w-full border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <header className="w-full sticky top-4 z-50 px-4 flex justify-center">
+      <div className="w-full max-w-4xl bg-white/90 backdrop-blur-xl border border-slate-200/80 rounded-full px-6 h-14 flex items-center justify-between shadow-lg shadow-slate-900/5">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-sm group-hover:scale-105 transition">
-            <Sparkles className="h-5 w-5" />
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="w-7 h-7 rounded-full bg-sky-500 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition">
+            <Sparkles className="h-4 w-4" />
           </div>
-          <span className="text-lg font-bold tracking-tight text-foreground">
-            Writara <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-muted border text-muted-foreground">AI</span>
+          <span className="text-base font-bold tracking-tight text-slate-900">
+            Writara
           </span>
         </Link>
 
-        {/* User / Auth Navigation */}
-        <div className="flex items-center gap-4">
+        {/* Center Navigation Links */}
+        <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-slate-600">
+          <Link href="#models" className="hover:text-slate-900 transition">
+            AI Models
+          </Link>
+          <Link href="#features" className="hover:text-slate-900 transition">
+            Features
+          </Link>
+          <Link href="#how-it-works" className="hover:text-slate-900 transition">
+            How it works
+          </Link>
+        </nav>
+
+        {/* User / Auth Action Controls */}
+        <div className="flex items-center gap-3">
           {isSessionLoading ? (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+            <div className="flex items-center gap-2 text-xs text-slate-500">
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-sky-500" />
               Loading...
             </div>
           ) : user ? (
-            <div className="flex items-center gap-3">
-              {/* User badge */}
-              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-muted border text-xs">
-                <div className="w-6 h-6 rounded-full bg-background border flex items-center justify-center text-foreground font-semibold">
-                  <UserIcon className="h-3.5 w-3.5" />
-                </div>
-                <div className="text-left">
-                  <p className="font-semibold text-foreground leading-none">{user.name || 'User'}</p>
-                  <p className="text-[10px] text-muted-foreground leading-tight truncate max-w-[140px]">{user.email}</p>
-                </div>
-              </div>
-
-              {/* Credits indicator API call result */}
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-semibold">
-                <Coins className="h-3.5 w-3.5 text-amber-500" />
+            <div className="flex items-center gap-2.5">
+              {/* Credits indicator pill */}
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 border border-sky-100 text-sky-600 text-xs font-semibold">
+                <Coins className="h-3.5 w-3.5 text-sky-500" />
                 {isCreditsLoading ? (
-                  <Loader2 className="h-3 w-3 animate-spin text-amber-500" />
+                  <Loader2 className="h-3 w-3 animate-spin text-sky-500" />
                 ) : (
                   <span>{totalCredits} Credits</span>
                 )}
               </div>
 
-              {/* Destructive Logout Button with AlertDialog Confirmation */}
+              {/* User badge */}
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs text-slate-700 font-medium">
+                <UserIcon className="h-3.5 w-3.5 text-slate-500" />
+                <span className="truncate max-w-[100px]">{user.name || 'User'}</span>
+              </div>
+
+              {/* Destructive Logout Button */}
               <AlertDialog>
                 <AlertDialogTrigger
                   render={
@@ -77,18 +85,18 @@ export function UserHeader() {
                       variant="destructive"
                       size="sm"
                       disabled={logoutMutation.isPending}
-                      className="gap-1.5"
+                      className="rounded-full h-8 px-3 text-xs gap-1"
                     >
                       {logoutMutation.isPending ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        <Loader2 className="h-3 w-3 animate-spin" />
                       ) : (
-                        <LogOut className="h-3.5 w-3.5" />
+                        <LogOut className="h-3 w-3" />
                       )}
                       <span>Logout</span>
                     </Button>
                   }
                 />
-                <AlertDialogContent>
+                <AlertDialogContent className="rounded-2xl">
                   <AlertDialogHeader>
                     <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
                     <AlertDialogDescription>
@@ -96,8 +104,8 @@ export function UserHeader() {
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => logoutMutation.mutate()}>
+                    <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => logoutMutation.mutate()} className="rounded-xl">
                       Sign Out
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -105,12 +113,12 @@ export function UserHeader() {
               </AlertDialog>
             </div>
           ) : (
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="sm" asChild>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" asChild className="rounded-full text-xs text-slate-700">
                 <Link href="/login">Sign In</Link>
               </Button>
-              <Button variant="default" size="sm" asChild>
-                <Link href="/register">Get Started Free</Link>
+              <Button variant="default" size="sm" asChild className="rounded-full text-xs bg-sky-500 hover:bg-sky-600 text-white shadow-md shadow-sky-500/20 px-4">
+                <Link href="/register">Sign up for free</Link>
               </Button>
             </div>
           )}

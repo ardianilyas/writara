@@ -12,10 +12,14 @@ const geistMono = localFont({
 });
 
 import { QueryProvider } from "../providers/query-provider";
-import { Inter } from "next/font/google";
+import { Bricolage_Grotesque } from "next/font/google";
 import { cn } from "@/lib/utils";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: "Writara — AI Presentation & Content Generator",
@@ -30,8 +34,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("light", "font-sans", inter.variable)}>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-slate-50 text-slate-900`}>
+    <html lang="en" className={cn("light", bricolage.variable, "font-sans")}>
+      <body className={`${bricolage.className} antialiased min-h-screen bg-white text-slate-900`}>
         <QueryProvider>
           {children}
           <Toaster />
