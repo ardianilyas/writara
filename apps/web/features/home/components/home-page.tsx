@@ -50,11 +50,11 @@ export default function HomePage() {
             </div>
 
             <div className="space-y-4 max-w-3xl mx-auto">
-              <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-900 leading-[1.2]">
-                Welcome back, <span className="text-sky-500">{user.name || 'Creator'}</span>
+              <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-900 leading-[1.25]">
+                Welcome to your AI workspace, <span className="text-sky-500">{user.name || 'Creator'}</span> — craft <KineticText /> instantly
               </h1>
               <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                Generate tailored <KineticText /> with automated slide layouts and speaker notes.
+                Writara transforms your topics into presentation-native slide decks with automated layouts, speaker notes, and key learning takeaways. Select an AI model below to generate your next deck with total clarity.
               </p>
             </div>
 
@@ -89,7 +89,7 @@ export default function HomePage() {
               </h1>
 
               <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                Writara helps educators and creators structure topics, automate slide layouts, and guide every presenter with clarity.
+                Writara helps educators and creators structure complex topics into presentation-native slide decks. Powered by DeepSeek V4 Flash and Nemotron 30B to automate slide layouts, speaker notes, and learning takeaways.
               </p>
             </div>
 
