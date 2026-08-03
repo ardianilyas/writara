@@ -4,6 +4,17 @@ import Link from 'next/link';
 import { Sparkles, LogOut, User as UserIcon, Coins, Loader2 } from 'lucide-react';
 import { useSession, useLogout, useUserStore } from '@/features/auth';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 export function UserHeader() {
   const { data: sessionData, isLoading } = useSession();
@@ -13,11 +24,11 @@ export function UserHeader() {
   const user = sessionData?.user || (storedUser?.email ? storedUser : null);
 
   return (
-    <header className="w-full border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+    <header className="w-full border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-200 group-hover:scale-105 transition">
+          <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-100 group-hover:scale-105 transition">
             <Sparkles className="h-5 w-5" />
           </div>
           <span className="text-lg font-bold tracking-tight text-slate-900">
@@ -45,7 +56,7 @@ export function UserHeader() {
                 </div>
               </div>
 
-              {/* Credits indicator if available */}
+              {/* Credits indicator */}
               {(sessionData?.user?.freeCredits !== undefined || sessionData?.user?.purchasedCredits !== undefined) && (
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold">
                   <Coins className="h-3.5 w-3.5 text-amber-600" />
@@ -53,21 +64,38 @@ export function UserHeader() {
                 </div>
               )}
 
-              {/* Logout Button (Default shadcn Button) */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => logoutMutation.mutate()}
-                disabled={logoutMutation.isPending}
-                className="gap-1.5 border-slate-200 text-slate-700 hover:bg-slate-100 hover:text-slate-900"
-              >
-                {logoutMutation.isPending ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <LogOut className="h-3.5 w-3.5" />
-                )}
-                <span>Logout</span>
-              </Button>
+              {/* Destructive Logout Button with AlertDialog Confirmation */}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    disabled={logoutMutation.isPending}
+                    className="gap-1.5 shadow-xs"
+                  >
+                    {logoutMutation.isPending ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <LogOut className="h-3.5 w-3.5" />
+                    )}
+                    <span>Logout</span>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      You will be logged out of your session on Writara AI. You can sign back in at any time.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => logoutMutation.mutate()}>
+                      Sign Out
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           ) : (
             <div className="flex items-center gap-3">

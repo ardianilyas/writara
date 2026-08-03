@@ -4,6 +4,17 @@ import Link from 'next/link';
 import { UserHeader } from './user-header';
 import { useSession, useLogout, useUserStore } from '@/features/auth';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Sparkles, Coins, Presentation, LogOut, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 
 export default function HomePage() {
@@ -77,7 +88,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Action CTAs using shadcn UI Button */}
+            {/* Action CTAs */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <Button
                 size="lg"
@@ -89,16 +100,34 @@ export default function HomePage() {
                 <ArrowRight className="h-4 w-4" />
               </Button>
 
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => logoutMutation.mutate()}
-                disabled={logoutMutation.isPending}
-                className="w-full sm:w-auto gap-2 border-slate-200 text-slate-700 hover:bg-slate-100 hover:text-slate-900"
-              >
-                <LogOut className="h-4 w-4" />
-                <span>Sign Out</span>
-              </Button>
+              {/* Destructive Logout Button with AlertDialog Confirmation */}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    size="lg"
+                    disabled={logoutMutation.isPending}
+                    className="w-full sm:w-auto gap-2 shadow-xs"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Sign Out</span>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      You will be logged out of your session on Writara AI. You can sign back in at any time.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => logoutMutation.mutate()}>
+                      Sign Out
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
         ) : (

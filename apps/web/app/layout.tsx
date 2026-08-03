@@ -22,6 +22,8 @@ export const metadata: Metadata = {
   description: "Generate structured, presentation-native slides and learning content powered by AI.",
 };
 
+import { Toaster } from "@/components/ui/sonner";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -30,7 +32,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn("light", "font-sans", inter.variable)}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-slate-50 text-slate-900`}>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          {children}
+          <Toaster />
+        </QueryProvider>
       </body>
     </html>
   );
