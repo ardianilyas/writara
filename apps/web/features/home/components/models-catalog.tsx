@@ -64,8 +64,8 @@ export function ModelsCatalog() {
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-slate-500 font-medium">Generation Speed</span>
                   <span className="font-bold text-slate-900 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    Ultra Fast (~2s)
+                    <span className="w-2 h-2 rounded-full bg-amber-500" />
+                    Standard Queue (~10-15s)
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
@@ -82,7 +82,7 @@ export function ModelsCatalog() {
               <ul className="space-y-2.5 text-xs text-slate-600">
                 <li className="flex items-center gap-2.5">
                   <Check className="h-4 w-4 text-emerald-500 shrink-0" />
-                  <span>Instant outline generation for quick pitches</span>
+                  <span>Quick outline generation for short pitches</span>
                 </li>
                 <li className="flex items-center gap-2.5">
                   <Check className="h-4 w-4 text-emerald-500 shrink-0" />
