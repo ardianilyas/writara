@@ -11,7 +11,9 @@ const envSchema = z.object({
   BETTER_AUTH_SECRET: z.string().min(1, 'BETTER_AUTH_SECRET is required'),
   BETTER_AUTH_URL: z.string().url().default('http://localhost:5001'),
   OPENROUTER_API_KEY: z.string().min(1, 'OPENROUTER_API_KEY is required'),
-  OPENROUTER_MODEL: z.string().default('nvidia/nemotron-3-ultra-550b-a55b:free'),
+  OPENROUTER_MODEL: z.string().default('nvidia/nemotron-3-nano-30b-a3b:free'),
+  OPENROUTER_FREE_MODEL: z.string().default('nvidia/nemotron-3-nano-30b-a3b:free'),
+  OPENROUTER_PAID_MODEL: z.string().default('deepseek/deepseek-v4-flash'),
 });
 
 const _env = envSchema.safeParse(process.env);

@@ -128,6 +128,8 @@ exports.Prisma.UserScalarFieldEnum = {
   emailVerified: 'emailVerified',
   image: 'image',
   role: 'role',
+  freeCredits: 'freeCredits',
+  purchasedCredits: 'purchasedCredits',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -180,6 +182,16 @@ exports.Prisma.GenerationScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.CreditTransactionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  amount: 'amount',
+  poolType: 'poolType',
+  type: 'type',
+  description: 'description',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -225,12 +237,20 @@ exports.GenerationStatus = exports.$Enums.GenerationStatus = {
   FAILED: 'FAILED'
 };
 
+exports.CreditTransactionType = exports.$Enums.CreditTransactionType = {
+  WELCOME_BONUS: 'WELCOME_BONUS',
+  TOP_UP: 'TOP_UP',
+  GENERATION_DEDUCT: 'GENERATION_DEDUCT',
+  GENERATION_REFUND: 'GENERATION_REFUND'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
-  Generation: 'Generation'
+  Generation: 'Generation',
+  CreditTransaction: 'CreditTransaction'
 };
 
 /**

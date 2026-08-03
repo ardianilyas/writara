@@ -28,19 +28,29 @@ enum GenerationTemplate {
   LESSON_PLAN
 }
 
-model User {
-  id            String       @id @default(cuid())
-  name          String
-  email         String       @unique
-  emailVerified Boolean      @default(false)
-  image         String?
-  role          UserRole     @default(STUDENT)
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+enum CreditTransactionType {
+  WELCOME_BONUS
+  TOP_UP
+  GENERATION_DEDUCT
+  GENERATION_REFUND
+}
 
-  sessions      Session[]
-  accounts      Account[]
-  generations   Generation[]
+model User {
+  id                 String              @id @default(cuid())
+  name               String
+  email              String              @unique
+  emailVerified      Boolean             @default(false)
+  image              String?
+  role               UserRole            @default(STUDENT)
+  freeCredits        Int                 @default(3)
+  purchasedCredits   Int                 @default(0)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  sessions           Session[]
+  accounts           Account[]
+  generations        Generation[]
+  creditTransactions CreditTransaction[]
 
   @@map("user")
 }
@@ -108,4 +118,18 @@ model Generation {
   @@index([status])
   @@index([createdAt])
   @@map("generation")
+}
+
+model CreditTransaction {
+  id          String                @id @default(cuid())
+  userId      String
+  user        User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount      Int
+  poolType    String                // "FREE" | "PURCHASED"
+  type        CreditTransactionType
+  description String?
+  createdAt   DateTime              @default(now())
+
+  @@index([userId])
+  @@map("credit_transaction")
 }

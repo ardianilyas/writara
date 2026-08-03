@@ -6,6 +6,8 @@ import { logger } from '../../lib/logger.js';
 import { NotFoundError, BadRequestError } from '../../errors/index.js';
 import { GeneratedContentPayload, CreateGenerationInput } from './generation.types.js';
 
+import { creditService, DeductCreditResult } from '../credits/credit.service.js';
+
 /** Timeout for OpenRouter AI calls (in milliseconds). */
 const AI_TIMEOUT_MS = 120_000; // 2 minutes
 
@@ -14,11 +16,22 @@ const STALE_JOB_THRESHOLD_MS = 3 * 60 * 1000;
 
 export class GenerationService {
   /**
-   * Creates a PENDING generation record and kicks off AI processing
-   * in the background. Returns the PENDING record immediately so
-   * the HTTP response is fast.
+   * Creates a PENDING generation record, deducts credits based on requested plan/chapters,
+   * and kicks off AI processing in the background.
    */
   async createGeneration(userId: string, input: CreateGenerationInput) {
+    const totalChapters = input.totalChapters && input.totalChapters >= 10 ? 10 : 5;
+    const requiredCredits = totalChapters >= 10 ? 5 : 1;
+    const model = totalChapters >= 10 ? env.OPENROUTER_PAID_MODEL : env.OPENROUTER_FREE_MODEL;
+
+    // 1. Deduct credits upfront (throws BadRequestError if insufficient)
+    const deduction = await creditService.deductCredits(
+      userId,
+      requiredCredits,
+      `Generation for "${input.topic}" (${totalChapters} chapters)`
+    );
+
+    // 2. Create database record
     const generation = await prisma.generation.create({
       data: {
         userId,
@@ -28,8 +41,8 @@ export class GenerationService {
       },
     });
 
-    // Fire-and-forget background processing
-    this.processGeneration(generation.id, input).catch((error) => {
+    // 3. Fire-and-forget background processing
+    this.processGeneration(generation.id, userId, input, totalChapters, model, deduction).catch((error) => {
       logger.error({ generationId: generation.id, error: error.message }, 'Background generation failed');
     });
 
@@ -46,6 +59,16 @@ export class GenerationService {
       throw new BadRequestError('Generation is currently in progress.');
     }
 
+    const totalChapters = 5; // Default retry chapters
+    const requiredCredits = 1;
+    const model = env.OPENROUTER_FREE_MODEL;
+
+    const deduction = await creditService.deductCredits(
+      userId,
+      requiredCredits,
+      `Retry generation for "${existing.topic}"`
+    );
+
     const updated = await prisma.generation.update({
       where: { id },
       data: {
@@ -54,10 +77,14 @@ export class GenerationService {
       },
     });
 
-    this.processGeneration(updated.id, {
-      topic: updated.topic,
-      template: updated.template,
-    }).catch((error) => {
+    this.processGeneration(
+      updated.id,
+      userId,
+      { topic: updated.topic, template: updated.template },
+      totalChapters,
+      model,
+      deduction
+    ).catch((error) => {
       logger.error({ generationId: updated.id, error: error.message }, 'Background retry generation failed');
     });
 
@@ -101,10 +128,17 @@ export class GenerationService {
   }
 
   /**
-   * Background worker: calls OpenRouter, parses JSON, and updates
-   * the DB record to COMPLETED or FAILED.
+   * Background worker: calls OpenRouter, parses JSON, and updates DB.
+   * If generation fails, automatically refunds user credits.
    */
-  private async processGeneration(generationId: string, input: CreateGenerationInput): Promise<void> {
+  private async processGeneration(
+    generationId: string,
+    userId: string,
+    input: CreateGenerationInput,
+    totalChapters: number,
+    model: string,
+    deduction: DeductCreditResult
+  ): Promise<void> {
     try {
       await prisma.generation.update({
         where: { id: generationId },
@@ -124,7 +158,7 @@ export class GenerationService {
       const userPrompt = `Create an educational presentation on the topic: "${input.topic}"
 
 REQUIREMENTS:
-- Generate exactly 10 chapters, each with 2 to 3 slides.
+- Generate exactly ${totalChapters} chapters, each with 2 to 3 slides.
 - Use a single layout per slide, chosen from: "TITLE", "BULLET_POINTS", "TWO_COLUMN", "KEY_METRIC", "SUMMARY".
 - Chapter 1, slide 1 MUST use the "TITLE" layout.
 - The final chapter's last slide MUST use the "SUMMARY" layout.
@@ -138,7 +172,7 @@ Return ONLY a valid JSON object matching this TypeScript interface exactly:
 interface Presentation {
   topic: string;
   template: string; // "${template}"
-  totalChapters: number; // 10
+  totalChapters: number; // ${totalChapters}
   estimatedDurationMinutes: number;
   targetAudience: string;
   chapters: Array<{
@@ -165,7 +199,7 @@ interface Presentation {
       try {
         result = await openRouter.chat.send({
           chatRequest: {
-            model: env.OPENROUTER_MODEL,
+            model,
             messages: [
               { role: 'system', content: systemPrompt },
               { role: 'user', content: userPrompt },
@@ -198,7 +232,7 @@ interface Presentation {
         },
       });
 
-      logger.info({ generationId }, 'Generation completed successfully');
+      logger.info({ generationId, model, totalChapters }, 'Generation completed successfully');
     } catch (error: any) {
       const errorMessage = error.name === 'AbortError'
         ? 'AI generation timed out after 2 minutes'
@@ -212,7 +246,15 @@ interface Presentation {
         },
       });
 
-      logger.error({ generationId, error: errorMessage }, 'Generation failed');
+      // Automatically refund deducted credits on generation failure
+      await creditService.refundCredits(
+        userId,
+        deduction.freeDeducted,
+        deduction.purchasedDeducted,
+        `Refund for failed generation "${input.topic}"`
+      );
+
+      logger.error({ generationId, error: errorMessage }, 'Generation failed and credits refunded');
     }
   }
 

@@ -47,4 +47,5 @@ export interface GeneratedContentPayload {
 export interface CreateGenerationInput {
   topic: string;
   template?: GenerationTemplate;
+  totalChapters?: number;
 }
