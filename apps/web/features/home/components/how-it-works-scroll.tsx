@@ -2,41 +2,35 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Cpu, LayoutGrid, Presentation, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 const STEPS = [
   {
     id: 1,
-    step: '01',
+    stepNumber: '01.',
     title: 'Select Topic & AI Model',
-    highlightSentence: 'enter your topic & select your AI model',
+    highlightSentence: 'select your topic & AI engine',
     description:
-      'Input your presentation topic and choose between Nemotron 30B Nano (1 credit, 5 chapters) for quick overviews or DeepSeek V4 Flash (5 credits, 20 chapters) for exhaustive deep dives.',
+      'Choose between Nemotron 30B Nano (1 credit, 5 chapters) for quick overviews or DeepSeek V4 Flash (5 credits, 20 chapters) for exhaustive deep dives.',
     badge: '1 or 5 Credits',
-    icon: Cpu,
-    details: ['Nemotron 30B (Free)', 'DeepSeek V4 (Pro)', 'Flexible Credit Pool'],
   },
   {
     id: 2,
-    step: '02',
+    stepNumber: '02.',
     title: 'AI Slide Structuring',
     highlightSentence: 'structure 5+ native slide layouts & speaker notes',
     description:
-      'Writara automatically parses your subject into structured slide layouts including Title slides, Bullet Points, 2-Column Comparisons, Key Metrics, and Summary takeaways — complete with detailed speaker notes.',
+      'Writara automatically parses your subject into structured slide layouts (Title, 2-Column, Key Metric, Summary) complete with comprehensive speaker notes.',
     badge: 'Automated Layouts',
-    icon: LayoutGrid,
-    details: ['Speaker Notes Included', '5+ Native Layouts', 'Key Takeaways'],
   },
   {
     id: 3,
-    step: '03',
+    stepNumber: '03.',
     title: 'Present & Share Deck',
     highlightSentence: 'present your slide deck with total clarity',
     description:
-      'Review your finalized slide deck in the interactive presenter viewer. If background generation encounters a timeout, credits are automatically restored to your account balance.',
+      'Review your finalized slide deck in the interactive presenter viewer. If background generation encounters a timeout, credits are automatically restored.',
     badge: 'Zero-Risk Refund',
-    icon: Presentation,
-    details: ['Interactive Presenter', 'Auto-Refund Guarantee', 'Lifetime Access'],
   },
 ];
 
@@ -44,139 +38,121 @@ export function HowItWorksScroll() {
   const [activeStep, setActiveStep] = useState(1);
 
   return (
-    <section id="how-it-works" className="space-y-12 pt-16 pb-12">
-      {/* Section Header */}
-      <div className="text-center space-y-3 max-w-xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-xs font-semibold uppercase tracking-wider">
-          <Sparkles className="h-3.5 w-3.5 text-sky-500" />
-          <span>WORKFLOW ENGINE</span>
-        </div>
-        <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900">
-          How Writara Works
-        </h2>
-        <p className="text-sm text-slate-600 leading-relaxed">
-          Scroll through to explore the automated presentation generation process.
-        </p>
-      </div>
-
-      {/* 2-Column Split: Left Sticky Sentence & Right Scrollable Steps */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start max-w-5xl mx-auto">
-        {/* Left Sticky Interactive Sentence */}
-        <div className="lg:col-span-5 lg:sticky lg:top-28 space-y-6 bg-slate-50 border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xs">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-sky-500 animate-pulse" />
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-              Live Process Tracker
-            </span>
+    <section id="how-it-works" className="w-full pt-20 pb-32 relative">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start relative">
+        {/* Left Sticky Container (Stays pinned smoothly until bottom of section) */}
+        <div className="lg:col-span-5 lg:sticky lg:top-32 space-y-6 self-start">
+          {/* Eyebrow Pill */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold">
+            <Sparkles className="h-3.5 w-3.5 text-sky-500" />
+            <span>How it works</span>
           </div>
 
-          {/* Dynamic Highlighted Sentence */}
+          {/* Display Title & Subtitle */}
           <div className="space-y-4">
-            <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 leading-snug">
-              Simply{' '}
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={activeStep}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.25 }}
-                  className="text-sky-500 underline decoration-sky-300 decoration-wavy decoration-2 underline-offset-4 inline"
-                >
-                  {STEPS.find((s) => s.id === activeStep)?.highlightSentence}
-                </motion.span>
-              </AnimatePresence>
-            </h3>
+            <h2 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 leading-[1.15]">
+              Get started in <span className="italic text-sky-500 font-serif">seconds</span>
+            </h2>
 
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Step <span className="font-bold text-slate-900">0{activeStep}</span> of 03 in active focus. Scroll down to advance through the workflow.
-            </p>
+            {/* Dynamic Highlighted Sentence */}
+            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
+                Active Step 0{activeStep} of 03
+              </span>
+              <p className="text-base font-bold text-slate-800 leading-snug">
+                Simply{' '}
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={activeStep}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.35, ease: 'easeOut' }}
+                    className="text-sky-500 underline decoration-sky-300 decoration-wavy decoration-2 underline-offset-4 inline"
+                  >
+                    {STEPS.find((s) => s.id === activeStep)?.highlightSentence}
+                  </motion.span>
+                </AnimatePresence>
+                .
+              </p>
+            </div>
           </div>
 
-          {/* Step Indicators */}
-          <div className="flex items-center gap-2 pt-2 border-t border-slate-200">
+          {/* Interactive Step Progress Pills */}
+          <div className="flex items-center gap-2 pt-2">
             {STEPS.map((s) => (
               <button
                 key={s.id}
                 onClick={() => setActiveStep(s.id)}
-                className={`flex-1 h-2 rounded-full transition-all cursor-pointer ${
+                className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
                   activeStep === s.id
-                    ? 'bg-sky-500 w-full'
-                    : 'bg-slate-200 hover:bg-slate-300'
+                    ? 'bg-sky-500 w-10'
+                    : 'bg-slate-200 hover:bg-slate-300 w-4'
                 }`}
-                aria-label={`Jump to step ${s.step}`}
+                aria-label={`Jump to step ${s.stepNumber}`}
               />
             ))}
           </div>
         </div>
 
-        {/* Right Scrollable Step Cards */}
-        <div className="lg:col-span-7 space-y-8">
+        {/* Right Side Typography-Driven Step List (Paced for smooth scroll reveal) */}
+        <div className="lg:col-span-7 space-y-36 sm:space-y-48 lg:space-y-56 py-12">
           {STEPS.map((item) => {
-            const Icon = item.icon;
             const isActive = activeStep === item.id;
 
             return (
               <motion.div
                 key={item.id}
                 onViewportEnter={() => setActiveStep(item.id)}
-                viewport={{ amount: 0.5 }}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className={`bg-white rounded-3xl p-6 sm:p-8 transition-all border-2 space-y-5 ${
-                  isActive
-                    ? 'border-sky-500 shadow-xl shadow-sky-500/10'
-                    : 'border-slate-200 hover:border-slate-300 shadow-sm opacity-90'
-                }`}
+                viewport={{ amount: 0.6, margin: '-10% 0px -10% 0px' }}
+                initial={{ opacity: 0.25 }}
+                animate={{
+                  opacity: isActive ? 1 : 0.25,
+                  scale: isActive ? 1 : 0.98,
+                }}
+                transition={{ duration: 0.45, ease: 'easeOut' }}
+                className="grid grid-cols-12 gap-6 items-start cursor-default select-none min-h-[160px]"
               >
-                {/* Card Top Row: Step Badge & Icon */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`w-10 h-10 rounded-2xl font-black text-sm flex items-center justify-center transition-colors ${
-                        isActive
-                          ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
-                          : 'bg-slate-100 text-slate-700'
-                      }`}
-                    >
-                      {item.step}
-                    </span>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-sky-600 px-3 py-1 rounded-full bg-sky-50 border border-sky-100">
-                      {item.badge}
-                    </span>
-                  </div>
-
-                  <div
-                    className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-colors ${
-                      isActive ? 'bg-sky-50 text-sky-500' : 'bg-slate-100 text-slate-600'
+                {/* Step Number */}
+                <div className="col-span-3 sm:col-span-2">
+                  <span
+                    className={`text-5xl sm:text-6xl font-black tracking-tight transition-colors duration-500 block ${
+                      isActive ? 'text-slate-900' : 'text-slate-300'
                     }`}
                   >
-                    <Icon className="h-5 w-5" />
-                  </div>
+                    {item.stepNumber}
+                  </span>
                 </div>
 
-                {/* Card Title & Description */}
-                <div className="space-y-2">
-                  <h3 className="text-xl font-bold text-slate-900 leading-snug">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">
+                {/* Step Content */}
+                <div className="col-span-9 sm:col-span-10 space-y-3 pt-1">
+                  <div className="flex items-center gap-3">
+                    <h3
+                      className={`text-2xl sm:text-3xl font-bold tracking-tight transition-colors duration-500 ${
+                        isActive ? 'text-slate-900 font-extrabold' : 'text-slate-400 font-medium'
+                      }`}
+                    >
+                      {item.title}
+                    </h3>
+
+                    {isActive && (
+                      <motion.span
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="text-[10px] font-bold uppercase tracking-wider text-sky-600 px-3 py-1 rounded-full bg-sky-50 border border-sky-100"
+                      >
+                        {item.badge}
+                      </motion.span>
+                    )}
+                  </div>
+
+                  <p
+                    className={`text-sm sm:text-base leading-relaxed transition-colors duration-500 ${
+                      isActive ? 'text-slate-600 font-normal' : 'text-slate-400 font-normal'
+                    }`}
+                  >
                     {item.description}
                   </p>
-                </div>
-
-                {/* Feature Chips */}
-                <div className="pt-3 border-t border-slate-100 flex flex-wrap gap-2 text-xs">
-                  {item.details.map((detail) => (
-                    <div
-                      key={detail}
-                      className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 font-medium text-[11px]"
-                    >
-                      <CheckCircle2 className="h-3 w-3 text-sky-500" />
-                      <span>{detail}</span>
-                    </div>
-                  ))}
                 </div>
               </motion.div>
             );
