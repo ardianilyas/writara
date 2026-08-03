@@ -113,28 +113,49 @@ export class GenerationService {
 
       const template = input.template || GenerationTemplate.PRESENTATION;
 
-      const systemPrompt = `You are an expert educational content generator. Produce concise, high-quality learning material.
-You MUST output ONLY valid JSON without markdown formatting or code block wrappers (no \`\`\`json or \`\`\`).`;
+      const systemPrompt = [
+        'You are a senior instructional designer who creates structured presentation decks.',
+        'RULES:',
+        '1. Output ONLY valid JSON. No markdown fences, no explanation, no text outside JSON.',
+        '2. Every string value must be properly escaped.',
+        '3. Do NOT truncate or abbreviate the output. Complete all chapters and slides.',
+      ].join('\n');
 
-      const userPrompt = `Topic: "${input.topic}"
-Template: ${template}
+      const userPrompt = `Create an educational presentation on the topic: "${input.topic}"
 
-Generate structured material containing exactly 5 chapters.
-Return ONLY valid JSON matching this exact structure:
-{
-  "topic": "${input.topic}",
-  "template": "${template}",
-  "totalChapters": 5,
-  "chapters": [
-    {
-      "chapterNumber": 1,
-      "title": "Chapter Title",
-      "summary": "Brief summary (1-2 sentences).",
-      "learningObjectives": ["Objective 1", "Objective 2"],
-      "content": "Detailed content in markdown (keep concise).",
-      "keyTakeaways": ["Takeaway 1", "Takeaway 2"]
-    }
-  ]
+REQUIREMENTS:
+- Generate exactly 10 chapters, each with 2 to 3 slides.
+- Use a single layout per slide, chosen from: "TITLE", "BULLET_POINTS", "TWO_COLUMN", "KEY_METRIC", "SUMMARY".
+- Chapter 1, slide 1 MUST use the "TITLE" layout.
+- The final chapter's last slide MUST use the "SUMMARY" layout.
+- For speakerNotes: Provide 1-2 complete sentences for the presenter to say.
+- For bulletPoints: Provide 3-5 short, punchy items (max 12 words each).
+- For visualSuggestion: Provide a brief description of a supporting graphic.
+- DO NOT use placeholders like "..." or truncate the output. Generate the FULL content.
+
+Return ONLY a valid JSON object matching this TypeScript interface exactly:
+
+interface Presentation {
+  topic: string;
+  template: string; // "${template}"
+  totalChapters: number; // 10
+  estimatedDurationMinutes: number;
+  targetAudience: string;
+  chapters: Array<{
+    chapterNumber: number;
+    title: string;
+    summary: string;
+    learningObjectives: string[];
+    slides: Array<{
+      slideNumber: number;
+      title: string;
+      layout: string;
+      bulletPoints?: string[];
+      speakerNotes: string;
+      visualSuggestion?: string;
+    }>;
+    keyTakeaways: string[];
+  }>;
 }`;
 
       const controller = new AbortController();
@@ -149,7 +170,7 @@ Return ONLY valid JSON matching this exact structure:
               { role: 'system', content: systemPrompt },
               { role: 'user', content: userPrompt },
             ],
-            maxTokens: 4096,
+            maxTokens: 8192,
           },
         });
       } finally {
@@ -157,18 +178,14 @@ Return ONLY valid JSON matching this exact structure:
       }
 
       const rawText = (result as any).choices?.[0]?.message?.content || '';
-      const cleanedJsonText = rawText
-        .replace(/<think>[\s\S]*?<\/think>/gi, '')
-        .replace(/```json|```/g, '')
-        .trim();
 
-      if (!cleanedJsonText) {
+      if (!rawText.trim()) {
         throw new Error('Received empty response from AI provider');
       }
 
       let parsedPayload: GeneratedContentPayload;
       try {
-        parsedPayload = JSON.parse(cleanedJsonText);
+        parsedPayload = this.extractJsonFromResponse(rawText);
       } catch (parseError) {
         throw new Error(`Failed to parse AI JSON response: ${(parseError as Error).message}`);
       }
@@ -222,6 +239,43 @@ Return ONLY valid JSON matching this exact structure:
       where: { userId },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  /**
+   * Robustly extracts and parses JSON from AI model response text.
+   * Handles: <think> tags, markdown fences, conversational preamble text,
+   * and any non-JSON content before or after the actual JSON object.
+   */
+  private extractJsonFromResponse(raw: string): GeneratedContentPayload {
+    // 1. Strip thinking tags (Nemotron reasoning models)
+    let text = raw.replace(/<think>[\s\S]*?<\/think>/gi, '');
+
+    // 2. Strip markdown code fences
+    text = text.replace(/```json\s*/gi, '').replace(/```\s*/gi, '');
+
+    // 3. Find the first top-level JSON object by matching braces
+    const startIdx = text.indexOf('{');
+    if (startIdx === -1) {
+      throw new Error('No JSON object found in AI response');
+    }
+
+    let depth = 0;
+    let endIdx = -1;
+    for (let i = startIdx; i < text.length; i++) {
+      if (text[i] === '{') depth++;
+      if (text[i] === '}') depth--;
+      if (depth === 0) {
+        endIdx = i;
+        break;
+      }
+    }
+
+    if (endIdx === -1) {
+      throw new Error('Incomplete JSON object in AI response (unmatched braces)');
+    }
+
+    const jsonStr = text.substring(startIdx, endIdx + 1);
+    return JSON.parse(jsonStr);
   }
 }
 
