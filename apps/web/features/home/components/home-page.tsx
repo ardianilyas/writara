@@ -12,13 +12,10 @@ import {
   ArrowRight,
   Zap,
   Cpu,
-  RefreshCw,
-  LayoutGrid,
-  FileCheck2,
-  Lock,
 } from 'lucide-react';
 
 import { HowItWorksScroll } from './how-it-works-scroll';
+import { FeaturesBento } from './features-bento';
 import { Footer } from './footer';
 
 export default function HomePage() {
@@ -214,61 +211,7 @@ export default function HomePage() {
         </motion.section>
 
         {/* FEATURES BENTO GRID */}
-        <motion.section
-          id="features"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6 }}
-          className="space-y-6 pt-4"
-        >
-          <div className="text-center space-y-2 max-w-xl mx-auto">
-            <h2 className="text-3xl font-black tracking-tight text-slate-900">Presentation-Native Capabilities</h2>
-            <p className="text-sm text-slate-600">Engineered specifically for presentation structure, learning takeaways, and speaker clarity.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <motion.div whileHover={{ y: -4 }} className="bg-white border border-slate-200 rounded-3xl p-6 space-y-3 md:col-span-2 shadow-xs">
-              <div className="w-10 h-10 rounded-2xl bg-sky-50 flex items-center justify-center text-sky-500 mb-1">
-                <LayoutGrid className="h-5 w-5" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900">Structured Slide Layouts</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Generates native slide structures including Title slides, Bullet Points, 2-Column Comparisons, Key Metrics, and Summary takeaways.
-              </p>
-            </motion.div>
-
-            <motion.div whileHover={{ y: -4 }} className="bg-white border border-slate-200 rounded-3xl p-6 space-y-3 shadow-xs">
-              <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-900 mb-1">
-                <FileCheck2 className="h-5 w-5" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900">Speaker Notes & Takeaways</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Every slide includes comprehensive speaker notes and key learning takeaways for presenters.
-              </p>
-            </motion.div>
-
-            <motion.div whileHover={{ y: -4 }} className="bg-white border border-slate-200 rounded-3xl p-6 space-y-3 shadow-xs">
-              <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-900 mb-1">
-                <RefreshCw className="h-5 w-5" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900">Auto-Refund Guarantee</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                If background AI generation encounters a timeout, credits are automatically refunded to your balance.
-              </p>
-            </motion.div>
-
-            <motion.div whileHover={{ y: -4 }} className="bg-white border border-slate-200 rounded-3xl p-6 space-y-3 md:col-span-2 shadow-xs">
-              <div className="w-10 h-10 rounded-2xl bg-sky-50 flex items-center justify-center text-sky-500 mb-1">
-                <Lock className="h-5 w-5" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900">Lifetime Credit Pool</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Your credits never expire. 3 Free trial credits are awarded on registration, and top-ups remain active indefinitely.
-              </p>
-            </motion.div>
-          </div>
-        </motion.section>
+        <FeaturesBento />
 
         {/* 3-STEP PROCESS SECTION */}
         <HowItWorksScroll />
