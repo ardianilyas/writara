@@ -85,7 +85,7 @@ export function UserHeader() {
                       variant="destructive"
                       size="sm"
                       disabled={logoutMutation.isPending}
-                      className="rounded-full h-8 px-3 text-xs gap-1"
+                      className="h-8 px-3 text-xs gap-1"
                     >
                       {logoutMutation.isPending ? (
                         <Loader2 className="h-3 w-3 animate-spin" />
@@ -104,8 +104,8 @@ export function UserHeader() {
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => logoutMutation.mutate()} className="rounded-xl">
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => logoutMutation.mutate()}>
                       Sign Out
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -114,10 +114,10 @@ export function UserHeader() {
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" asChild className="rounded-full text-xs text-slate-700">
+              <Button variant="ghost" size="sm" asChild className="text-xs text-slate-700">
                 <Link href="/login">Sign In</Link>
               </Button>
-              <Button variant="default" size="sm" asChild className="rounded-full text-xs bg-sky-500 hover:bg-sky-600 text-white shadow-md shadow-sky-500/20 px-4">
+              <Button variant="default" size="sm" asChild className="text-xs bg-sky-500 hover:bg-sky-600 text-white shadow-md shadow-sky-500/20 px-4">
                 <Link href="/register">Sign up for free</Link>
               </Button>
             </div>

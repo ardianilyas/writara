@@ -41,63 +41,57 @@ export default function HomePage() {
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="w-full space-y-8 text-center pt-6"
+            transition={{ duration: 0.6 }}
+            className="text-center space-y-8 pt-8 md:pt-12 max-w-4xl mx-auto"
           >
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold uppercase tracking-wider">
               <Sparkles className="h-3.5 w-3.5 text-sky-500" />
-              <span>Workspace Active — {user.name || 'Creator'}</span>
+              <span>Welcome Back</span>
             </div>
 
-            <div className="space-y-4 max-w-3xl mx-auto">
-              <h1 className="text-5xl sm:text-7xl font-black tracking-tight text-slate-900 leading-[1.1]">
-                AI Presentation Decks in <span className="text-sky-500">Seconds</span>
-              </h1>
-              <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                Writara transforms your topics into presentation-native slide decks with automated layouts, speaker notes, and key learning takeaways. Select an AI model below to generate your next deck.
-              </p>
-            </div>
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-slate-900 leading-[1.1] sm:leading-[1.08]">
+              AI Presentation Decks in Seconds
+            </h1>
 
-            {/* ACTION BUTTON */}
-            <div className="flex items-center justify-center pt-2">
-              <Button size="lg" disabled className="rounded-full bg-sky-500 text-white shadow-lg shadow-sky-500/25 px-8 gap-2 cursor-not-allowed opacity-90 h-12 text-sm font-bold">
-                <Presentation className="h-4 w-4" />
-                <span>Create Presentation Deck</span>
-                <ArrowRight className="h-4 w-4" />
+            <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+              Writara transforms your topics into structured slide decks with automated layouts, speaker notes, and key learning takeaways.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button size="lg" disabled className="bg-sky-500 text-white shadow-lg shadow-sky-500/25 px-8 gap-2 cursor-not-allowed opacity-90 h-12 text-sm font-bold">
+                <Presentation className="h-5 w-5" />
+                <span>Generating presentation deck...</span>
               </Button>
             </div>
+
+            {/* HERO 3D UNBOXING CARDS VISUAL */}
+            <HeroUnboxingCards />
           </motion.section>
         ) : (
-          /* GUEST HERO LANDING VIEW */
+          /* GUEST HERO */
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="w-full space-y-8 text-center pt-6"
+            className="text-center space-y-8 pt-8 md:pt-12 max-w-4xl mx-auto"
           >
-            <motion.div
-              whileHover={{ scale: 1.04 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-xs font-semibold uppercase tracking-wider cursor-default"
-            >
-              <Zap className="h-3.5 w-3.5 text-sky-500" />
-              <span>WRITARA AI PRESENTATION ENGINE</span>
-            </motion.div>
-
-            <div className="space-y-4 max-w-4xl mx-auto">
-              <h1 className="text-5xl sm:text-7xl font-black tracking-tight text-slate-900 leading-[1.1]">
-                AI Presentation Decks in <span className="text-sky-500">Seconds</span>
-              </h1>
-
-              <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                Writara helps educators and creators structure complex topics into presentation-native slide decks. Powered by DeepSeek V4 Flash and Nemotron 30B to automate slide layouts, speaker notes, and learning takeaways.
-              </p>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-xs font-semibold uppercase tracking-wider cursor-default">
+              <Sparkles className="h-3.5 w-3.5 text-sky-500" />
+              <span>AI Deck Generator</span>
             </div>
 
-            {/* DUAL ACTION PILL BUTTONS */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-slate-900 leading-[1.1] sm:leading-[1.08]">
+              AI Presentation Decks in Seconds
+            </h1>
+
+            <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+              Powered by DeepSeek V4 Flash and Nemotron 30B to automate slide layouts, speaker notes, and learning takeaways — in seconds.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Button size="lg" asChild className="rounded-full bg-sky-500 hover:bg-sky-600 text-white shadow-xl shadow-sky-500/20 px-8 h-12 text-sm font-bold gap-2">
-                  <Link href="/register">
+                <Button size="lg" asChild className="bg-sky-500 hover:bg-sky-600 text-white shadow-xl shadow-sky-500/20 px-8 h-12 text-sm font-bold gap-2">
+                  <Link href="/login">
                     <span>Schedule a demo</span>
                     <ArrowRight className="h-4 w-4" />
                   </Link>
@@ -105,7 +99,7 @@ export default function HomePage() {
               </motion.div>
 
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Button variant="outline" size="lg" asChild className="rounded-full bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200 px-8 h-12 text-sm font-semibold">
+                <Button variant="outline" size="lg" asChild className="bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200 px-8 h-12 text-sm font-semibold">
                   <Link href="/register">
                     <span>Start free for 3 credits</span>
                   </Link>
