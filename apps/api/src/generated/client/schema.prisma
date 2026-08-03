@@ -107,6 +107,7 @@ model Generation {
   topic        String
   template     GenerationTemplate @default(PRESENTATION)
   status       GenerationStatus   @default(PENDING)
+  modelUsed    String?
   content      Json?
   errorMessage String?
   userId       String

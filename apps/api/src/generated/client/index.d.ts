@@ -5972,6 +5972,7 @@ export namespace Prisma {
     topic: string | null
     template: $Enums.GenerationTemplate | null
     status: $Enums.GenerationStatus | null
+    modelUsed: string | null
     errorMessage: string | null
     userId: string | null
     createdAt: Date | null
@@ -5983,6 +5984,7 @@ export namespace Prisma {
     topic: string | null
     template: $Enums.GenerationTemplate | null
     status: $Enums.GenerationStatus | null
+    modelUsed: string | null
     errorMessage: string | null
     userId: string | null
     createdAt: Date | null
@@ -5994,6 +5996,7 @@ export namespace Prisma {
     topic: number
     template: number
     status: number
+    modelUsed: number
     content: number
     errorMessage: number
     userId: number
@@ -6008,6 +6011,7 @@ export namespace Prisma {
     topic?: true
     template?: true
     status?: true
+    modelUsed?: true
     errorMessage?: true
     userId?: true
     createdAt?: true
@@ -6019,6 +6023,7 @@ export namespace Prisma {
     topic?: true
     template?: true
     status?: true
+    modelUsed?: true
     errorMessage?: true
     userId?: true
     createdAt?: true
@@ -6030,6 +6035,7 @@ export namespace Prisma {
     topic?: true
     template?: true
     status?: true
+    modelUsed?: true
     content?: true
     errorMessage?: true
     userId?: true
@@ -6115,6 +6121,7 @@ export namespace Prisma {
     topic: string
     template: $Enums.GenerationTemplate
     status: $Enums.GenerationStatus
+    modelUsed: string | null
     content: JsonValue | null
     errorMessage: string | null
     userId: string
@@ -6144,6 +6151,7 @@ export namespace Prisma {
     topic?: boolean
     template?: boolean
     status?: boolean
+    modelUsed?: boolean
     content?: boolean
     errorMessage?: boolean
     userId?: boolean
@@ -6157,6 +6165,7 @@ export namespace Prisma {
     topic?: boolean
     template?: boolean
     status?: boolean
+    modelUsed?: boolean
     content?: boolean
     errorMessage?: boolean
     userId?: boolean
@@ -6170,6 +6179,7 @@ export namespace Prisma {
     topic?: boolean
     template?: boolean
     status?: boolean
+    modelUsed?: boolean
     content?: boolean
     errorMessage?: boolean
     userId?: boolean
@@ -6183,6 +6193,7 @@ export namespace Prisma {
     topic?: boolean
     template?: boolean
     status?: boolean
+    modelUsed?: boolean
     content?: boolean
     errorMessage?: boolean
     userId?: boolean
@@ -6190,7 +6201,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type GenerationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "topic" | "template" | "status" | "content" | "errorMessage" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["generation"]>
+  export type GenerationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "topic" | "template" | "status" | "modelUsed" | "content" | "errorMessage" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["generation"]>
   export type GenerationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -6211,6 +6222,7 @@ export namespace Prisma {
       topic: string
       template: $Enums.GenerationTemplate
       status: $Enums.GenerationStatus
+      modelUsed: string | null
       content: Prisma.JsonValue | null
       errorMessage: string | null
       userId: string
@@ -6644,6 +6656,7 @@ export namespace Prisma {
     readonly topic: FieldRef<"Generation", 'String'>
     readonly template: FieldRef<"Generation", 'GenerationTemplate'>
     readonly status: FieldRef<"Generation", 'GenerationStatus'>
+    readonly modelUsed: FieldRef<"Generation", 'String'>
     readonly content: FieldRef<"Generation", 'Json'>
     readonly errorMessage: FieldRef<"Generation", 'String'>
     readonly userId: FieldRef<"Generation", 'String'>
@@ -8261,6 +8274,7 @@ export namespace Prisma {
     topic: 'topic',
     template: 'template',
     status: 'status',
+    modelUsed: 'modelUsed',
     content: 'content',
     errorMessage: 'errorMessage',
     userId: 'userId',
@@ -8787,6 +8801,7 @@ export namespace Prisma {
     topic?: StringFilter<"Generation"> | string
     template?: EnumGenerationTemplateFilter<"Generation"> | $Enums.GenerationTemplate
     status?: EnumGenerationStatusFilter<"Generation"> | $Enums.GenerationStatus
+    modelUsed?: StringNullableFilter<"Generation"> | string | null
     content?: JsonNullableFilter<"Generation">
     errorMessage?: StringNullableFilter<"Generation"> | string | null
     userId?: StringFilter<"Generation"> | string
@@ -8800,6 +8815,7 @@ export namespace Prisma {
     topic?: SortOrder
     template?: SortOrder
     status?: SortOrder
+    modelUsed?: SortOrderInput | SortOrder
     content?: SortOrderInput | SortOrder
     errorMessage?: SortOrderInput | SortOrder
     userId?: SortOrder
@@ -8816,6 +8832,7 @@ export namespace Prisma {
     topic?: StringFilter<"Generation"> | string
     template?: EnumGenerationTemplateFilter<"Generation"> | $Enums.GenerationTemplate
     status?: EnumGenerationStatusFilter<"Generation"> | $Enums.GenerationStatus
+    modelUsed?: StringNullableFilter<"Generation"> | string | null
     content?: JsonNullableFilter<"Generation">
     errorMessage?: StringNullableFilter<"Generation"> | string | null
     userId?: StringFilter<"Generation"> | string
@@ -8829,6 +8846,7 @@ export namespace Prisma {
     topic?: SortOrder
     template?: SortOrder
     status?: SortOrder
+    modelUsed?: SortOrderInput | SortOrder
     content?: SortOrderInput | SortOrder
     errorMessage?: SortOrderInput | SortOrder
     userId?: SortOrder
@@ -8847,6 +8865,7 @@ export namespace Prisma {
     topic?: StringWithAggregatesFilter<"Generation"> | string
     template?: EnumGenerationTemplateWithAggregatesFilter<"Generation"> | $Enums.GenerationTemplate
     status?: EnumGenerationStatusWithAggregatesFilter<"Generation"> | $Enums.GenerationStatus
+    modelUsed?: StringNullableWithAggregatesFilter<"Generation"> | string | null
     content?: JsonNullableWithAggregatesFilter<"Generation">
     errorMessage?: StringNullableWithAggregatesFilter<"Generation"> | string | null
     userId?: StringWithAggregatesFilter<"Generation"> | string
@@ -9283,6 +9302,7 @@ export namespace Prisma {
     topic: string
     template?: $Enums.GenerationTemplate
     status?: $Enums.GenerationStatus
+    modelUsed?: string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: string | null
     createdAt?: Date | string
@@ -9295,6 +9315,7 @@ export namespace Prisma {
     topic: string
     template?: $Enums.GenerationTemplate
     status?: $Enums.GenerationStatus
+    modelUsed?: string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: string | null
     userId: string
@@ -9307,6 +9328,7 @@ export namespace Prisma {
     topic?: StringFieldUpdateOperationsInput | string
     template?: EnumGenerationTemplateFieldUpdateOperationsInput | $Enums.GenerationTemplate
     status?: EnumGenerationStatusFieldUpdateOperationsInput | $Enums.GenerationStatus
+    modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9319,6 +9341,7 @@ export namespace Prisma {
     topic?: StringFieldUpdateOperationsInput | string
     template?: EnumGenerationTemplateFieldUpdateOperationsInput | $Enums.GenerationTemplate
     status?: EnumGenerationStatusFieldUpdateOperationsInput | $Enums.GenerationStatus
+    modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
@@ -9331,6 +9354,7 @@ export namespace Prisma {
     topic: string
     template?: $Enums.GenerationTemplate
     status?: $Enums.GenerationStatus
+    modelUsed?: string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: string | null
     userId: string
@@ -9343,6 +9367,7 @@ export namespace Prisma {
     topic?: StringFieldUpdateOperationsInput | string
     template?: EnumGenerationTemplateFieldUpdateOperationsInput | $Enums.GenerationTemplate
     status?: EnumGenerationStatusFieldUpdateOperationsInput | $Enums.GenerationStatus
+    modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9354,6 +9379,7 @@ export namespace Prisma {
     topic?: StringFieldUpdateOperationsInput | string
     template?: EnumGenerationTemplateFieldUpdateOperationsInput | $Enums.GenerationTemplate
     status?: EnumGenerationStatusFieldUpdateOperationsInput | $Enums.GenerationStatus
+    modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
@@ -9852,6 +9878,7 @@ export namespace Prisma {
     topic?: SortOrder
     template?: SortOrder
     status?: SortOrder
+    modelUsed?: SortOrder
     content?: SortOrder
     errorMessage?: SortOrder
     userId?: SortOrder
@@ -9864,6 +9891,7 @@ export namespace Prisma {
     topic?: SortOrder
     template?: SortOrder
     status?: SortOrder
+    modelUsed?: SortOrder
     errorMessage?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
@@ -9875,6 +9903,7 @@ export namespace Prisma {
     topic?: SortOrder
     template?: SortOrder
     status?: SortOrder
+    modelUsed?: SortOrder
     errorMessage?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
@@ -10590,6 +10619,7 @@ export namespace Prisma {
     topic: string
     template?: $Enums.GenerationTemplate
     status?: $Enums.GenerationStatus
+    modelUsed?: string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: string | null
     createdAt?: Date | string
@@ -10601,6 +10631,7 @@ export namespace Prisma {
     topic: string
     template?: $Enums.GenerationTemplate
     status?: $Enums.GenerationStatus
+    modelUsed?: string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: string | null
     createdAt?: Date | string
@@ -10734,6 +10765,7 @@ export namespace Prisma {
     topic?: StringFilter<"Generation"> | string
     template?: EnumGenerationTemplateFilter<"Generation"> | $Enums.GenerationTemplate
     status?: EnumGenerationStatusFilter<"Generation"> | $Enums.GenerationStatus
+    modelUsed?: StringNullableFilter<"Generation"> | string | null
     content?: JsonNullableFilter<"Generation">
     errorMessage?: StringNullableFilter<"Generation"> | string | null
     userId?: StringFilter<"Generation"> | string
@@ -11120,6 +11152,7 @@ export namespace Prisma {
     topic: string
     template?: $Enums.GenerationTemplate
     status?: $Enums.GenerationStatus
+    modelUsed?: string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: string | null
     createdAt?: Date | string
@@ -11215,6 +11248,7 @@ export namespace Prisma {
     topic?: StringFieldUpdateOperationsInput | string
     template?: EnumGenerationTemplateFieldUpdateOperationsInput | $Enums.GenerationTemplate
     status?: EnumGenerationStatusFieldUpdateOperationsInput | $Enums.GenerationStatus
+    modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11226,6 +11260,7 @@ export namespace Prisma {
     topic?: StringFieldUpdateOperationsInput | string
     template?: EnumGenerationTemplateFieldUpdateOperationsInput | $Enums.GenerationTemplate
     status?: EnumGenerationStatusFieldUpdateOperationsInput | $Enums.GenerationStatus
+    modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11237,6 +11272,7 @@ export namespace Prisma {
     topic?: StringFieldUpdateOperationsInput | string
     template?: EnumGenerationTemplateFieldUpdateOperationsInput | $Enums.GenerationTemplate
     status?: EnumGenerationStatusFieldUpdateOperationsInput | $Enums.GenerationStatus
+    modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

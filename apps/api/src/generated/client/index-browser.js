@@ -175,6 +175,7 @@ exports.Prisma.GenerationScalarFieldEnum = {
   topic: 'topic',
   template: 'template',
   status: 'status',
+  modelUsed: 'modelUsed',
   content: 'content',
   errorMessage: 'errorMessage',
   userId: 'userId',

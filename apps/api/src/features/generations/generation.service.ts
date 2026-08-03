@@ -20,24 +20,33 @@ export class GenerationService {
    * and kicks off AI processing in the background.
    */
   async createGeneration(userId: string, input: CreateGenerationInput) {
+    const isPaid = input.modelTier === 'PAID';
+    const model = isPaid ? env.OPENROUTER_PAID_MODEL : env.OPENROUTER_FREE_MODEL;
+    const requiredCredits = isPaid ? 5 : 1;
     const totalChapters = input.totalChapters && input.totalChapters > 0 ? input.totalChapters : 5;
-    const requiredCredits = totalChapters > 5 ? 5 : 1;
-    const model = totalChapters > 5 ? env.OPENROUTER_PAID_MODEL : env.OPENROUTER_FREE_MODEL;
+
+    // Free model tier safety check
+    if (!isPaid && totalChapters > 5) {
+      throw new BadRequestError(
+        'Free model tier is limited to 5 chapters. Please select the PAID model tier for decks up to 20 chapters.'
+      );
+    }
 
     // 1. Deduct credits upfront (throws BadRequestError if insufficient)
     const deduction = await creditService.deductCredits(
       userId,
       requiredCredits,
-      `Generation for "${input.topic}" (${totalChapters} chapters)`
+      `Generation for "${input.topic}" (${totalChapters} chapters, ${isPaid ? 'PAID' : 'FREE'} model)`
     );
 
-    // 2. Create database record
+    // 2. Create database record with modelUsed
     const generation = await prisma.generation.create({
       data: {
         userId,
         topic: input.topic,
         template: input.template || GenerationTemplate.PRESENTATION,
         status: GenerationStatus.PENDING,
+        modelUsed: model,
       },
     });
 

@@ -17,4 +17,8 @@ export const createGenerationSchema = z.object({
     .max(20, 'Maximum 20 chapters allowed')
     .optional()
     .default(5),
+  modelTier: z
+    .enum(['FREE', 'PAID'])
+    .optional()
+    .default('FREE'),
 });
