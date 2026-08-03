@@ -176,9 +176,25 @@ exports.Prisma.GenerationScalarFieldEnum = {
   template: 'template',
   status: 'status',
   modelUsed: 'modelUsed',
+  aiModelId: 'aiModelId',
   content: 'content',
   errorMessage: 'errorMessage',
   userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AIModelScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  name: 'name',
+  description: 'description',
+  provider: 'provider',
+  modelKey: 'modelKey',
+  creditCost: 'creditCost',
+  maxChapters: 'maxChapters',
+  isFreeTier: 'isFreeTier',
+  isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -251,6 +267,7 @@ exports.Prisma.ModelName = {
   Account: 'Account',
   Verification: 'Verification',
   Generation: 'Generation',
+  AIModel: 'AIModel',
   CreditTransaction: 'CreditTransaction'
 };
 

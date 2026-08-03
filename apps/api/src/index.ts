@@ -56,11 +56,13 @@ app.get('/api/health', (_req: Request, res: Response) => {
 });
 
 import creditRouter from './features/credits/credit.route.js';
+import modelsRouter from './features/models/models.route.js';
 
 // Feature Routes
 app.use('/api/user', userRouter);
 app.use('/api/generations', generationRouter);
 app.use('/api/credits', creditRouter);
+app.use('/api/models', modelsRouter);
 
 // 404 Handler
 app.use((_req: Request, _res: Response, next: NextFunction) => {

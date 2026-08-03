@@ -7,6 +7,7 @@ import { NotFoundError, BadRequestError } from '../../errors/index.js';
 import { GeneratedContentPayload, CreateGenerationInput } from './generation.types.js';
 
 import { creditService, DeductCreditResult } from '../credits/credit.service.js';
+import { modelsService } from '../models/models.service.js';
 
 /** Timeout for OpenRouter AI calls (in milliseconds). */
 const AI_TIMEOUT_MS = 120_000; // 2 minutes
@@ -16,30 +17,32 @@ const STALE_JOB_THRESHOLD_MS = 3 * 60 * 1000;
 
 export class GenerationService {
   /**
-   * Creates a PENDING generation record, deducts credits based on requested plan/chapters,
+   * Creates a PENDING generation record, deducts credits based on selected AI model,
    * and kicks off AI processing in the background.
    */
   async createGeneration(userId: string, input: CreateGenerationInput) {
-    const isPaid = input.modelTier === 'PAID';
-    const model = isPaid ? env.OPENROUTER_PAID_MODEL : env.OPENROUTER_FREE_MODEL;
-    const requiredCredits = isPaid ? 5 : 1;
+    // 1. Resolve selected AI model from database
+    const selectedModel = await modelsService.getModelByIdOrSlug(input.modelId || 'nemotron-30b');
     const totalChapters = input.totalChapters && input.totalChapters > 0 ? input.totalChapters : 5;
 
-    // Free model tier safety check
-    if (!isPaid && totalChapters > 5) {
+    // 2. Max chapters validation per model capability
+    if (totalChapters > selectedModel.maxChapters) {
       throw new BadRequestError(
-        'Free model tier is limited to 5 chapters. Please select the PAID model tier for decks up to 20 chapters.'
+        `Model '${selectedModel.name}' supports up to ${selectedModel.maxChapters} chapters. You requested ${totalChapters}.`
       );
     }
 
-    // 1. Deduct credits upfront (throws BadRequestError if insufficient)
+    const requiredCredits = selectedModel.creditCost;
+    const model = selectedModel.modelKey;
+
+    // 3. Deduct credits upfront (throws BadRequestError if insufficient)
     const deduction = await creditService.deductCredits(
       userId,
       requiredCredits,
-      `Generation for "${input.topic}" (${totalChapters} chapters, ${isPaid ? 'PAID' : 'FREE'} model)`
+      `Generation for "${input.topic}" (${totalChapters} chapters via ${selectedModel.name})`
     );
 
-    // 2. Create database record with modelUsed
+    // 4. Create database record
     const generation = await prisma.generation.create({
       data: {
         userId,
@@ -47,10 +50,11 @@ export class GenerationService {
         template: input.template || GenerationTemplate.PRESENTATION,
         status: GenerationStatus.PENDING,
         modelUsed: model,
+        aiModelId: selectedModel.id,
       },
     });
 
-    // 3. Fire-and-forget background processing
+    // 5. Fire-and-forget background processing
     this.processGeneration(generation.id, userId, input, totalChapters, model, deduction).catch((error) => {
       logger.error({ generationId: generation.id, error: error.message }, 'Background generation failed');
     });

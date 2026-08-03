@@ -50,5 +50,5 @@ export interface CreateGenerationInput {
   topic: string;
   template?: GenerationTemplate;
   totalChapters?: number;
-  modelTier?: ModelTier;
+  modelId?: string;
 }

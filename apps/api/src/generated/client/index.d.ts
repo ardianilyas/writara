@@ -39,6 +39,11 @@ export type Verification = $Result.DefaultSelection<Prisma.$VerificationPayload>
  */
 export type Generation = $Result.DefaultSelection<Prisma.$GenerationPayload>
 /**
+ * Model AIModel
+ * 
+ */
+export type AIModel = $Result.DefaultSelection<Prisma.$AIModelPayload>
+/**
  * Model CreditTransaction
  * 
  */
@@ -271,6 +276,16 @@ export class PrismaClient<
     * ```
     */
   get generation(): Prisma.GenerationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.aIModel`: Exposes CRUD operations for the **AIModel** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AIModels
+    * const aIModels = await prisma.aIModel.findMany()
+    * ```
+    */
+  get aIModel(): Prisma.AIModelDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.creditTransaction`: Exposes CRUD operations for the **CreditTransaction** model.
@@ -727,6 +742,7 @@ export namespace Prisma {
     Account: 'Account',
     Verification: 'Verification',
     Generation: 'Generation',
+    AIModel: 'AIModel',
     CreditTransaction: 'CreditTransaction'
   };
 
@@ -746,7 +762,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "session" | "account" | "verification" | "generation" | "creditTransaction"
+      modelProps: "user" | "session" | "account" | "verification" | "generation" | "aIModel" | "creditTransaction"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1120,6 +1136,80 @@ export namespace Prisma {
           }
         }
       }
+      AIModel: {
+        payload: Prisma.$AIModelPayload<ExtArgs>
+        fields: Prisma.AIModelFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AIModelFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIModelPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AIModelFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIModelPayload>
+          }
+          findFirst: {
+            args: Prisma.AIModelFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIModelPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AIModelFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIModelPayload>
+          }
+          findMany: {
+            args: Prisma.AIModelFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIModelPayload>[]
+          }
+          create: {
+            args: Prisma.AIModelCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIModelPayload>
+          }
+          createMany: {
+            args: Prisma.AIModelCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AIModelCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIModelPayload>[]
+          }
+          delete: {
+            args: Prisma.AIModelDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIModelPayload>
+          }
+          update: {
+            args: Prisma.AIModelUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIModelPayload>
+          }
+          deleteMany: {
+            args: Prisma.AIModelDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AIModelUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AIModelUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIModelPayload>[]
+          }
+          upsert: {
+            args: Prisma.AIModelUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIModelPayload>
+          }
+          aggregate: {
+            args: Prisma.AIModelAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAIModel>
+          }
+          groupBy: {
+            args: Prisma.AIModelGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AIModelGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AIModelCountArgs<ExtArgs>
+            result: $Utils.Optional<AIModelCountAggregateOutputType> | number
+          }
+        }
+      }
       CreditTransaction: {
         payload: Prisma.$CreditTransactionPayload<ExtArgs>
         fields: Prisma.CreditTransactionFieldRefs
@@ -1295,6 +1385,7 @@ export namespace Prisma {
     account?: AccountOmit
     verification?: VerificationOmit
     generation?: GenerationOmit
+    aIModel?: AIModelOmit
     creditTransaction?: CreditTransactionOmit
   }
 
@@ -1426,6 +1517,37 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountCreditTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CreditTransactionWhereInput
+  }
+
+
+  /**
+   * Count Type AIModelCountOutputType
+   */
+
+  export type AIModelCountOutputType = {
+    generations: number
+  }
+
+  export type AIModelCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    generations?: boolean | AIModelCountOutputTypeCountGenerationsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * AIModelCountOutputType without action
+   */
+  export type AIModelCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIModelCountOutputType
+     */
+    select?: AIModelCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * AIModelCountOutputType without action
+   */
+  export type AIModelCountOutputTypeCountGenerationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GenerationWhereInput
   }
 
 
@@ -5973,6 +6095,7 @@ export namespace Prisma {
     template: $Enums.GenerationTemplate | null
     status: $Enums.GenerationStatus | null
     modelUsed: string | null
+    aiModelId: string | null
     errorMessage: string | null
     userId: string | null
     createdAt: Date | null
@@ -5985,6 +6108,7 @@ export namespace Prisma {
     template: $Enums.GenerationTemplate | null
     status: $Enums.GenerationStatus | null
     modelUsed: string | null
+    aiModelId: string | null
     errorMessage: string | null
     userId: string | null
     createdAt: Date | null
@@ -5997,6 +6121,7 @@ export namespace Prisma {
     template: number
     status: number
     modelUsed: number
+    aiModelId: number
     content: number
     errorMessage: number
     userId: number
@@ -6012,6 +6137,7 @@ export namespace Prisma {
     template?: true
     status?: true
     modelUsed?: true
+    aiModelId?: true
     errorMessage?: true
     userId?: true
     createdAt?: true
@@ -6024,6 +6150,7 @@ export namespace Prisma {
     template?: true
     status?: true
     modelUsed?: true
+    aiModelId?: true
     errorMessage?: true
     userId?: true
     createdAt?: true
@@ -6036,6 +6163,7 @@ export namespace Prisma {
     template?: true
     status?: true
     modelUsed?: true
+    aiModelId?: true
     content?: true
     errorMessage?: true
     userId?: true
@@ -6122,6 +6250,7 @@ export namespace Prisma {
     template: $Enums.GenerationTemplate
     status: $Enums.GenerationStatus
     modelUsed: string | null
+    aiModelId: string | null
     content: JsonValue | null
     errorMessage: string | null
     userId: string
@@ -6152,11 +6281,13 @@ export namespace Prisma {
     template?: boolean
     status?: boolean
     modelUsed?: boolean
+    aiModelId?: boolean
     content?: boolean
     errorMessage?: boolean
     userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    aiModel?: boolean | Generation$aiModelArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["generation"]>
 
@@ -6166,11 +6297,13 @@ export namespace Prisma {
     template?: boolean
     status?: boolean
     modelUsed?: boolean
+    aiModelId?: boolean
     content?: boolean
     errorMessage?: boolean
     userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    aiModel?: boolean | Generation$aiModelArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["generation"]>
 
@@ -6180,11 +6313,13 @@ export namespace Prisma {
     template?: boolean
     status?: boolean
     modelUsed?: boolean
+    aiModelId?: boolean
     content?: boolean
     errorMessage?: boolean
     userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    aiModel?: boolean | Generation$aiModelArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["generation"]>
 
@@ -6194,6 +6329,7 @@ export namespace Prisma {
     template?: boolean
     status?: boolean
     modelUsed?: boolean
+    aiModelId?: boolean
     content?: boolean
     errorMessage?: boolean
     userId?: boolean
@@ -6201,20 +6337,24 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type GenerationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "topic" | "template" | "status" | "modelUsed" | "content" | "errorMessage" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["generation"]>
+  export type GenerationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "topic" | "template" | "status" | "modelUsed" | "aiModelId" | "content" | "errorMessage" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["generation"]>
   export type GenerationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    aiModel?: boolean | Generation$aiModelArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type GenerationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    aiModel?: boolean | Generation$aiModelArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type GenerationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    aiModel?: boolean | Generation$aiModelArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $GenerationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Generation"
     objects: {
+      aiModel: Prisma.$AIModelPayload<ExtArgs> | null
       user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -6223,6 +6363,7 @@ export namespace Prisma {
       template: $Enums.GenerationTemplate
       status: $Enums.GenerationStatus
       modelUsed: string | null
+      aiModelId: string | null
       content: Prisma.JsonValue | null
       errorMessage: string | null
       userId: string
@@ -6622,6 +6763,7 @@ export namespace Prisma {
    */
   export interface Prisma__GenerationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    aiModel<T extends Generation$aiModelArgs<ExtArgs> = {}>(args?: Subset<T, Generation$aiModelArgs<ExtArgs>>): Prisma__AIModelClient<$Result.GetResult<Prisma.$AIModelPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -6657,6 +6799,7 @@ export namespace Prisma {
     readonly template: FieldRef<"Generation", 'GenerationTemplate'>
     readonly status: FieldRef<"Generation", 'GenerationStatus'>
     readonly modelUsed: FieldRef<"Generation", 'String'>
+    readonly aiModelId: FieldRef<"Generation", 'String'>
     readonly content: FieldRef<"Generation", 'Json'>
     readonly errorMessage: FieldRef<"Generation", 'String'>
     readonly userId: FieldRef<"Generation", 'String'>
@@ -7058,6 +7201,25 @@ export namespace Prisma {
   }
 
   /**
+   * Generation.aiModel
+   */
+  export type Generation$aiModelArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIModel
+     */
+    select?: AIModelSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIModel
+     */
+    omit?: AIModelOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIModelInclude<ExtArgs> | null
+    where?: AIModelWhereInput
+  }
+
+  /**
    * Generation without action
    */
   export type GenerationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7073,6 +7235,1205 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: GenerationInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AIModel
+   */
+
+  export type AggregateAIModel = {
+    _count: AIModelCountAggregateOutputType | null
+    _avg: AIModelAvgAggregateOutputType | null
+    _sum: AIModelSumAggregateOutputType | null
+    _min: AIModelMinAggregateOutputType | null
+    _max: AIModelMaxAggregateOutputType | null
+  }
+
+  export type AIModelAvgAggregateOutputType = {
+    creditCost: number | null
+    maxChapters: number | null
+  }
+
+  export type AIModelSumAggregateOutputType = {
+    creditCost: number | null
+    maxChapters: number | null
+  }
+
+  export type AIModelMinAggregateOutputType = {
+    id: string | null
+    slug: string | null
+    name: string | null
+    description: string | null
+    provider: string | null
+    modelKey: string | null
+    creditCost: number | null
+    maxChapters: number | null
+    isFreeTier: boolean | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AIModelMaxAggregateOutputType = {
+    id: string | null
+    slug: string | null
+    name: string | null
+    description: string | null
+    provider: string | null
+    modelKey: string | null
+    creditCost: number | null
+    maxChapters: number | null
+    isFreeTier: boolean | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AIModelCountAggregateOutputType = {
+    id: number
+    slug: number
+    name: number
+    description: number
+    provider: number
+    modelKey: number
+    creditCost: number
+    maxChapters: number
+    isFreeTier: number
+    isActive: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AIModelAvgAggregateInputType = {
+    creditCost?: true
+    maxChapters?: true
+  }
+
+  export type AIModelSumAggregateInputType = {
+    creditCost?: true
+    maxChapters?: true
+  }
+
+  export type AIModelMinAggregateInputType = {
+    id?: true
+    slug?: true
+    name?: true
+    description?: true
+    provider?: true
+    modelKey?: true
+    creditCost?: true
+    maxChapters?: true
+    isFreeTier?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AIModelMaxAggregateInputType = {
+    id?: true
+    slug?: true
+    name?: true
+    description?: true
+    provider?: true
+    modelKey?: true
+    creditCost?: true
+    maxChapters?: true
+    isFreeTier?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AIModelCountAggregateInputType = {
+    id?: true
+    slug?: true
+    name?: true
+    description?: true
+    provider?: true
+    modelKey?: true
+    creditCost?: true
+    maxChapters?: true
+    isFreeTier?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AIModelAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AIModel to aggregate.
+     */
+    where?: AIModelWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AIModels to fetch.
+     */
+    orderBy?: AIModelOrderByWithRelationInput | AIModelOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AIModelWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AIModels from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AIModels.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AIModels
+    **/
+    _count?: true | AIModelCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AIModelAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AIModelSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AIModelMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AIModelMaxAggregateInputType
+  }
+
+  export type GetAIModelAggregateType<T extends AIModelAggregateArgs> = {
+        [P in keyof T & keyof AggregateAIModel]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAIModel[P]>
+      : GetScalarType<T[P], AggregateAIModel[P]>
+  }
+
+
+
+
+  export type AIModelGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AIModelWhereInput
+    orderBy?: AIModelOrderByWithAggregationInput | AIModelOrderByWithAggregationInput[]
+    by: AIModelScalarFieldEnum[] | AIModelScalarFieldEnum
+    having?: AIModelScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AIModelCountAggregateInputType | true
+    _avg?: AIModelAvgAggregateInputType
+    _sum?: AIModelSumAggregateInputType
+    _min?: AIModelMinAggregateInputType
+    _max?: AIModelMaxAggregateInputType
+  }
+
+  export type AIModelGroupByOutputType = {
+    id: string
+    slug: string
+    name: string
+    description: string
+    provider: string
+    modelKey: string
+    creditCost: number
+    maxChapters: number
+    isFreeTier: boolean
+    isActive: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: AIModelCountAggregateOutputType | null
+    _avg: AIModelAvgAggregateOutputType | null
+    _sum: AIModelSumAggregateOutputType | null
+    _min: AIModelMinAggregateOutputType | null
+    _max: AIModelMaxAggregateOutputType | null
+  }
+
+  type GetAIModelGroupByPayload<T extends AIModelGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AIModelGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AIModelGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AIModelGroupByOutputType[P]>
+            : GetScalarType<T[P], AIModelGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AIModelSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    slug?: boolean
+    name?: boolean
+    description?: boolean
+    provider?: boolean
+    modelKey?: boolean
+    creditCost?: boolean
+    maxChapters?: boolean
+    isFreeTier?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    generations?: boolean | AIModel$generationsArgs<ExtArgs>
+    _count?: boolean | AIModelCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["aIModel"]>
+
+  export type AIModelSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    slug?: boolean
+    name?: boolean
+    description?: boolean
+    provider?: boolean
+    modelKey?: boolean
+    creditCost?: boolean
+    maxChapters?: boolean
+    isFreeTier?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["aIModel"]>
+
+  export type AIModelSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    slug?: boolean
+    name?: boolean
+    description?: boolean
+    provider?: boolean
+    modelKey?: boolean
+    creditCost?: boolean
+    maxChapters?: boolean
+    isFreeTier?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["aIModel"]>
+
+  export type AIModelSelectScalar = {
+    id?: boolean
+    slug?: boolean
+    name?: boolean
+    description?: boolean
+    provider?: boolean
+    modelKey?: boolean
+    creditCost?: boolean
+    maxChapters?: boolean
+    isFreeTier?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AIModelOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "name" | "description" | "provider" | "modelKey" | "creditCost" | "maxChapters" | "isFreeTier" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["aIModel"]>
+  export type AIModelInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    generations?: boolean | AIModel$generationsArgs<ExtArgs>
+    _count?: boolean | AIModelCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type AIModelIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type AIModelIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $AIModelPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AIModel"
+    objects: {
+      generations: Prisma.$GenerationPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      slug: string
+      name: string
+      description: string
+      provider: string
+      modelKey: string
+      creditCost: number
+      maxChapters: number
+      isFreeTier: boolean
+      isActive: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["aIModel"]>
+    composites: {}
+  }
+
+  type AIModelGetPayload<S extends boolean | null | undefined | AIModelDefaultArgs> = $Result.GetResult<Prisma.$AIModelPayload, S>
+
+  type AIModelCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AIModelFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AIModelCountAggregateInputType | true
+    }
+
+  export interface AIModelDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AIModel'], meta: { name: 'AIModel' } }
+    /**
+     * Find zero or one AIModel that matches the filter.
+     * @param {AIModelFindUniqueArgs} args - Arguments to find a AIModel
+     * @example
+     * // Get one AIModel
+     * const aIModel = await prisma.aIModel.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AIModelFindUniqueArgs>(args: SelectSubset<T, AIModelFindUniqueArgs<ExtArgs>>): Prisma__AIModelClient<$Result.GetResult<Prisma.$AIModelPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AIModel that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AIModelFindUniqueOrThrowArgs} args - Arguments to find a AIModel
+     * @example
+     * // Get one AIModel
+     * const aIModel = await prisma.aIModel.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AIModelFindUniqueOrThrowArgs>(args: SelectSubset<T, AIModelFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AIModelClient<$Result.GetResult<Prisma.$AIModelPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AIModel that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIModelFindFirstArgs} args - Arguments to find a AIModel
+     * @example
+     * // Get one AIModel
+     * const aIModel = await prisma.aIModel.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AIModelFindFirstArgs>(args?: SelectSubset<T, AIModelFindFirstArgs<ExtArgs>>): Prisma__AIModelClient<$Result.GetResult<Prisma.$AIModelPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AIModel that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIModelFindFirstOrThrowArgs} args - Arguments to find a AIModel
+     * @example
+     * // Get one AIModel
+     * const aIModel = await prisma.aIModel.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AIModelFindFirstOrThrowArgs>(args?: SelectSubset<T, AIModelFindFirstOrThrowArgs<ExtArgs>>): Prisma__AIModelClient<$Result.GetResult<Prisma.$AIModelPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AIModels that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIModelFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AIModels
+     * const aIModels = await prisma.aIModel.findMany()
+     * 
+     * // Get first 10 AIModels
+     * const aIModels = await prisma.aIModel.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const aIModelWithIdOnly = await prisma.aIModel.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AIModelFindManyArgs>(args?: SelectSubset<T, AIModelFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIModelPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AIModel.
+     * @param {AIModelCreateArgs} args - Arguments to create a AIModel.
+     * @example
+     * // Create one AIModel
+     * const AIModel = await prisma.aIModel.create({
+     *   data: {
+     *     // ... data to create a AIModel
+     *   }
+     * })
+     * 
+     */
+    create<T extends AIModelCreateArgs>(args: SelectSubset<T, AIModelCreateArgs<ExtArgs>>): Prisma__AIModelClient<$Result.GetResult<Prisma.$AIModelPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AIModels.
+     * @param {AIModelCreateManyArgs} args - Arguments to create many AIModels.
+     * @example
+     * // Create many AIModels
+     * const aIModel = await prisma.aIModel.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AIModelCreateManyArgs>(args?: SelectSubset<T, AIModelCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AIModels and returns the data saved in the database.
+     * @param {AIModelCreateManyAndReturnArgs} args - Arguments to create many AIModels.
+     * @example
+     * // Create many AIModels
+     * const aIModel = await prisma.aIModel.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AIModels and only return the `id`
+     * const aIModelWithIdOnly = await prisma.aIModel.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AIModelCreateManyAndReturnArgs>(args?: SelectSubset<T, AIModelCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIModelPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AIModel.
+     * @param {AIModelDeleteArgs} args - Arguments to delete one AIModel.
+     * @example
+     * // Delete one AIModel
+     * const AIModel = await prisma.aIModel.delete({
+     *   where: {
+     *     // ... filter to delete one AIModel
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AIModelDeleteArgs>(args: SelectSubset<T, AIModelDeleteArgs<ExtArgs>>): Prisma__AIModelClient<$Result.GetResult<Prisma.$AIModelPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AIModel.
+     * @param {AIModelUpdateArgs} args - Arguments to update one AIModel.
+     * @example
+     * // Update one AIModel
+     * const aIModel = await prisma.aIModel.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AIModelUpdateArgs>(args: SelectSubset<T, AIModelUpdateArgs<ExtArgs>>): Prisma__AIModelClient<$Result.GetResult<Prisma.$AIModelPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AIModels.
+     * @param {AIModelDeleteManyArgs} args - Arguments to filter AIModels to delete.
+     * @example
+     * // Delete a few AIModels
+     * const { count } = await prisma.aIModel.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AIModelDeleteManyArgs>(args?: SelectSubset<T, AIModelDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AIModels.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIModelUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AIModels
+     * const aIModel = await prisma.aIModel.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AIModelUpdateManyArgs>(args: SelectSubset<T, AIModelUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AIModels and returns the data updated in the database.
+     * @param {AIModelUpdateManyAndReturnArgs} args - Arguments to update many AIModels.
+     * @example
+     * // Update many AIModels
+     * const aIModel = await prisma.aIModel.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AIModels and only return the `id`
+     * const aIModelWithIdOnly = await prisma.aIModel.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AIModelUpdateManyAndReturnArgs>(args: SelectSubset<T, AIModelUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIModelPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AIModel.
+     * @param {AIModelUpsertArgs} args - Arguments to update or create a AIModel.
+     * @example
+     * // Update or create a AIModel
+     * const aIModel = await prisma.aIModel.upsert({
+     *   create: {
+     *     // ... data to create a AIModel
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AIModel we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AIModelUpsertArgs>(args: SelectSubset<T, AIModelUpsertArgs<ExtArgs>>): Prisma__AIModelClient<$Result.GetResult<Prisma.$AIModelPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AIModels.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIModelCountArgs} args - Arguments to filter AIModels to count.
+     * @example
+     * // Count the number of AIModels
+     * const count = await prisma.aIModel.count({
+     *   where: {
+     *     // ... the filter for the AIModels we want to count
+     *   }
+     * })
+    **/
+    count<T extends AIModelCountArgs>(
+      args?: Subset<T, AIModelCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AIModelCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AIModel.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIModelAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AIModelAggregateArgs>(args: Subset<T, AIModelAggregateArgs>): Prisma.PrismaPromise<GetAIModelAggregateType<T>>
+
+    /**
+     * Group by AIModel.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIModelGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AIModelGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AIModelGroupByArgs['orderBy'] }
+        : { orderBy?: AIModelGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AIModelGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAIModelGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AIModel model
+   */
+  readonly fields: AIModelFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AIModel.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AIModelClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    generations<T extends AIModel$generationsArgs<ExtArgs> = {}>(args?: Subset<T, AIModel$generationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GenerationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AIModel model
+   */
+  interface AIModelFieldRefs {
+    readonly id: FieldRef<"AIModel", 'String'>
+    readonly slug: FieldRef<"AIModel", 'String'>
+    readonly name: FieldRef<"AIModel", 'String'>
+    readonly description: FieldRef<"AIModel", 'String'>
+    readonly provider: FieldRef<"AIModel", 'String'>
+    readonly modelKey: FieldRef<"AIModel", 'String'>
+    readonly creditCost: FieldRef<"AIModel", 'Int'>
+    readonly maxChapters: FieldRef<"AIModel", 'Int'>
+    readonly isFreeTier: FieldRef<"AIModel", 'Boolean'>
+    readonly isActive: FieldRef<"AIModel", 'Boolean'>
+    readonly createdAt: FieldRef<"AIModel", 'DateTime'>
+    readonly updatedAt: FieldRef<"AIModel", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AIModel findUnique
+   */
+  export type AIModelFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIModel
+     */
+    select?: AIModelSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIModel
+     */
+    omit?: AIModelOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIModelInclude<ExtArgs> | null
+    /**
+     * Filter, which AIModel to fetch.
+     */
+    where: AIModelWhereUniqueInput
+  }
+
+  /**
+   * AIModel findUniqueOrThrow
+   */
+  export type AIModelFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIModel
+     */
+    select?: AIModelSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIModel
+     */
+    omit?: AIModelOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIModelInclude<ExtArgs> | null
+    /**
+     * Filter, which AIModel to fetch.
+     */
+    where: AIModelWhereUniqueInput
+  }
+
+  /**
+   * AIModel findFirst
+   */
+  export type AIModelFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIModel
+     */
+    select?: AIModelSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIModel
+     */
+    omit?: AIModelOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIModelInclude<ExtArgs> | null
+    /**
+     * Filter, which AIModel to fetch.
+     */
+    where?: AIModelWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AIModels to fetch.
+     */
+    orderBy?: AIModelOrderByWithRelationInput | AIModelOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AIModels.
+     */
+    cursor?: AIModelWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AIModels from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AIModels.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AIModels.
+     */
+    distinct?: AIModelScalarFieldEnum | AIModelScalarFieldEnum[]
+  }
+
+  /**
+   * AIModel findFirstOrThrow
+   */
+  export type AIModelFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIModel
+     */
+    select?: AIModelSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIModel
+     */
+    omit?: AIModelOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIModelInclude<ExtArgs> | null
+    /**
+     * Filter, which AIModel to fetch.
+     */
+    where?: AIModelWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AIModels to fetch.
+     */
+    orderBy?: AIModelOrderByWithRelationInput | AIModelOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AIModels.
+     */
+    cursor?: AIModelWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AIModels from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AIModels.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AIModels.
+     */
+    distinct?: AIModelScalarFieldEnum | AIModelScalarFieldEnum[]
+  }
+
+  /**
+   * AIModel findMany
+   */
+  export type AIModelFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIModel
+     */
+    select?: AIModelSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIModel
+     */
+    omit?: AIModelOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIModelInclude<ExtArgs> | null
+    /**
+     * Filter, which AIModels to fetch.
+     */
+    where?: AIModelWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AIModels to fetch.
+     */
+    orderBy?: AIModelOrderByWithRelationInput | AIModelOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AIModels.
+     */
+    cursor?: AIModelWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AIModels from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AIModels.
+     */
+    skip?: number
+    distinct?: AIModelScalarFieldEnum | AIModelScalarFieldEnum[]
+  }
+
+  /**
+   * AIModel create
+   */
+  export type AIModelCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIModel
+     */
+    select?: AIModelSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIModel
+     */
+    omit?: AIModelOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIModelInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AIModel.
+     */
+    data: XOR<AIModelCreateInput, AIModelUncheckedCreateInput>
+  }
+
+  /**
+   * AIModel createMany
+   */
+  export type AIModelCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AIModels.
+     */
+    data: AIModelCreateManyInput | AIModelCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AIModel createManyAndReturn
+   */
+  export type AIModelCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIModel
+     */
+    select?: AIModelSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIModel
+     */
+    omit?: AIModelOmit<ExtArgs> | null
+    /**
+     * The data used to create many AIModels.
+     */
+    data: AIModelCreateManyInput | AIModelCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AIModel update
+   */
+  export type AIModelUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIModel
+     */
+    select?: AIModelSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIModel
+     */
+    omit?: AIModelOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIModelInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AIModel.
+     */
+    data: XOR<AIModelUpdateInput, AIModelUncheckedUpdateInput>
+    /**
+     * Choose, which AIModel to update.
+     */
+    where: AIModelWhereUniqueInput
+  }
+
+  /**
+   * AIModel updateMany
+   */
+  export type AIModelUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AIModels.
+     */
+    data: XOR<AIModelUpdateManyMutationInput, AIModelUncheckedUpdateManyInput>
+    /**
+     * Filter which AIModels to update
+     */
+    where?: AIModelWhereInput
+    /**
+     * Limit how many AIModels to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AIModel updateManyAndReturn
+   */
+  export type AIModelUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIModel
+     */
+    select?: AIModelSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIModel
+     */
+    omit?: AIModelOmit<ExtArgs> | null
+    /**
+     * The data used to update AIModels.
+     */
+    data: XOR<AIModelUpdateManyMutationInput, AIModelUncheckedUpdateManyInput>
+    /**
+     * Filter which AIModels to update
+     */
+    where?: AIModelWhereInput
+    /**
+     * Limit how many AIModels to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AIModel upsert
+   */
+  export type AIModelUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIModel
+     */
+    select?: AIModelSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIModel
+     */
+    omit?: AIModelOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIModelInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AIModel to update in case it exists.
+     */
+    where: AIModelWhereUniqueInput
+    /**
+     * In case the AIModel found by the `where` argument doesn't exist, create a new AIModel with this data.
+     */
+    create: XOR<AIModelCreateInput, AIModelUncheckedCreateInput>
+    /**
+     * In case the AIModel was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AIModelUpdateInput, AIModelUncheckedUpdateInput>
+  }
+
+  /**
+   * AIModel delete
+   */
+  export type AIModelDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIModel
+     */
+    select?: AIModelSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIModel
+     */
+    omit?: AIModelOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIModelInclude<ExtArgs> | null
+    /**
+     * Filter which AIModel to delete.
+     */
+    where: AIModelWhereUniqueInput
+  }
+
+  /**
+   * AIModel deleteMany
+   */
+  export type AIModelDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AIModels to delete
+     */
+    where?: AIModelWhereInput
+    /**
+     * Limit how many AIModels to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AIModel.generations
+   */
+  export type AIModel$generationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Generation
+     */
+    select?: GenerationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Generation
+     */
+    omit?: GenerationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GenerationInclude<ExtArgs> | null
+    where?: GenerationWhereInput
+    orderBy?: GenerationOrderByWithRelationInput | GenerationOrderByWithRelationInput[]
+    cursor?: GenerationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GenerationScalarFieldEnum | GenerationScalarFieldEnum[]
+  }
+
+  /**
+   * AIModel without action
+   */
+  export type AIModelDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIModel
+     */
+    select?: AIModelSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIModel
+     */
+    omit?: AIModelOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIModelInclude<ExtArgs> | null
   }
 
 
@@ -8275,6 +9636,7 @@ export namespace Prisma {
     template: 'template',
     status: 'status',
     modelUsed: 'modelUsed',
+    aiModelId: 'aiModelId',
     content: 'content',
     errorMessage: 'errorMessage',
     userId: 'userId',
@@ -8283,6 +9645,24 @@ export namespace Prisma {
   };
 
   export type GenerationScalarFieldEnum = (typeof GenerationScalarFieldEnum)[keyof typeof GenerationScalarFieldEnum]
+
+
+  export const AIModelScalarFieldEnum: {
+    id: 'id',
+    slug: 'slug',
+    name: 'name',
+    description: 'description',
+    provider: 'provider',
+    modelKey: 'modelKey',
+    creditCost: 'creditCost',
+    maxChapters: 'maxChapters',
+    isFreeTier: 'isFreeTier',
+    isActive: 'isActive',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AIModelScalarFieldEnum = (typeof AIModelScalarFieldEnum)[keyof typeof AIModelScalarFieldEnum]
 
 
   export const CreditTransactionScalarFieldEnum: {
@@ -8802,11 +10182,13 @@ export namespace Prisma {
     template?: EnumGenerationTemplateFilter<"Generation"> | $Enums.GenerationTemplate
     status?: EnumGenerationStatusFilter<"Generation"> | $Enums.GenerationStatus
     modelUsed?: StringNullableFilter<"Generation"> | string | null
+    aiModelId?: StringNullableFilter<"Generation"> | string | null
     content?: JsonNullableFilter<"Generation">
     errorMessage?: StringNullableFilter<"Generation"> | string | null
     userId?: StringFilter<"Generation"> | string
     createdAt?: DateTimeFilter<"Generation"> | Date | string
     updatedAt?: DateTimeFilter<"Generation"> | Date | string
+    aiModel?: XOR<AIModelNullableScalarRelationFilter, AIModelWhereInput> | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
@@ -8816,11 +10198,13 @@ export namespace Prisma {
     template?: SortOrder
     status?: SortOrder
     modelUsed?: SortOrderInput | SortOrder
+    aiModelId?: SortOrderInput | SortOrder
     content?: SortOrderInput | SortOrder
     errorMessage?: SortOrderInput | SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    aiModel?: AIModelOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
   }
 
@@ -8833,11 +10217,13 @@ export namespace Prisma {
     template?: EnumGenerationTemplateFilter<"Generation"> | $Enums.GenerationTemplate
     status?: EnumGenerationStatusFilter<"Generation"> | $Enums.GenerationStatus
     modelUsed?: StringNullableFilter<"Generation"> | string | null
+    aiModelId?: StringNullableFilter<"Generation"> | string | null
     content?: JsonNullableFilter<"Generation">
     errorMessage?: StringNullableFilter<"Generation"> | string | null
     userId?: StringFilter<"Generation"> | string
     createdAt?: DateTimeFilter<"Generation"> | Date | string
     updatedAt?: DateTimeFilter<"Generation"> | Date | string
+    aiModel?: XOR<AIModelNullableScalarRelationFilter, AIModelWhereInput> | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
@@ -8847,6 +10233,7 @@ export namespace Prisma {
     template?: SortOrder
     status?: SortOrder
     modelUsed?: SortOrderInput | SortOrder
+    aiModelId?: SortOrderInput | SortOrder
     content?: SortOrderInput | SortOrder
     errorMessage?: SortOrderInput | SortOrder
     userId?: SortOrder
@@ -8866,11 +10253,104 @@ export namespace Prisma {
     template?: EnumGenerationTemplateWithAggregatesFilter<"Generation"> | $Enums.GenerationTemplate
     status?: EnumGenerationStatusWithAggregatesFilter<"Generation"> | $Enums.GenerationStatus
     modelUsed?: StringNullableWithAggregatesFilter<"Generation"> | string | null
+    aiModelId?: StringNullableWithAggregatesFilter<"Generation"> | string | null
     content?: JsonNullableWithAggregatesFilter<"Generation">
     errorMessage?: StringNullableWithAggregatesFilter<"Generation"> | string | null
     userId?: StringWithAggregatesFilter<"Generation"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Generation"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Generation"> | Date | string
+  }
+
+  export type AIModelWhereInput = {
+    AND?: AIModelWhereInput | AIModelWhereInput[]
+    OR?: AIModelWhereInput[]
+    NOT?: AIModelWhereInput | AIModelWhereInput[]
+    id?: StringFilter<"AIModel"> | string
+    slug?: StringFilter<"AIModel"> | string
+    name?: StringFilter<"AIModel"> | string
+    description?: StringFilter<"AIModel"> | string
+    provider?: StringFilter<"AIModel"> | string
+    modelKey?: StringFilter<"AIModel"> | string
+    creditCost?: IntFilter<"AIModel"> | number
+    maxChapters?: IntFilter<"AIModel"> | number
+    isFreeTier?: BoolFilter<"AIModel"> | boolean
+    isActive?: BoolFilter<"AIModel"> | boolean
+    createdAt?: DateTimeFilter<"AIModel"> | Date | string
+    updatedAt?: DateTimeFilter<"AIModel"> | Date | string
+    generations?: GenerationListRelationFilter
+  }
+
+  export type AIModelOrderByWithRelationInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    provider?: SortOrder
+    modelKey?: SortOrder
+    creditCost?: SortOrder
+    maxChapters?: SortOrder
+    isFreeTier?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    generations?: GenerationOrderByRelationAggregateInput
+  }
+
+  export type AIModelWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    slug?: string
+    AND?: AIModelWhereInput | AIModelWhereInput[]
+    OR?: AIModelWhereInput[]
+    NOT?: AIModelWhereInput | AIModelWhereInput[]
+    name?: StringFilter<"AIModel"> | string
+    description?: StringFilter<"AIModel"> | string
+    provider?: StringFilter<"AIModel"> | string
+    modelKey?: StringFilter<"AIModel"> | string
+    creditCost?: IntFilter<"AIModel"> | number
+    maxChapters?: IntFilter<"AIModel"> | number
+    isFreeTier?: BoolFilter<"AIModel"> | boolean
+    isActive?: BoolFilter<"AIModel"> | boolean
+    createdAt?: DateTimeFilter<"AIModel"> | Date | string
+    updatedAt?: DateTimeFilter<"AIModel"> | Date | string
+    generations?: GenerationListRelationFilter
+  }, "id" | "slug">
+
+  export type AIModelOrderByWithAggregationInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    provider?: SortOrder
+    modelKey?: SortOrder
+    creditCost?: SortOrder
+    maxChapters?: SortOrder
+    isFreeTier?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AIModelCountOrderByAggregateInput
+    _avg?: AIModelAvgOrderByAggregateInput
+    _max?: AIModelMaxOrderByAggregateInput
+    _min?: AIModelMinOrderByAggregateInput
+    _sum?: AIModelSumOrderByAggregateInput
+  }
+
+  export type AIModelScalarWhereWithAggregatesInput = {
+    AND?: AIModelScalarWhereWithAggregatesInput | AIModelScalarWhereWithAggregatesInput[]
+    OR?: AIModelScalarWhereWithAggregatesInput[]
+    NOT?: AIModelScalarWhereWithAggregatesInput | AIModelScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AIModel"> | string
+    slug?: StringWithAggregatesFilter<"AIModel"> | string
+    name?: StringWithAggregatesFilter<"AIModel"> | string
+    description?: StringWithAggregatesFilter<"AIModel"> | string
+    provider?: StringWithAggregatesFilter<"AIModel"> | string
+    modelKey?: StringWithAggregatesFilter<"AIModel"> | string
+    creditCost?: IntWithAggregatesFilter<"AIModel"> | number
+    maxChapters?: IntWithAggregatesFilter<"AIModel"> | number
+    isFreeTier?: BoolWithAggregatesFilter<"AIModel"> | boolean
+    isActive?: BoolWithAggregatesFilter<"AIModel"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"AIModel"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"AIModel"> | Date | string
   }
 
   export type CreditTransactionWhereInput = {
@@ -9307,6 +10787,7 @@ export namespace Prisma {
     errorMessage?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    aiModel?: AIModelCreateNestedOneWithoutGenerationsInput
     user: UserCreateNestedOneWithoutGenerationsInput
   }
 
@@ -9316,6 +10797,7 @@ export namespace Prisma {
     template?: $Enums.GenerationTemplate
     status?: $Enums.GenerationStatus
     modelUsed?: string | null
+    aiModelId?: string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: string | null
     userId: string
@@ -9333,6 +10815,7 @@ export namespace Prisma {
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiModel?: AIModelUpdateOneWithoutGenerationsNestedInput
     user?: UserUpdateOneRequiredWithoutGenerationsNestedInput
   }
 
@@ -9342,6 +10825,7 @@ export namespace Prisma {
     template?: EnumGenerationTemplateFieldUpdateOperationsInput | $Enums.GenerationTemplate
     status?: EnumGenerationStatusFieldUpdateOperationsInput | $Enums.GenerationStatus
     modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
+    aiModelId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
@@ -9355,6 +10839,7 @@ export namespace Prisma {
     template?: $Enums.GenerationTemplate
     status?: $Enums.GenerationStatus
     modelUsed?: string | null
+    aiModelId?: string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: string | null
     userId: string
@@ -9380,9 +10865,119 @@ export namespace Prisma {
     template?: EnumGenerationTemplateFieldUpdateOperationsInput | $Enums.GenerationTemplate
     status?: EnumGenerationStatusFieldUpdateOperationsInput | $Enums.GenerationStatus
     modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
+    aiModelId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIModelCreateInput = {
+    id?: string
+    slug: string
+    name: string
+    description: string
+    provider: string
+    modelKey: string
+    creditCost?: number
+    maxChapters?: number
+    isFreeTier?: boolean
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    generations?: GenerationCreateNestedManyWithoutAiModelInput
+  }
+
+  export type AIModelUncheckedCreateInput = {
+    id?: string
+    slug: string
+    name: string
+    description: string
+    provider: string
+    modelKey: string
+    creditCost?: number
+    maxChapters?: number
+    isFreeTier?: boolean
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    generations?: GenerationUncheckedCreateNestedManyWithoutAiModelInput
+  }
+
+  export type AIModelUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    modelKey?: StringFieldUpdateOperationsInput | string
+    creditCost?: IntFieldUpdateOperationsInput | number
+    maxChapters?: IntFieldUpdateOperationsInput | number
+    isFreeTier?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    generations?: GenerationUpdateManyWithoutAiModelNestedInput
+  }
+
+  export type AIModelUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    modelKey?: StringFieldUpdateOperationsInput | string
+    creditCost?: IntFieldUpdateOperationsInput | number
+    maxChapters?: IntFieldUpdateOperationsInput | number
+    isFreeTier?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    generations?: GenerationUncheckedUpdateManyWithoutAiModelNestedInput
+  }
+
+  export type AIModelCreateManyInput = {
+    id?: string
+    slug: string
+    name: string
+    description: string
+    provider: string
+    modelKey: string
+    creditCost?: number
+    maxChapters?: number
+    isFreeTier?: boolean
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AIModelUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    modelKey?: StringFieldUpdateOperationsInput | string
+    creditCost?: IntFieldUpdateOperationsInput | number
+    maxChapters?: IntFieldUpdateOperationsInput | number
+    isFreeTier?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIModelUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    modelKey?: StringFieldUpdateOperationsInput | string
+    creditCost?: IntFieldUpdateOperationsInput | number
+    maxChapters?: IntFieldUpdateOperationsInput | number
+    isFreeTier?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9873,12 +11468,18 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type AIModelNullableScalarRelationFilter = {
+    is?: AIModelWhereInput | null
+    isNot?: AIModelWhereInput | null
+  }
+
   export type GenerationCountOrderByAggregateInput = {
     id?: SortOrder
     topic?: SortOrder
     template?: SortOrder
     status?: SortOrder
     modelUsed?: SortOrder
+    aiModelId?: SortOrder
     content?: SortOrder
     errorMessage?: SortOrder
     userId?: SortOrder
@@ -9892,6 +11493,7 @@ export namespace Prisma {
     template?: SortOrder
     status?: SortOrder
     modelUsed?: SortOrder
+    aiModelId?: SortOrder
     errorMessage?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
@@ -9904,6 +11506,7 @@ export namespace Prisma {
     template?: SortOrder
     status?: SortOrder
     modelUsed?: SortOrder
+    aiModelId?: SortOrder
     errorMessage?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
@@ -9954,6 +11557,61 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedJsonNullableFilter<$PrismaModel>
     _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
+  export type AIModelCountOrderByAggregateInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    provider?: SortOrder
+    modelKey?: SortOrder
+    creditCost?: SortOrder
+    maxChapters?: SortOrder
+    isFreeTier?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AIModelAvgOrderByAggregateInput = {
+    creditCost?: SortOrder
+    maxChapters?: SortOrder
+  }
+
+  export type AIModelMaxOrderByAggregateInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    provider?: SortOrder
+    modelKey?: SortOrder
+    creditCost?: SortOrder
+    maxChapters?: SortOrder
+    isFreeTier?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AIModelMinOrderByAggregateInput = {
+    id?: SortOrder
+    slug?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    provider?: SortOrder
+    modelKey?: SortOrder
+    creditCost?: SortOrder
+    maxChapters?: SortOrder
+    isFreeTier?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AIModelSumOrderByAggregateInput = {
+    creditCost?: SortOrder
+    maxChapters?: SortOrder
   }
 
   export type EnumCreditTransactionTypeFilter<$PrismaModel = never> = {
@@ -10239,6 +11897,12 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAccountsInput, UserUpdateWithoutAccountsInput>, UserUncheckedUpdateWithoutAccountsInput>
   }
 
+  export type AIModelCreateNestedOneWithoutGenerationsInput = {
+    create?: XOR<AIModelCreateWithoutGenerationsInput, AIModelUncheckedCreateWithoutGenerationsInput>
+    connectOrCreate?: AIModelCreateOrConnectWithoutGenerationsInput
+    connect?: AIModelWhereUniqueInput
+  }
+
   export type UserCreateNestedOneWithoutGenerationsInput = {
     create?: XOR<UserCreateWithoutGenerationsInput, UserUncheckedCreateWithoutGenerationsInput>
     connectOrCreate?: UserCreateOrConnectWithoutGenerationsInput
@@ -10253,12 +11917,64 @@ export namespace Prisma {
     set?: $Enums.GenerationStatus
   }
 
+  export type AIModelUpdateOneWithoutGenerationsNestedInput = {
+    create?: XOR<AIModelCreateWithoutGenerationsInput, AIModelUncheckedCreateWithoutGenerationsInput>
+    connectOrCreate?: AIModelCreateOrConnectWithoutGenerationsInput
+    upsert?: AIModelUpsertWithoutGenerationsInput
+    disconnect?: AIModelWhereInput | boolean
+    delete?: AIModelWhereInput | boolean
+    connect?: AIModelWhereUniqueInput
+    update?: XOR<XOR<AIModelUpdateToOneWithWhereWithoutGenerationsInput, AIModelUpdateWithoutGenerationsInput>, AIModelUncheckedUpdateWithoutGenerationsInput>
+  }
+
   export type UserUpdateOneRequiredWithoutGenerationsNestedInput = {
     create?: XOR<UserCreateWithoutGenerationsInput, UserUncheckedCreateWithoutGenerationsInput>
     connectOrCreate?: UserCreateOrConnectWithoutGenerationsInput
     upsert?: UserUpsertWithoutGenerationsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutGenerationsInput, UserUpdateWithoutGenerationsInput>, UserUncheckedUpdateWithoutGenerationsInput>
+  }
+
+  export type GenerationCreateNestedManyWithoutAiModelInput = {
+    create?: XOR<GenerationCreateWithoutAiModelInput, GenerationUncheckedCreateWithoutAiModelInput> | GenerationCreateWithoutAiModelInput[] | GenerationUncheckedCreateWithoutAiModelInput[]
+    connectOrCreate?: GenerationCreateOrConnectWithoutAiModelInput | GenerationCreateOrConnectWithoutAiModelInput[]
+    createMany?: GenerationCreateManyAiModelInputEnvelope
+    connect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+  }
+
+  export type GenerationUncheckedCreateNestedManyWithoutAiModelInput = {
+    create?: XOR<GenerationCreateWithoutAiModelInput, GenerationUncheckedCreateWithoutAiModelInput> | GenerationCreateWithoutAiModelInput[] | GenerationUncheckedCreateWithoutAiModelInput[]
+    connectOrCreate?: GenerationCreateOrConnectWithoutAiModelInput | GenerationCreateOrConnectWithoutAiModelInput[]
+    createMany?: GenerationCreateManyAiModelInputEnvelope
+    connect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+  }
+
+  export type GenerationUpdateManyWithoutAiModelNestedInput = {
+    create?: XOR<GenerationCreateWithoutAiModelInput, GenerationUncheckedCreateWithoutAiModelInput> | GenerationCreateWithoutAiModelInput[] | GenerationUncheckedCreateWithoutAiModelInput[]
+    connectOrCreate?: GenerationCreateOrConnectWithoutAiModelInput | GenerationCreateOrConnectWithoutAiModelInput[]
+    upsert?: GenerationUpsertWithWhereUniqueWithoutAiModelInput | GenerationUpsertWithWhereUniqueWithoutAiModelInput[]
+    createMany?: GenerationCreateManyAiModelInputEnvelope
+    set?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    disconnect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    delete?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    connect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    update?: GenerationUpdateWithWhereUniqueWithoutAiModelInput | GenerationUpdateWithWhereUniqueWithoutAiModelInput[]
+    updateMany?: GenerationUpdateManyWithWhereWithoutAiModelInput | GenerationUpdateManyWithWhereWithoutAiModelInput[]
+    deleteMany?: GenerationScalarWhereInput | GenerationScalarWhereInput[]
+  }
+
+  export type GenerationUncheckedUpdateManyWithoutAiModelNestedInput = {
+    create?: XOR<GenerationCreateWithoutAiModelInput, GenerationUncheckedCreateWithoutAiModelInput> | GenerationCreateWithoutAiModelInput[] | GenerationUncheckedCreateWithoutAiModelInput[]
+    connectOrCreate?: GenerationCreateOrConnectWithoutAiModelInput | GenerationCreateOrConnectWithoutAiModelInput[]
+    upsert?: GenerationUpsertWithWhereUniqueWithoutAiModelInput | GenerationUpsertWithWhereUniqueWithoutAiModelInput[]
+    createMany?: GenerationCreateManyAiModelInputEnvelope
+    set?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    disconnect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    delete?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    connect?: GenerationWhereUniqueInput | GenerationWhereUniqueInput[]
+    update?: GenerationUpdateWithWhereUniqueWithoutAiModelInput | GenerationUpdateWithWhereUniqueWithoutAiModelInput[]
+    updateMany?: GenerationUpdateManyWithWhereWithoutAiModelInput | GenerationUpdateManyWithWhereWithoutAiModelInput[]
+    deleteMany?: GenerationScalarWhereInput | GenerationScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutCreditTransactionsInput = {
@@ -10624,6 +12340,7 @@ export namespace Prisma {
     errorMessage?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    aiModel?: AIModelCreateNestedOneWithoutGenerationsInput
   }
 
   export type GenerationUncheckedCreateWithoutUserInput = {
@@ -10632,6 +12349,7 @@ export namespace Prisma {
     template?: $Enums.GenerationTemplate
     status?: $Enums.GenerationStatus
     modelUsed?: string | null
+    aiModelId?: string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: string | null
     createdAt?: Date | string
@@ -10766,6 +12484,7 @@ export namespace Prisma {
     template?: EnumGenerationTemplateFilter<"Generation"> | $Enums.GenerationTemplate
     status?: EnumGenerationStatusFilter<"Generation"> | $Enums.GenerationStatus
     modelUsed?: StringNullableFilter<"Generation"> | string | null
+    aiModelId?: StringNullableFilter<"Generation"> | string | null
     content?: JsonNullableFilter<"Generation">
     errorMessage?: StringNullableFilter<"Generation"> | string | null
     userId?: StringFilter<"Generation"> | string
@@ -10962,6 +12681,41 @@ export namespace Prisma {
     creditTransactions?: CreditTransactionUncheckedUpdateManyWithoutUserNestedInput
   }
 
+  export type AIModelCreateWithoutGenerationsInput = {
+    id?: string
+    slug: string
+    name: string
+    description: string
+    provider: string
+    modelKey: string
+    creditCost?: number
+    maxChapters?: number
+    isFreeTier?: boolean
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AIModelUncheckedCreateWithoutGenerationsInput = {
+    id?: string
+    slug: string
+    name: string
+    description: string
+    provider: string
+    modelKey: string
+    creditCost?: number
+    maxChapters?: number
+    isFreeTier?: boolean
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AIModelCreateOrConnectWithoutGenerationsInput = {
+    where: AIModelWhereUniqueInput
+    create: XOR<AIModelCreateWithoutGenerationsInput, AIModelUncheckedCreateWithoutGenerationsInput>
+  }
+
   export type UserCreateWithoutGenerationsInput = {
     id?: string
     name: string
@@ -10997,6 +12751,47 @@ export namespace Prisma {
   export type UserCreateOrConnectWithoutGenerationsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutGenerationsInput, UserUncheckedCreateWithoutGenerationsInput>
+  }
+
+  export type AIModelUpsertWithoutGenerationsInput = {
+    update: XOR<AIModelUpdateWithoutGenerationsInput, AIModelUncheckedUpdateWithoutGenerationsInput>
+    create: XOR<AIModelCreateWithoutGenerationsInput, AIModelUncheckedCreateWithoutGenerationsInput>
+    where?: AIModelWhereInput
+  }
+
+  export type AIModelUpdateToOneWithWhereWithoutGenerationsInput = {
+    where?: AIModelWhereInput
+    data: XOR<AIModelUpdateWithoutGenerationsInput, AIModelUncheckedUpdateWithoutGenerationsInput>
+  }
+
+  export type AIModelUpdateWithoutGenerationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    modelKey?: StringFieldUpdateOperationsInput | string
+    creditCost?: IntFieldUpdateOperationsInput | number
+    maxChapters?: IntFieldUpdateOperationsInput | number
+    isFreeTier?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIModelUncheckedUpdateWithoutGenerationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    modelKey?: StringFieldUpdateOperationsInput | string
+    creditCost?: IntFieldUpdateOperationsInput | number
+    maxChapters?: IntFieldUpdateOperationsInput | number
+    isFreeTier?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserUpsertWithoutGenerationsInput = {
@@ -11040,6 +12835,58 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     creditTransactions?: CreditTransactionUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type GenerationCreateWithoutAiModelInput = {
+    id?: string
+    topic: string
+    template?: $Enums.GenerationTemplate
+    status?: $Enums.GenerationStatus
+    modelUsed?: string | null
+    content?: NullableJsonNullValueInput | InputJsonValue
+    errorMessage?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutGenerationsInput
+  }
+
+  export type GenerationUncheckedCreateWithoutAiModelInput = {
+    id?: string
+    topic: string
+    template?: $Enums.GenerationTemplate
+    status?: $Enums.GenerationStatus
+    modelUsed?: string | null
+    content?: NullableJsonNullValueInput | InputJsonValue
+    errorMessage?: string | null
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GenerationCreateOrConnectWithoutAiModelInput = {
+    where: GenerationWhereUniqueInput
+    create: XOR<GenerationCreateWithoutAiModelInput, GenerationUncheckedCreateWithoutAiModelInput>
+  }
+
+  export type GenerationCreateManyAiModelInputEnvelope = {
+    data: GenerationCreateManyAiModelInput | GenerationCreateManyAiModelInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type GenerationUpsertWithWhereUniqueWithoutAiModelInput = {
+    where: GenerationWhereUniqueInput
+    update: XOR<GenerationUpdateWithoutAiModelInput, GenerationUncheckedUpdateWithoutAiModelInput>
+    create: XOR<GenerationCreateWithoutAiModelInput, GenerationUncheckedCreateWithoutAiModelInput>
+  }
+
+  export type GenerationUpdateWithWhereUniqueWithoutAiModelInput = {
+    where: GenerationWhereUniqueInput
+    data: XOR<GenerationUpdateWithoutAiModelInput, GenerationUncheckedUpdateWithoutAiModelInput>
+  }
+
+  export type GenerationUpdateManyWithWhereWithoutAiModelInput = {
+    where: GenerationScalarWhereInput
+    data: XOR<GenerationUpdateManyMutationInput, GenerationUncheckedUpdateManyWithoutAiModelInput>
   }
 
   export type UserCreateWithoutCreditTransactionsInput = {
@@ -11153,6 +13000,7 @@ export namespace Prisma {
     template?: $Enums.GenerationTemplate
     status?: $Enums.GenerationStatus
     modelUsed?: string | null
+    aiModelId?: string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: string | null
     createdAt?: Date | string
@@ -11253,6 +13101,7 @@ export namespace Prisma {
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiModel?: AIModelUpdateOneWithoutGenerationsNestedInput
   }
 
   export type GenerationUncheckedUpdateWithoutUserInput = {
@@ -11261,6 +13110,7 @@ export namespace Prisma {
     template?: EnumGenerationTemplateFieldUpdateOperationsInput | $Enums.GenerationTemplate
     status?: EnumGenerationStatusFieldUpdateOperationsInput | $Enums.GenerationStatus
     modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
+    aiModelId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11273,6 +13123,7 @@ export namespace Prisma {
     template?: EnumGenerationTemplateFieldUpdateOperationsInput | $Enums.GenerationTemplate
     status?: EnumGenerationStatusFieldUpdateOperationsInput | $Enums.GenerationStatus
     modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
+    aiModelId?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableJsonNullValueInput | InputJsonValue
     errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11304,6 +13155,58 @@ export namespace Prisma {
     type?: EnumCreditTransactionTypeFieldUpdateOperationsInput | $Enums.CreditTransactionType
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GenerationCreateManyAiModelInput = {
+    id?: string
+    topic: string
+    template?: $Enums.GenerationTemplate
+    status?: $Enums.GenerationStatus
+    modelUsed?: string | null
+    content?: NullableJsonNullValueInput | InputJsonValue
+    errorMessage?: string | null
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GenerationUpdateWithoutAiModelInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topic?: StringFieldUpdateOperationsInput | string
+    template?: EnumGenerationTemplateFieldUpdateOperationsInput | $Enums.GenerationTemplate
+    status?: EnumGenerationStatusFieldUpdateOperationsInput | $Enums.GenerationStatus
+    modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableJsonNullValueInput | InputJsonValue
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutGenerationsNestedInput
+  }
+
+  export type GenerationUncheckedUpdateWithoutAiModelInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topic?: StringFieldUpdateOperationsInput | string
+    template?: EnumGenerationTemplateFieldUpdateOperationsInput | $Enums.GenerationTemplate
+    status?: EnumGenerationStatusFieldUpdateOperationsInput | $Enums.GenerationStatus
+    modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableJsonNullValueInput | InputJsonValue
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GenerationUncheckedUpdateManyWithoutAiModelInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topic?: StringFieldUpdateOperationsInput | string
+    template?: EnumGenerationTemplateFieldUpdateOperationsInput | $Enums.GenerationTemplate
+    status?: EnumGenerationStatusFieldUpdateOperationsInput | $Enums.GenerationStatus
+    modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableJsonNullValueInput | InputJsonValue
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

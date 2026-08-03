@@ -108,6 +108,8 @@ model Generation {
   template     GenerationTemplate @default(PRESENTATION)
   status       GenerationStatus   @default(PENDING)
   modelUsed    String?
+  aiModelId    String?
+  aiModel      AIModel?           @relation(fields: [aiModelId], references: [id], onDelete: SetNull)
   content      Json?
   errorMessage String?
   userId       String
@@ -119,6 +121,25 @@ model Generation {
   @@index([status])
   @@index([createdAt])
   @@map("generation")
+}
+
+model AIModel {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  name        String
+  description String
+  provider    String
+  modelKey    String
+  creditCost  Int          @default(1)
+  maxChapters Int          @default(5)
+  isFreeTier  Boolean      @default(false)
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  generations Generation[]
+
+  @@map("ai_model")
 }
 
 model CreditTransaction {
