@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Sparkles, LogOut, User as UserIcon, Coins, Loader2 } from 'lucide-react';
 import { useSession, useLogout, useUserStore } from '@/features/auth';
+import { useCredits } from '@/features/credits';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -17,11 +18,13 @@ import {
 } from '@/components/ui/alert-dialog';
 
 export function UserHeader() {
-  const { data: sessionData, isLoading } = useSession();
+  const { data: sessionData, isLoading: isSessionLoading } = useSession();
+  const { data: creditsData, isLoading: isCreditsLoading } = useCredits();
   const logoutMutation = useLogout();
   const storedUser = useUserStore((state) => state.user);
 
   const user = sessionData?.user || (storedUser?.email ? storedUser : null);
+  const totalCredits = creditsData?.totalCredits ?? (sessionData?.user?.freeCredits || 0);
 
   return (
     <header className="w-full border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50">
@@ -38,7 +41,7 @@ export function UserHeader() {
 
         {/* User / Auth Navigation */}
         <div className="flex items-center gap-4">
-          {isLoading ? (
+          {isSessionLoading ? (
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin text-primary" />
               Loading...
@@ -56,13 +59,15 @@ export function UserHeader() {
                 </div>
               </div>
 
-              {/* Credits indicator */}
-              {(sessionData?.user?.freeCredits !== undefined || sessionData?.user?.purchasedCredits !== undefined) && (
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 text-xs font-semibold">
-                  <Coins className="h-3.5 w-3.5 text-amber-500" />
-                  <span>{(sessionData.user.freeCredits || 0) + (sessionData.user.purchasedCredits || 0)} Credits</span>
-                </div>
-              )}
+              {/* Credits indicator API call result */}
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-semibold">
+                <Coins className="h-3.5 w-3.5 text-amber-500" />
+                {isCreditsLoading ? (
+                  <Loader2 className="h-3 w-3 animate-spin text-amber-500" />
+                ) : (
+                  <span>{totalCredits} Credits</span>
+                )}
+              </div>
 
               {/* Destructive Logout Button with AlertDialog Confirmation */}
               <AlertDialog>
