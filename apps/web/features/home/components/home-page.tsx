@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import { UserHeader } from './user-header';
-import { KineticText } from './kinetic-text';
 import { HeroUnboxingCards } from './hero-unboxing-cards';
 import { useSession, useUserStore } from '@/features/auth';
 import { Button } from '@/components/ui/button';
@@ -46,15 +45,15 @@ export default function HomePage() {
           >
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold uppercase tracking-wider">
               <Sparkles className="h-3.5 w-3.5 text-sky-500" />
-              <span>Active Session</span>
+              <span>Workspace Active — {user.name || 'Creator'}</span>
             </div>
 
             <div className="space-y-4 max-w-3xl mx-auto">
-              <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-900 leading-[1.25]">
-                Welcome to your AI workspace, <span className="text-sky-500">{user.name || 'Creator'}</span> — craft <KineticText /> instantly
+              <h1 className="text-5xl sm:text-7xl font-black tracking-tight text-slate-900 leading-[1.1]">
+                AI Presentation Decks in <span className="text-sky-500">Seconds</span>
               </h1>
               <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                Writara transforms your topics into presentation-native slide decks with automated layouts, speaker notes, and key learning takeaways. Select an AI model below to generate your next deck with total clarity.
+                Writara transforms your topics into presentation-native slide decks with automated layouts, speaker notes, and key learning takeaways. Select an AI model below to generate your next deck.
               </p>
             </div>
 
@@ -84,8 +83,8 @@ export default function HomePage() {
             </motion.div>
 
             <div className="space-y-4 max-w-4xl mx-auto">
-              <h1 className="text-5xl sm:text-6xl font-black tracking-tight text-slate-900 leading-[1.25]">
-                Generate tailored <KineticText />
+              <h1 className="text-5xl sm:text-7xl font-black tracking-tight text-slate-900 leading-[1.1]">
+                AI Presentation Decks in <span className="text-sky-500">Seconds</span>
               </h1>
 
               <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
