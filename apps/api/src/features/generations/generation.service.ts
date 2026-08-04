@@ -177,7 +177,7 @@ Return ONLY valid JSON matching this schema:
 {
   "generatedTitle": "Polished, high-impact title",
   "topicThesis": "1-2 sentence core educational thesis explaining what this guide covers and why it matters",
-  "targetAudience": "Specific target audience description",
+  "targetAudience": "Ultra-concise audience label (STRICT MAX 8 WORDS, e.g. Junior Developers & Web Beginners)",
   "keySubtopics": ["Subtopic 1", "Subtopic 2", "Subtopic 3", "Subtopic 4"]
 }`;
 

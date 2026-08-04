@@ -88,6 +88,13 @@ export function DeckDocumentViewer({ deck, onBackToChat }: DeckDocumentViewerPro
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const getShortTargetAudience = (text?: string) => {
+    if (!text) return '';
+    const words = text.trim().split(/\s+/);
+    if (words.length <= 8) return text;
+    return words.slice(0, 8).join(' ');
+  };
+
   const handlePrint = () => {
     window.print();
   };
@@ -137,7 +144,7 @@ export function DeckDocumentViewer({ deck, onBackToChat }: DeckDocumentViewerPro
             {payload?.targetAudience && (
               <Badge variant="outline" className="text-xs font-medium text-muted-foreground gap-1.5 h-auto py-1 max-w-full text-wrap text-left break-words leading-relaxed">
                 <Users className="h-3.5 w-3.5 shrink-0 text-sky-500" />
-                <span>Target: {payload.targetAudience}</span>
+                <span>Target: {getShortTargetAudience(payload.targetAudience)}</span>
               </Badge>
             )}
           </div>

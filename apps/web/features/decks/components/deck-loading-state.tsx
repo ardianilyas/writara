@@ -175,15 +175,6 @@ export function DeckLoadingState({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="text-xs font-medium gap-1 text-muted-foreground hover:text-foreground"
-          >
-            {isPlaying ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
-            <span>{isPlaying ? 'Pause' : 'Play'}</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
             onClick={handleReset}
             className="text-xs font-medium gap-1 text-muted-foreground hover:text-foreground"
           >
