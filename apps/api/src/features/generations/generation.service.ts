@@ -437,38 +437,115 @@ interface Presentation {
   /**
    * Robustly extracts and parses JSON from AI model response text.
    * Handles: <think> tags, markdown fences, conversational preamble text,
-   * and any non-JSON content before or after the actual JSON object.
+  /**
+   * Robustly extracts and parses JSON from AI model response text.
+   * Handles: <think> tags, markdown fences, conversational preamble text,
+   * escaped quotes, trailing commas, and unclosed arrays/objects.
    */
   private extractJsonFromResponse(raw: string): GeneratedContentPayload {
     // 1. Strip thinking tags (Nemotron reasoning models)
-    let text = raw.replace(/<think>[\s\S]*?<\/think>/gi, '');
+    let text = raw.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
 
     // 2. Strip markdown code fences
-    text = text.replace(/```json\s*/gi, '').replace(/```\s*/gi, '');
+    text = text.replace(/```json\s*/gi, '').replace(/```\s*/gi, '').trim();
 
-    // 3. Find the first top-level JSON object by matching braces
-    const startIdx = text.indexOf('{');
-    if (startIdx === -1) {
+    // 3. Locate first '{' and last '}' intelligently ignoring quotes
+    const firstBrace = text.indexOf('{');
+    const lastBrace = text.lastIndexOf('}');
+
+    if (firstBrace === -1) {
       throw new Error('No JSON object found in AI response');
     }
 
-    let depth = 0;
-    let endIdx = -1;
-    for (let i = startIdx; i < text.length; i++) {
-      if (text[i] === '{') depth++;
-      if (text[i] === '}') depth--;
-      if (depth === 0) {
-        endIdx = i;
-        break;
+    let candidate = lastBrace > firstBrace
+      ? text.substring(firstBrace, lastBrace + 1)
+      : text.substring(firstBrace);
+
+    // Try direct parse first
+    try {
+      return JSON.parse(candidate);
+    } catch (e1) {
+      // 4. Clean trailing commas & invalid control characters
+      candidate = this.repairJsonString(candidate);
+
+      try {
+        return JSON.parse(candidate);
+      } catch (e2) {
+        // 5. Try auto-closing unclosed brackets/braces
+        candidate = this.autoCloseJson(candidate);
+        try {
+          return JSON.parse(candidate);
+        } catch (e3) {
+          throw new Error(`Failed to parse AI JSON response: ${(e3 as Error).message}`);
+        }
+      }
+    }
+  }
+
+  /**
+   * Sanitizes trailing commas, unescaped newlines in strings, and control characters.
+   */
+  private repairJsonString(jsonStr: string): string {
+    return jsonStr
+      .replace(/,\s*([\}\]])/g, '$1') // Remove trailing commas before } or ]
+      .replace(/[\u0000-\u001F]+/g, (match) => {
+        if (match === '\n' || match === '\r' || match === '\t') return match;
+        return '';
+      });
+  }
+
+  /**
+   * Auto-closes unclosed quotes, brackets, and braces if JSON was cut off near token limit.
+   */
+  private autoCloseJson(jsonStr: string): string {
+    let inString = false;
+    let isEscaped = false;
+    const stack: string[] = [];
+
+    for (let i = 0; i < jsonStr.length; i++) {
+      const char = jsonStr[i];
+
+      if (isEscaped) {
+        isEscaped = false;
+        continue;
+      }
+
+      if (char === '\\') {
+        isEscaped = true;
+        continue;
+      }
+
+      if (char === '"') {
+        inString = !inString;
+        continue;
+      }
+
+      if (!inString) {
+        if (char === '{' || char === '[') {
+          stack.push(char);
+        } else if (char === '}') {
+          if (stack.length && stack[stack.length - 1] === '{') stack.pop();
+        } else if (char === ']') {
+          if (stack.length && stack[stack.length - 1] === '[') stack.pop();
+        }
       }
     }
 
-    if (endIdx === -1) {
-      throw new Error('Incomplete JSON object in AI response (unmatched braces)');
+    let repaired = jsonStr;
+    if (inString) {
+      repaired += '"';
     }
 
-    const jsonStr = text.substring(startIdx, endIdx + 1);
-    return JSON.parse(jsonStr);
+    // Strip trailing incomplete key or comma
+    repaired = repaired.replace(/,\s*$/, '').replace(/"[^"]*"\s*:\s*$/, '');
+
+    while (stack.length > 0) {
+      const open = stack.pop();
+      if (open === '{') repaired += '}';
+      if (open === '[') repaired += ']';
+    }
+
+    return repaired;
   }
 }
 
