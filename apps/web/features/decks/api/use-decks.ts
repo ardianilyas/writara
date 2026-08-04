@@ -41,7 +41,8 @@ export interface GenerationRecord {
   modelId: string;
   modelTier: 'FREE' | 'PAID';
   status: 'PENDING' | 'GENERATING' | 'COMPLETED' | 'FAILED' | 'REFUNDED';
-  generatedContent: GeneratedContentPayload | null;
+  content?: GeneratedContentPayload | null;
+  generatedContent?: GeneratedContentPayload | null;
   errorMessage?: string | null;
   creditsUsed: number;
   createdAt: string;

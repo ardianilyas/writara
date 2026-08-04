@@ -22,9 +22,10 @@ export function DeckSlideViewer({ deck, onBackToChat }: DeckSlideViewerProps) {
     (deck.status as string) === 'IN_PROGRESS';
 
   // Extract all slides from generated content chapters
+  const payload = deck.content || deck.generatedContent;
   const allSlides: { slide: Slide; chapterTitle: string }[] = [];
-  if (deck.generatedContent?.chapters) {
-    deck.generatedContent.chapters.forEach((chapter) => {
+  if (payload?.chapters) {
+    payload.chapters.forEach((chapter) => {
       chapter.slides.forEach((slide) => {
         allSlides.push({ slide, chapterTitle: chapter.title });
       });
