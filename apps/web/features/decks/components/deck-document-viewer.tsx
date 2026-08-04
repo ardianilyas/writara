@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { GenerationRecord, Slide } from '../api/use-decks';
+import { DeckLoadingState } from './deck-loading-state';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -92,30 +93,7 @@ export function DeckDocumentViewer({ deck, onBackToChat }: DeckDocumentViewerPro
   };
 
   if (isGenerating) {
-    return (
-      <Card className="w-full h-full flex flex-col items-center justify-center p-8 text-center bg-card border-border shadow-xs space-y-6 min-h-[500px]">
-        <div className="w-16 h-16 rounded-2xl bg-sky-500/10 border border-sky-200 flex items-center justify-center text-sky-500 shadow-xs relative">
-          <Loader2 className="h-8 w-8 animate-spin" />
-        </div>
-        <div className="space-y-2 max-w-md">
-          <Badge variant="outline" className="gap-1.5 px-3 py-1 font-semibold text-xs border-sky-200 bg-sky-50 text-sky-700">
-            <Sparkles className="h-3.5 w-3.5 text-sky-500" />
-            <span>AI Topic Generation In Progress</span>
-          </Badge>
-          <h2 className="text-xl font-bold text-foreground tracking-tight">
-            Generating "{deck.topic}"
-          </h2>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Writara is building structured chapter guides, key takeaways, and speaker scripts. This takes a few seconds...
-          </p>
-        </div>
-
-        <Button variant="outline" size="sm" onClick={onBackToChat} className="gap-2 text-xs">
-          <ArrowLeft className="h-3.5 w-3.5" />
-          <span>Back to Chat</span>
-        </Button>
-      </Card>
-    );
+    return <DeckLoadingState topic={deck.topic} onBack={onBackToChat} />;
   }
 
   return (
