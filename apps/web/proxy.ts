@@ -10,15 +10,21 @@ export function proxy(request: NextRequest) {
     request.cookies.get('__Secure-better-auth.session_token')?.value;
 
   const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/register');
+  const isProtectedPage = pathname.startsWith('/decks');
 
   // If user is authenticated and trying to access /login or /register -> redirect to /
   if (sessionToken && isAuthPage) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
+  // If user is NOT authenticated and trying to access /decks -> redirect to /login
+  if (!sessionToken && isProtectedPage) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/login', '/register'],
+  matcher: ['/login', '/register', '/decks', '/decks/:path*'],
 };

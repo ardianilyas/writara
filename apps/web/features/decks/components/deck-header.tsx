@@ -1,105 +1,94 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
-import { Sparkles, Sun, Moon, Bell, PanelLeft, LayoutDashboard, MessageSquare, HelpCircle, FlaskConical } from 'lucide-react';
-import { useSession } from '@/features/auth';
+import { Sparkles, LayoutDashboard, MessageSquare, LogOut, User as UserIcon } from 'lucide-react';
+import { useSession, useLogout } from '@/features/auth';
+import { useCredits } from '@/features/credits/hooks/use-credits';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface DeckHeaderProps {
-  onToggleSidebar?: () => void;
   activeTab?: string;
-  onTabChange?: (tab: string) => void;
+  onToggleSidebar?: () => void;
 }
 
-export function DeckHeader({ onToggleSidebar, activeTab = 'ai-chat', onTabChange }: DeckHeaderProps) {
+export function DeckHeader({ activeTab = 'ai-chat' }: DeckHeaderProps) {
   const { data: session } = useSession();
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const { data: creditData } = useCredits();
+  const logoutMutation = useLogout();
 
-  const navTabs = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, href: '/' },
-    { id: 'ai-chat', label: 'Ai Chat', icon: MessageSquare, href: '/decks' },
-    { id: 'help', label: 'Help', icon: HelpCircle, href: '#help' },
-    { id: 'labs', label: 'Labs', icon: FlaskConical, href: '#labs' },
-  ];
+  const user = session?.user;
+  const creditsBalance = creditData?.totalCredits ?? 3;
 
   return (
-    <header className="w-full h-16 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
-      {/* Left: Brand Logo & Sidebar Toggle */}
+    <header className="w-full h-14 bg-background border-b border-border px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
+      {/* Brand Logo */}
       <div className="flex items-center gap-3">
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-sky-500 flex items-center justify-center text-white shadow-md shadow-sky-500/20 group-hover:scale-105 transition-transform">
-            <Sparkles className="h-5 w-5" />
+        <Link href="/" className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center text-white shadow-xs">
+            <Sparkles className="h-4 w-4" />
           </div>
-          <span className="font-black text-lg text-slate-900 tracking-tight">
+          <span className="font-bold text-base text-foreground tracking-tight">
             Writara<span className="text-sky-500">.ai</span>
           </span>
         </Link>
-
-        {onToggleSidebar && (
-          <button
-            onClick={onToggleSidebar}
-            className="p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-            title="Toggle sidebar"
-          >
-            <PanelLeft className="h-4 w-4" />
-          </button>
-        )}
       </div>
 
-      {/* Center: Floating Pill Navigation Tabs (Matching Reference Image) */}
-      <nav className="hidden md:flex items-center gap-1 bg-slate-100/80 p-1.5 rounded-full border border-slate-200/60 shadow-xs">
-        {navTabs.map((tab) => {
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => onTabChange?.(tab.id)}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                isActive
-                  ? 'bg-white text-slate-900 shadow-sm border border-slate-200/60 font-bold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-              }`}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
+      {/* Navigation Links using Shadcn Button */}
+      <nav className="flex items-center gap-1">
+        <Button variant={activeTab === 'dashboard' ? 'secondary' : 'ghost'} size="sm" asChild>
+          <Link href="/" className="gap-1.5 text-xs font-semibold">
+            <LayoutDashboard className="h-3.5 w-3.5" />
+            <span>Dashboard</span>
+          </Link>
+        </Button>
+        <Button variant={activeTab === 'ai-chat' ? 'secondary' : 'ghost'} size="sm" asChild>
+          <Link href="/decks" className="gap-1.5 text-xs font-semibold">
+            <MessageSquare className="h-3.5 w-3.5 text-sky-500" />
+            <span>AI Chat</span>
+          </Link>
+        </Button>
       </nav>
 
-      {/* Right: Theme Toggle, Notifications, User Avatar */}
-      <div className="flex items-center gap-2">
-        {/* Light / Dark Mode Controls */}
-        <div className="flex items-center bg-slate-100 p-1 rounded-full border border-slate-200/80">
-          <button
-            onClick={() => setTheme('light')}
-            className={`p-1.5 rounded-full text-xs transition-colors ${
-              theme === 'light' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-400 hover:text-slate-700'
-            }`}
-            title="Light mode"
-          >
-            <Sun className="h-3.5 w-3.5" />
-          </button>
-          <button
-            onClick={() => setTheme('dark')}
-            className={`p-1.5 rounded-full text-xs transition-colors ${
-              theme === 'dark' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-400 hover:text-slate-700'
-            }`}
-            title="Dark mode"
-          >
-            <Moon className="h-3.5 w-3.5" />
-          </button>
-        </div>
+      {/* Right Controls: Credits & User Dropdown */}
+      <div className="flex items-center gap-3">
+        <Badge variant="outline" className="gap-1.5 px-3 py-1 font-semibold text-xs border-sky-200 bg-sky-50 text-sky-700">
+          <Sparkles className="h-3 w-3 text-sky-500" />
+          <span>{creditsBalance} Credits</span>
+        </Badge>
 
-        {/* Notifications Bell */}
-        <button className="p-2 rounded-full text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors relative">
-          <Bell className="h-4 w-4" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-sky-500 border border-white" />
-        </button>
-
-        {/* User Avatar */}
-        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-500 flex items-center justify-center text-white text-xs font-bold shadow-xs border border-white">
-          {session?.user?.name ? session.user.name.charAt(0).toUpperCase() : 'U'}
-        </div>
+        {user && (
+          <DropdownMenu>
+            <DropdownMenuTrigger render={
+              <Button variant="outline" size="sm" className="gap-2 text-xs font-semibold">
+                <UserIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="max-w-[100px] truncate">{user.name || 'Account'}</span>
+              </Button>
+            } />
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuLabel className="font-normal text-xs">
+                <div className="font-semibold text-foreground truncate">{user.name}</div>
+                <div className="text-muted-foreground truncate">{user.email}</div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => logoutMutation.mutate()}
+                className="text-destructive focus:text-destructive cursor-pointer text-xs"
+              >
+                <LogOut className="h-3.5 w-3.5 mr-2" />
+                <span>Sign Out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
     </header>
   );

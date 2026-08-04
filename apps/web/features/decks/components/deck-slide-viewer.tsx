@@ -1,19 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  ArrowLeft,
-  ChevronLeft,
-  ChevronRight,
-  Maximize2,
-  FileText,
-  Sparkles,
-  Layers,
-  CheckCircle2,
-  ListOrdered,
-  TrendingUp,
-} from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, FileText, Sparkles } from 'lucide-react';
 import { GenerationRecord, Slide } from '../api/use-decks';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 
 interface DeckSlideViewerProps {
   deck: GenerationRecord;
@@ -47,87 +39,78 @@ export function DeckSlideViewer({ deck, onBackToChat }: DeckSlideViewerProps) {
   };
 
   return (
-    <div className="w-full h-full flex flex-col justify-between bg-slate-900 text-white rounded-3xl p-6 shadow-xl border border-slate-800 relative overflow-hidden">
+    <Card className="w-full h-full flex flex-col justify-between p-6 bg-card border-border shadow-xs">
       {/* Top Controls Bar */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+      <div className="flex items-center justify-between border-b border-border pb-4">
         <div className="flex items-center gap-3">
-          <button
-            onClick={onBackToChat}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back to Chat</span>
-          </button>
+          <Button variant="outline" size="sm" onClick={onBackToChat} className="gap-2 text-xs font-semibold">
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>Back to Generator</span>
+          </Button>
 
-          <div className="h-4 w-px bg-slate-800" />
+          <div className="h-4 w-px bg-border" />
 
-          <div>
-            <h2 className="text-sm font-bold text-white truncate max-w-xs sm:max-w-md">
+          <div className="truncate">
+            <h2 className="text-sm font-bold text-foreground truncate max-w-xs sm:max-w-md">
               {deck.topic}
             </h2>
-            <div className="flex items-center gap-2 text-[10px] text-slate-400">
-              <span>{deck.modelId}</span>
-              <span>•</span>
+            <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                {deck.modelId}
+              </Badge>
               <span>{totalSlides} Slides</span>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowSpeakerNotes(!showSpeakerNotes)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
-              showSpeakerNotes ? 'bg-sky-500 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-            }`}
-          >
-            <FileText className="h-3.5 w-3.5" />
-            <span>Notes</span>
-          </button>
-          <button className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
-            <Maximize2 className="h-4 w-4" />
-          </button>
-        </div>
+        <Button
+          variant={showSpeakerNotes ? 'secondary' : 'outline'}
+          size="sm"
+          onClick={() => setShowSpeakerNotes(!showSpeakerNotes)}
+          className="gap-1.5 text-xs font-semibold"
+        >
+          <FileText className="h-3.5 w-3.5" />
+          <span>Speaker Notes</span>
+        </Button>
       </div>
 
       {/* Main Slide Canvas */}
       {currentSlide ? (
         <div className="my-auto py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           {/* Slide Preview Box */}
-          <div
-            className={`bg-slate-950 border border-slate-800 rounded-2xl p-8 flex flex-col justify-between min-h-[380px] shadow-2xl relative ${
+          <Card
+            className={`p-8 flex flex-col justify-between min-h-[360px] border-border bg-slate-950 text-white shadow-md ${
               showSpeakerNotes ? 'lg:col-span-8' : 'lg:col-span-12'
             }`}
           >
             {/* Header / Chapter Label */}
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-sky-400 uppercase tracking-wider">
+              <span className="text-xs font-bold text-sky-400 uppercase tracking-wider">
                 {currentItem.chapterTitle}
               </span>
-              <span className="text-xs font-mono text-slate-600">
+              <span className="text-xs font-mono text-slate-500">
                 Slide {currentSlideIndex + 1} / {totalSlides}
               </span>
             </div>
 
             {/* Slide Content based on layout */}
             <div className="my-auto space-y-6">
-              {/* Title & Subtitle */}
               <div className="space-y-2">
                 <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
                   {currentSlide.title}
                 </h3>
                 {currentSlide.subtitle && (
-                  <p className="text-sm text-slate-400 leading-relaxed max-w-xl">
+                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-xl">
                     {currentSlide.subtitle}
                   </p>
                 )}
               </div>
 
-              {/* Layout Specific Renderers */}
               {currentSlide.layout === 'BULLET_POINTS' && currentSlide.bulletPoints && (
-                <ul className="space-y-2.5 text-xs text-slate-300">
+                <ul className="space-y-2 text-xs text-slate-300">
                   {currentSlide.bulletPoints.map((point, i) => (
-                    <li key={i} className="flex items-start gap-2.5">
-                      <div className="w-1.5 h-1.5 rounded-full bg-sky-500 mt-1.5 shrink-0" />
+                    <li key={i} className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-sky-400 mt-1.5 shrink-0" />
                       <span>{point}</span>
                     </li>
                   ))}
@@ -136,12 +119,12 @@ export function DeckSlideViewer({ deck, onBackToChat }: DeckSlideViewerProps) {
 
               {currentSlide.layout === 'TWO_COLUMN' && (
                 <div className="grid grid-cols-2 gap-4 text-xs pt-2">
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                  <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 space-y-1">
                     {currentSlide.leftColumnContent?.map((item, i) => (
                       <p key={i} className="text-slate-300">{item}</p>
                     ))}
                   </div>
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                  <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 space-y-1">
                     {currentSlide.rightColumnContent?.map((item, i) => (
                       <p key={i} className="text-sky-300">{item}</p>
                     ))}
@@ -150,8 +133,8 @@ export function DeckSlideViewer({ deck, onBackToChat }: DeckSlideViewerProps) {
               )}
 
               {currentSlide.layout === 'KEY_METRIC' && currentSlide.keyMetric && (
-                <div className="bg-sky-500/10 border border-sky-500/20 rounded-2xl p-6 text-center space-y-1">
-                  <span className="text-5xl font-black text-sky-400 block tracking-tight">
+                <div className="bg-sky-500/10 border border-sky-500/20 rounded-xl p-6 text-center space-y-1">
+                  <span className="text-4xl font-black text-sky-400 block tracking-tight">
                     {currentSlide.keyMetric.value}
                   </span>
                   <span className="text-xs font-semibold text-slate-300">
@@ -161,65 +144,63 @@ export function DeckSlideViewer({ deck, onBackToChat }: DeckSlideViewerProps) {
               )}
             </div>
 
-            {/* Visual Suggestion Tag */}
             {currentSlide.visualSuggestion && (
-              <div className="pt-4 border-t border-slate-900/80 flex items-center gap-2 text-[11px] text-slate-500">
+              <div className="pt-4 border-t border-slate-900 flex items-center gap-2 text-[11px] text-slate-500">
                 <Sparkles className="h-3.5 w-3.5 text-sky-400 shrink-0" />
-                <span className="truncate">Visual Idea: {currentSlide.visualSuggestion}</span>
+                <span className="truncate">Visual Suggestion: {currentSlide.visualSuggestion}</span>
               </div>
             )}
-          </div>
+          </Card>
 
-          {/* Speaker Notes Side Drawer */}
+          {/* Speaker Notes Drawer */}
           {showSpeakerNotes && (
-            <div className="lg:col-span-4 bg-slate-950/80 border border-slate-800 rounded-2xl p-5 space-y-4 flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 text-xs font-bold text-sky-400 border-b border-slate-800 pb-2">
+            <Card className="lg:col-span-4 p-5 space-y-4 flex flex-col justify-between border-border bg-card">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-xs font-bold text-sky-600 border-b border-border pb-2">
                   <FileText className="h-4 w-4" />
                   <span>Speaker Notes</span>
                 </div>
-                <p className="text-xs text-slate-300 leading-relaxed">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   {currentSlide.speakerNotes}
                 </p>
               </div>
-
-              <div className="bg-slate-900 border border-slate-800 rounded-xl p-3 text-[11px] text-slate-400 space-y-1">
-                <span className="font-semibold text-slate-200 block">Presenting Tip</span>
-                <p>Pause after stating the core thesis before transitioning to bullet points.</p>
-              </div>
-            </div>
+            </Card>
           )}
         </div>
       ) : (
-        <div className="my-auto py-12 text-center text-slate-500">
-          <p>No slides found for this deck.</p>
+        <div className="my-auto py-12 text-center text-muted-foreground">
+          No slides found for this deck.
         </div>
       )}
 
-      {/* Bottom Navigation Toolbar */}
-      <div className="flex items-center justify-between border-t border-slate-800 pt-4">
-        <button
+      {/* Bottom Navigation Controls using Shadcn Button */}
+      <div className="flex items-center justify-between border-t border-border pt-4">
+        <Button
+          variant="outline"
+          size="sm"
           onClick={handlePrev}
           disabled={currentSlideIndex === 0}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-bold transition-colors"
+          className="gap-1.5 text-xs font-semibold"
         >
           <ChevronLeft className="h-4 w-4" />
           <span>Previous</span>
-        </button>
+        </Button>
 
-        <span className="text-xs text-slate-400 font-mono">
+        <span className="text-xs text-muted-foreground font-mono">
           Slide {currentSlideIndex + 1} of {totalSlides}
         </span>
 
-        <button
+        <Button
+          variant="default"
+          size="sm"
           onClick={handleNext}
           disabled={currentSlideIndex === totalSlides - 1}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold transition-colors"
+          className="gap-1.5 text-xs font-semibold bg-sky-500 hover:bg-sky-600 text-white"
         >
           <span>Next</span>
           <ChevronRight className="h-4 w-4" />
-        </button>
+        </Button>
       </div>
-    </div>
+    </Card>
   );
 }
