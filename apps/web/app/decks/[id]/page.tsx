@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import {
   DeckHeader,
   DeckSidebar,
-  DeckSlideViewer,
+  DeckDocumentViewer,
   useGetDeckById,
   useDeleteDeck,
 } from '@/features/decks';
@@ -58,13 +58,13 @@ export default function DeckDetailPage({ params }: { params: Promise<{ id: strin
         {/* Main Workspace Area */}
         <main className="flex-1 h-full min-w-0">
           {currentDeck ? (
-            <DeckSlideViewer
+            <DeckDocumentViewer
               deck={currentDeck}
               onBackToChat={() => router.push('/decks')}
             />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center bg-card border border-border rounded-xl">
-              <p className="text-xs font-semibold text-muted-foreground">Loading presentation deck...</p>
+              <p className="text-xs font-semibold text-muted-foreground">Loading topic document...</p>
             </div>
           )}
         </main>
