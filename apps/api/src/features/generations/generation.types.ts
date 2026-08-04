@@ -62,4 +62,5 @@ export interface CreateGenerationInput {
   topic: string;
   template?: GenerationTemplate;
   modelId?: string;
+  slideCount?: number;
 }

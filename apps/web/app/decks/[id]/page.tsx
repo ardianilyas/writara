@@ -18,7 +18,7 @@ export default function DeckDetailPage({ params }: { params: Promise<{ id: strin
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data: currentDeck, isError: isDeckError } = useGetDeckById(id);
+  const { data: currentDeck, isLoading: isDeckLoading, isError: isDeckError } = useGetDeckById(id);
   const deleteDeckMutation = useDeleteDeck();
 
   useEffect(() => {
@@ -63,6 +63,10 @@ export default function DeckDetailPage({ params }: { params: Promise<{ id: strin
               deck={currentDeck}
               onBackToChat={() => router.push('/decks')}
             />
+          ) : isDeckLoading ? (
+            <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center bg-card border border-border rounded-xl">
+              <p className="text-xs font-semibold text-muted-foreground animate-pulse">Loading topic document...</p>
+            </div>
           ) : (
             <DeckLoadingState
               onBack={() => router.push('/decks')}

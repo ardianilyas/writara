@@ -23,7 +23,14 @@ export class GenerationService {
   async createGeneration(userId: string, input: CreateGenerationInput) {
     // 1. Resolve selected AI model from database
     const selectedModel = await modelsService.getModelByIdOrSlug(input.modelId || 'nemotron-30b');
-    const totalChapters = selectedModel.maxChapters;
+
+    // 2. Resolve requested chapter count from user input (input.slideCount)
+    let requestedChapters = Number(input.slideCount) || 5;
+    if (requestedChapters > selectedModel.maxChapters) {
+      requestedChapters = selectedModel.maxChapters;
+    }
+    const totalChapters = Math.max(1, requestedChapters);
+
     const requiredCredits = selectedModel.creditCost;
     const model = selectedModel.modelKey;
 
@@ -171,6 +178,7 @@ export class GenerationService {
         const stage1SystemPrompt = 'You are an expert curriculum planner and instructional designer. Output ONLY valid JSON.';
         const stage1UserPrompt = `Analyze the user input topic: "${input.topic}".
 Formulate a focused learning thesis, target audience, key subtopics, and a polished educational title.
+CRITICAL: Generate EXACTLY ${totalChapters} distinct subtopics in the "keySubtopics" array (no more, no less).
 CRITICAL: Create a NEW, professional, high-impact title (e.g. if input is "laravel basic", generate "Laravel Basics: A Complete Developer Guide"). Do NOT return raw "${input.topic}".
 
 Return ONLY valid JSON matching this schema:
@@ -178,7 +186,7 @@ Return ONLY valid JSON matching this schema:
   "generatedTitle": "Polished, high-impact title",
   "topicThesis": "1-2 sentence core educational thesis explaining what this guide covers and why it matters",
   "targetAudience": "Ultra-concise audience label (STRICT MAX 8 WORDS, e.g. Junior Developers & Web Beginners)",
-  "keySubtopics": ["Subtopic 1", "Subtopic 2", "Subtopic 3", "Subtopic 4"]
+  "keySubtopics": ${JSON.stringify(Array.from({ length: totalChapters }, (_, i) => `Subtopic ${i + 1}`))}
 }`;
 
         const stage1Controller = new AbortController();

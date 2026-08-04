@@ -14,4 +14,9 @@ export const createGenerationSchema = z.object({
     .string()
     .optional()
     .default('nemotron-30b'),
+  slideCount: z
+    .number()
+    .min(1)
+    .max(15)
+    .optional(),
 });
