@@ -98,18 +98,38 @@ export function DeckSidebar({
                       <span className="truncate">{deck.title}</span>
                     </div>
                     {onDeleteDeck && (
-                      <Button
-                        variant="ghost"
-                        size="icon-xs"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDeleteDeck(deck.id);
-                        }}
-                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive"
-                        title="Delete deck"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger
+                          render={
+                            <Button
+                              variant="ghost"
+                              size="icon-xs"
+                              onClick={(e) => e.stopPropagation()}
+                              className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive shrink-0"
+                              title="Delete presentation"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          }
+                        />
+                        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Presentation Topic?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete "{deck.title}"? This action cannot be undone and will permanently remove this topic guide.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => onDeleteDeck(deck.id)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold"
+                            >
+                              Delete Topic
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     )}
                   </div>
                 );
