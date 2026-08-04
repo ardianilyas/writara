@@ -32,11 +32,12 @@ export function DeckSidebar({
   onNewDeck,
   onDeleteDeck,
 }: DeckSidebarProps) {
-  const { data: session } = useSession();
+  const { data: session, isLoading: isSessionLoading } = useSession();
   const logoutMutation = useLogout();
   const { data: sidebarData, isLoading: isSidebarLoading } = useGetDecksSidebar();
   const user = session?.user;
 
+  const showSkeleton = !sidebarData || isSidebarLoading || isSessionLoading;
   const deckItems = sidebarData?.items || [];
   const count = sidebarData?.count ?? deckItems.length;
 
@@ -56,7 +57,7 @@ export function DeckSidebar({
               <History className="h-3.5 w-3.5" />
               <span>History</span>
             </div>
-            {isSidebarLoading ? (
+            {showSkeleton ? (
               <Skeleton className="h-4 w-6 rounded-md" />
             ) : (
               <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
@@ -66,7 +67,7 @@ export function DeckSidebar({
           </div>
 
           <div className="space-y-1 max-h-[calc(100vh-14rem)] overflow-y-auto pr-1">
-            {isSidebarLoading ? (
+            {showSkeleton ? (
               <div className="space-y-2 p-1">
                 {[1, 2, 3, 4, 5].map((i) => (
                   <div key={i} className="flex items-center gap-2 p-1.5">
