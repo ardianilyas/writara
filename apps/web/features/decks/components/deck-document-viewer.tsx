@@ -93,7 +93,7 @@ export function DeckDocumentViewer({ deck, onBackToChat }: DeckDocumentViewerPro
   };
 
   if (isGenerating) {
-    return <DeckLoadingState topic={deck.topic} onBack={onBackToChat} />;
+    return <DeckLoadingState topic={deck.topic} createdAt={deck.createdAt} onBack={onBackToChat} />;
   }
 
   return (

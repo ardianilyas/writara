@@ -21,6 +21,7 @@ import { Card } from '@/components/ui/card';
 
 interface DeckLoadingStateProps {
   topic?: string;
+  createdAt?: string | Date;
   onBack?: () => void;
 }
 
@@ -76,12 +77,29 @@ const MICRO_TIPS = [
 
 export function DeckLoadingState({
   topic = 'Laravel Basics: Modern Web Development',
+  createdAt,
   onBack,
 }: DeckLoadingStateProps) {
-  const [seconds, setSeconds] = useState(0);
+  // Calculate real-world elapsed seconds from creation timestamp
+  const getInitialSeconds = () => {
+    if (!createdAt) return 0;
+    const startMs = new Date(createdAt).getTime();
+    if (isNaN(startMs)) return 0;
+    const elapsed = Math.floor((Date.now() - startMs) / 1000);
+    return Math.max(0, elapsed);
+  };
+
+  const [seconds, setSeconds] = useState(getInitialSeconds);
   const [isPlaying, setIsPlaying] = useState(true);
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [tipIndex, setTipIndex] = useState(0);
+
+  // Sync elapsed seconds when createdAt prop updates
+  useEffect(() => {
+    if (createdAt) {
+      setSeconds(getInitialSeconds());
+    }
+  }, [createdAt]);
 
   // Timer loop
   useEffect(() => {
