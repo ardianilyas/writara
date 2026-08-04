@@ -147,7 +147,7 @@ export function useCreateDeck() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: { topic: string; modelId?: string; template?: string }) => {
+    mutationFn: async (payload: { topic: string; modelId?: string; template?: string; slideCount?: number }) => {
       const response = await apiClient.post<{ success: boolean; data: GenerationRecord }>('/api/generations', payload);
       return response.data.data;
     },

@@ -15,9 +15,9 @@ export default function DecksNewPage() {
   const createDeckMutation = useCreateDeck();
   const deleteDeckMutation = useDeleteDeck();
 
-  const handleCreateDeck = (topic: string, modelId: string) => {
+  const handleCreateDeck = (topic: string, modelId: string, slideCount?: number) => {
     createDeckMutation.mutate(
-      { topic, modelId },
+      { topic, modelId, slideCount },
       {
         onSuccess: (newDeck) => {
           router.push(`/decks/${newDeck.id}`);

@@ -6,6 +6,7 @@ import { useGetDecksSidebar, SidebarDeckItem } from '../api/use-decks';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,7 +34,7 @@ export function DeckSidebar({
 }: DeckSidebarProps) {
   const { data: session } = useSession();
   const logoutMutation = useLogout();
-  const { data: sidebarData } = useGetDecksSidebar();
+  const { data: sidebarData, isLoading: isSidebarLoading } = useGetDecksSidebar();
   const user = session?.user;
 
   const deckItems = sidebarData?.items || [];
@@ -55,13 +56,26 @@ export function DeckSidebar({
               <History className="h-3.5 w-3.5" />
               <span>History</span>
             </div>
-            <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
-              {count}
-            </Badge>
+            {isSidebarLoading ? (
+              <Skeleton className="h-4 w-6 rounded-md" />
+            ) : (
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
+                {count}
+              </Badge>
+            )}
           </div>
 
           <div className="space-y-1 max-h-[calc(100vh-14rem)] overflow-y-auto pr-1">
-            {deckItems.length === 0 ? (
+            {isSidebarLoading ? (
+              <div className="space-y-2 p-1">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="flex items-center gap-2 p-1.5">
+                    <Skeleton className="h-3.5 w-3.5 rounded-md shrink-0 bg-sky-200/50" />
+                    <Skeleton className="h-3.5 w-full rounded-md" />
+                  </div>
+                ))}
+              </div>
+            ) : deckItems.length === 0 ? (
               <div className="p-3 text-center text-xs text-muted-foreground border border-dashed rounded-lg">
                 No presentation decks created yet.
               </div>

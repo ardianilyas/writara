@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 interface DeckChatInterfaceProps {
-  onSubmitTopic: (topic: string, modelId: string) => void;
+  onSubmitTopic: (topic: string, modelId: string, slideCount?: number) => void;
   isGenerating?: boolean;
 }
 
@@ -33,9 +33,9 @@ const STARTER_CARDS = [
     prompt: 'Build a comprehensive 15-chapter lecture presentation on Machine Learning Fundamentals for university students.',
   },
   {
-    title: 'Executive Strategy Deck',
-    description: 'Executive summary deck with 2-column comparisons and key metric slides.',
-    prompt: 'Generate an executive strategy presentation reviewing Q3 engineering roadmaps and product metrics.',
+    title: 'Product Roadmap Update',
+    description: 'Quarterly roadmap presentation with feature priorities and timelines.',
+    prompt: 'Generate a crisp product roadmap presentation covering Q1-Q4 engineering goals and key metrics.',
   },
 ];
 
@@ -43,16 +43,17 @@ export function DeckChatInterface({ onSubmitTopic, isGenerating = false }: DeckC
   const { data: session } = useSession();
   const { data: creditData } = useCredits();
   const [topic, setTopic] = useState('');
-  const [selectedModel, setSelectedModel] = useState<'deepseek-v4-flash' | 'nemotron-30b'>('deepseek-v4-flash');
-  const [chaptersLimit, setChaptersLimit] = useState(5);
+  const [selectedModel, setSelectedModel] = useState<'deepseek-v4-flash' | 'nemotron-30b'>('nemotron-30b');
+  const [chapterCount, setChapterCount] = useState(5);
 
   const userName = session?.user?.name?.split(' ')[0] || 'Creator';
   const creditsBalance = creditData?.totalCredits ?? 3;
+  const isFreeModel = selectedModel === 'nemotron-30b';
 
   const handleModelChange = (model: 'deepseek-v4-flash' | 'nemotron-30b') => {
     setSelectedModel(model);
-    if (model === 'nemotron-30b' && chaptersLimit > 5) {
-      setChaptersLimit(5);
+    if (model === 'nemotron-30b' && chapterCount > 5) {
+      setChapterCount(5);
     }
   };
 
@@ -63,7 +64,7 @@ export function DeckChatInterface({ onSubmitTopic, isGenerating = false }: DeckC
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!topic.trim() || isGenerating) return;
-    onSubmitTopic(topic.trim(), selectedModel);
+    onSubmitTopic(topic.trim(), selectedModel, chapterCount);
   };
 
   return (
@@ -201,7 +202,7 @@ export function DeckChatInterface({ onSubmitTopic, isGenerating = false }: DeckC
                 <DropdownMenuTrigger render={
                   <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-muted-foreground font-medium hover:text-foreground">
                     <SlidersHorizontal className="h-3.5 w-3.5" />
-                    <span>{chaptersLimit} Chapters</span>
+                    <span>{chapterCount} Chapters</span>
                     {selectedModel === 'nemotron-30b' && (
                       <span className="text-[10px] text-amber-600 font-semibold">(Max 5)</span>
                     )}
@@ -216,8 +217,8 @@ export function DeckChatInterface({ onSubmitTopic, isGenerating = false }: DeckC
                   {availableChapterOptions.map((num) => (
                     <DropdownMenuItem
                       key={num}
-                      onClick={() => setChaptersLimit(num)}
-                      className={`text-xs cursor-pointer ${chaptersLimit === num ? 'font-bold text-sky-600 bg-sky-50' : ''}`}
+                      onClick={() => setChapterCount(num)}
+                      className={`text-xs cursor-pointer ${chapterCount === num ? 'font-bold text-sky-600 bg-sky-50' : ''}`}
                     >
                       {num} Chapters
                     </DropdownMenuItem>

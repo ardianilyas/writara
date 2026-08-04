@@ -5,3 +5,4 @@ export * from './components/deck-chat-interface';
 export * from './components/deck-slide-viewer';
 export * from './components/deck-document-viewer';
 export * from './components/deck-loading-state';
+export * from './components/deck-detail-skeleton';
