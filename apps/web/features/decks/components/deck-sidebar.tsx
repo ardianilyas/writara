@@ -6,6 +6,17 @@ import { GenerationRecord } from '../api/use-decks';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface DeckSidebarProps {
   decks?: GenerationRecord[];
@@ -91,22 +102,52 @@ export function DeckSidebar({
         </div>
       </div>
 
-      {/* User Footer Card using Shadcn Card & Button */}
+      {/* User Footer Card with Avatar, perfect alignment & AlertDialog sign out */}
       {user && (
-        <Card className="p-2.5 flex items-center justify-between gap-2 border-border shadow-2xs">
-          <div className="truncate text-xs">
-            <span className="font-semibold block truncate text-foreground">{user.name}</span>
-            <span className="text-[10px] text-muted-foreground block truncate">{user.email}</span>
+        <Card className="p-2.5 flex items-center justify-between gap-3 border-border shadow-2xs">
+          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+            <div className="w-8 h-8 rounded-full bg-sky-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs">
+              {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+            </div>
+            <div className="min-w-0 flex-1">
+              <span className="font-bold text-xs block truncate text-foreground leading-tight">
+                {user.name || 'User'}
+              </span>
+              <span className="text-[10px] text-muted-foreground block truncate leading-tight">
+                {user.email}
+              </span>
+            </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            onClick={() => logoutMutation.mutate()}
-            className="text-muted-foreground hover:text-destructive shrink-0"
-            title="Sign Out"
-          >
-            <LogOut className="h-3.5 w-3.5" />
-          </Button>
+
+          <AlertDialog>
+            <AlertDialogTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  disabled={logoutMutation.isPending}
+                  className="text-muted-foreground hover:text-destructive shrink-0"
+                  title="Sign Out"
+                >
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              }
+            />
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Sign out of Writara?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  You will be signed out of your current session on Writara AI. You can sign back in at any time.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => logoutMutation.mutate()}>
+                  Sign Out
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </Card>
       )}
     </aside>
