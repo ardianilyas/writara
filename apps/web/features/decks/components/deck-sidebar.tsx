@@ -1,11 +1,10 @@
 'use client';
 
-import { Plus, History, Presentation, Trash2, LogOut, Sparkles } from 'lucide-react';
-import { useSession, useLogout } from '@/features/auth';
+import { Plus, History, Presentation, Trash2 } from 'lucide-react';
+import { useSession } from '@/features/auth';
 import { useGetDecksSidebar } from '../api/use-decks';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   AlertDialog,
@@ -32,30 +31,28 @@ export function DeckSidebar({
   onNewDeck,
   onDeleteDeck,
 }: DeckSidebarProps) {
-  const { data: session, isLoading: isSessionLoading } = useSession();
-  const logoutMutation = useLogout();
+  const { isLoading: isSessionLoading } = useSession();
   const { data: sidebarData, isLoading: isSidebarLoading } = useGetDecksSidebar();
-  const user = session?.user;
 
   const showSkeleton = !sidebarData || isSidebarLoading || isSessionLoading;
   const deckItems = sidebarData?.items || [];
   const count = sidebarData?.count ?? deckItems.length;
 
   return (
-    <aside className="w-64 shrink-0 bg-slate-50/80 border-r border-slate-200/80 flex flex-col justify-between p-3.5 min-h-[calc(100vh-3.5rem)] select-none">
-      <div className="space-y-5">
+    <aside className="w-64 shrink-0 bg-slate-50/80 border-r border-slate-200/80 flex flex-col p-3.5 h-[calc(100vh-3.5rem)] select-none">
+      <div className="space-y-4 flex-1 flex flex-col min-h-0">
         {/* + New Presentation Primary High-Contrast Button */}
         <Button
           onClick={onNewDeck}
-          className="w-full h-10 gap-2 font-bold bg-slate-900 text-white hover:bg-slate-800 shadow-sm transition-all text-xs"
+          className="w-full h-10 gap-2 font-bold bg-slate-900 text-white hover:bg-slate-800 shadow-sm transition-all text-xs shrink-0"
         >
           <Plus className="h-4 w-4" />
           <span>New Presentation</span>
         </Button>
 
         {/* Deck History Navigation Section */}
-        <div className="space-y-2.5">
-          <div className="flex items-center justify-between px-2 text-xs font-bold text-slate-500 uppercase tracking-wider">
+        <div className="space-y-2.5 flex-1 flex flex-col min-h-0">
+          <div className="flex items-center justify-between px-2 text-xs font-bold text-slate-500 uppercase tracking-wider shrink-0">
             <div className="flex items-center gap-1.5">
               <History className="h-3.5 w-3.5 text-slate-400" />
               <span>History</span>
@@ -69,10 +66,10 @@ export function DeckSidebar({
             )}
           </div>
 
-          <div className="space-y-1 max-h-[calc(100vh-14.5rem)] overflow-y-auto pr-1 scrollbar-thin">
+          <div className="space-y-1 flex-1 overflow-y-auto pr-1 scrollbar-thin">
             {showSkeleton ? (
               <div className="space-y-2 p-1">
-                {[1, 2, 3, 4, 5].map((i) => (
+                {[1, 2, 3, 4, 5, 6].map((i) => (
                   <div key={i} className="flex items-center gap-2 p-2">
                     <Skeleton className="h-4 w-4 rounded-md shrink-0 bg-sky-200/40" />
                     <Skeleton className="h-3.5 w-full rounded-md" />
@@ -147,68 +144,6 @@ export function DeckSidebar({
           </div>
         </div>
       </div>
-
-      {/* Redesigned User Profile Footer Card */}
-      {user ? (
-        <Card className="p-3 bg-white border border-slate-200/80 shadow-2xs rounded-xl flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-600 text-white font-black text-xs flex items-center justify-center shrink-0 border-2 border-white shadow-2xs">
-              {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
-            </div>
-            <div className="min-w-0 flex-1 space-y-0.5">
-              <div className="flex items-center gap-1">
-                <span className="font-bold text-xs truncate text-slate-900 leading-tight block">
-                  {user.name || 'User'}
-                </span>
-                <span className="text-[9px] font-extrabold uppercase bg-sky-50 text-sky-700 px-1 py-0.2 rounded-xs shrink-0">
-                  MEMBER
-                </span>
-              </div>
-              <span className="text-[10px] text-slate-500 truncate block leading-tight">
-                {user.email}
-              </span>
-            </div>
-          </div>
-
-          <AlertDialog>
-            <AlertDialogTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon-xs"
-                  disabled={logoutMutation.isPending}
-                  className="text-slate-400 hover:text-destructive shrink-0 hover:bg-slate-100"
-                  title="Sign Out"
-                >
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              }
-            />
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Sign out of Writara?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  You will be signed out of your current session on Writara AI. You can sign back in at any time.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => logoutMutation.mutate()}>
-                  Sign Out
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </Card>
-      ) : isSessionLoading ? (
-        <Card className="p-3 bg-white border border-slate-200/80 shadow-2xs rounded-xl flex items-center gap-3">
-          <Skeleton className="w-9 h-9 rounded-full shrink-0" />
-          <div className="space-y-1.5 flex-1">
-            <Skeleton className="h-3.5 w-24 rounded-md" />
-            <Skeleton className="h-3 w-32 rounded-md" />
-          </div>
-        </Card>
-      ) : null}
     </aside>
   );
 }

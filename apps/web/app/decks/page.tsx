@@ -40,7 +40,7 @@ export default function DecksNewPage() {
       <DeckHeader activeTab="ai-chat" />
 
       {/* Main App Layout */}
-      <div className="flex-1 flex max-w-[1600px] w-full mx-auto p-3 sm:p-4 gap-4 h-[calc(100vh-3.5rem)]">
+      <div className="flex-1 flex w-full h-[calc(100vh-3.5rem)] overflow-hidden">
         {/* Left Sidebar */}
         <DeckSidebar
           onSelectDeckId={(selectedId) => router.push(`/decks/${selectedId}`)}
@@ -49,7 +49,7 @@ export default function DecksNewPage() {
         />
 
         {/* Main Workspace Area */}
-        <main className="flex-1 h-full min-w-0">
+        <main className="flex-1 h-full min-w-0 p-3 sm:p-4 overflow-y-auto">
           <DeckChatInterface
             onSubmitTopic={handleCreateDeck}
             isGenerating={createDeckMutation.isPending}

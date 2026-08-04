@@ -47,7 +47,7 @@ export default function DeckDetailPage({ params }: { params: Promise<{ id: strin
       <DeckHeader activeTab="ai-chat" />
 
       {/* Main App Layout */}
-      <div className="flex-1 flex max-w-[1600px] w-full mx-auto p-3 sm:p-4 gap-4 h-[calc(100vh-3.5rem)]">
+      <div className="flex-1 flex w-full h-[calc(100vh-3.5rem)] overflow-hidden">
         {/* Left Sidebar */}
         <DeckSidebar
           activeDeckId={id}
@@ -57,7 +57,7 @@ export default function DeckDetailPage({ params }: { params: Promise<{ id: strin
         />
 
         {/* Main Workspace Area */}
-        <main className="flex-1 h-full min-w-0">
+        <main className="flex-1 h-full min-w-0 p-3 sm:p-4 overflow-y-auto">
           {currentDeck ? (
             <DeckDocumentViewer
               deck={currentDeck}

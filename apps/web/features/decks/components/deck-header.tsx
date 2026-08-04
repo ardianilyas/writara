@@ -58,7 +58,7 @@ export function DeckHeader({ activeTab = 'ai-chat' }: DeckHeaderProps) {
         </Button>
       </nav>
 
-      {/* Right Controls: Credits & User Dropdown */}
+      {/* Right Controls: Credits & User Profile Dropdown */}
       <div className="flex items-center gap-3">
         <Badge variant="outline" className="gap-1.5 px-3 py-1 font-semibold text-xs border-sky-200 bg-sky-50 text-sky-700">
           <Sparkles className="h-3 w-3 text-sky-500" />
@@ -67,21 +67,27 @@ export function DeckHeader({ activeTab = 'ai-chat' }: DeckHeaderProps) {
 
         {user && (
           <DropdownMenu>
-            <DropdownMenuTrigger render={
-              <Button variant="outline" size="sm" className="gap-2 text-xs font-semibold">
-                <UserIcon className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="max-w-[100px] truncate">{user.name || 'Account'}</span>
-              </Button>
-            } />
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuLabel className="font-normal text-xs">
-                <div className="font-semibold text-foreground truncate">{user.name}</div>
-                <div className="text-muted-foreground truncate">{user.email}</div>
+            <DropdownMenuTrigger
+              render={
+                <Button variant="ghost" size="sm" className="gap-2 px-2 hover:bg-slate-100 rounded-full">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-600 text-white font-black text-xs flex items-center justify-center border border-white shadow-2xs">
+                    {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                  </div>
+                  <span className="font-bold text-xs max-w-[120px] truncate text-slate-800 hidden sm:inline-block">
+                    {user.name || 'Account'}
+                  </span>
+                </Button>
+              }
+            />
+            <DropdownMenuContent align="end" className="w-56 p-1.5 space-y-1">
+              <DropdownMenuLabel className="font-normal text-xs p-2 bg-slate-50 rounded-lg">
+                <div className="font-bold text-slate-900 truncate">{user.name}</div>
+                <div className="text-[11px] text-slate-500 truncate">{user.email}</div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => logoutMutation.mutate()}
-                className="text-destructive focus:text-destructive cursor-pointer text-xs"
+                className="text-destructive focus:text-destructive cursor-pointer text-xs font-semibold rounded-md"
               >
                 <LogOut className="h-3.5 w-3.5 mr-2" />
                 <span>Sign Out</span>
