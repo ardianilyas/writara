@@ -116,14 +116,14 @@ export function DeckSidebar({
                           <AlertDialogHeader>
                             <AlertDialogTitle>Delete Presentation Topic?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Are you sure you want to delete "{deck.title}"? This action cannot be undone and will permanently remove this topic guide.
+                              Are you sure you want to delete <span className="font-bold text-foreground">"{deck.title}"</span>? This action cannot be undone and will permanently remove this topic guide.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
+                              variant="destructive"
                               onClick={() => onDeleteDeck(deck.id)}
-                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold"
                             >
                               Delete Topic
                             </AlertDialogAction>
