@@ -8,6 +8,7 @@ import {
   DeckHeader,
   DeckSidebar,
   DeckDocumentViewer,
+  DeckLoadingState,
   useGetDeckById,
   useDeleteDeck,
 } from '@/features/decks';
@@ -63,9 +64,9 @@ export default function DeckDetailPage({ params }: { params: Promise<{ id: strin
               onBackToChat={() => router.push('/decks')}
             />
           ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center bg-card border border-border rounded-xl">
-              <p className="text-xs font-semibold text-muted-foreground">Loading topic document...</p>
-            </div>
+            <DeckLoadingState
+              onBack={() => router.push('/decks')}
+            />
           )}
         </main>
       </div>
