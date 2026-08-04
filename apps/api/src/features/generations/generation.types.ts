@@ -26,21 +26,33 @@ export interface Slide {
   visualSuggestion?: string;
 }
 
+export interface GeneratedSection {
+  sectionNumber?: number;
+  heading: string;
+  explanation: string;
+  keyPoints: string[];
+  speakerScript?: string;
+}
+
 export interface Chapter {
   chapterNumber: number;
   title: string;
   summary: string;
-  learningObjectives: string[];
-  slides: Slide[];
-  keyTakeaways: string[];
+  learningObjectives?: string[];
+  sections?: GeneratedSection[];
+  slides?: Slide[];
+  chapterTakeaways?: string[];
+  keyTakeaways?: string[];
 }
 
 export interface GeneratedContentPayload {
+  generatedTitle?: string;
   topic: string;
   template: GenerationTemplate;
   totalChapters: number;
   estimatedDurationMinutes: number;
   targetAudience: string;
+  executiveSummary?: string;
   chapters: Chapter[];
 }
 

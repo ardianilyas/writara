@@ -153,20 +153,29 @@ export class GenerationService {
       const template = input.template || GenerationTemplate.PRESENTATION;
 
       // STAGE 1: Fast Intent & Scope Expansion
-      let stage1Plan = {
+      let stage1Plan: {
+        generatedTitle?: string;
+        expandedTitle?: string;
+        topicThesis?: string;
+        targetAudience?: string;
+        keySubtopics?: string[];
+      } = {
+        generatedTitle: undefined,
         expandedTitle: input.topic,
         topicThesis: `A comprehensive educational guide covering core concepts and practical implementation of ${input.topic}.`,
         targetAudience: 'Developers and learners seeking a clear topic walkthrough.',
-        keySubtopics: [] as string[],
+        keySubtopics: [],
       };
 
       try {
         const stage1SystemPrompt = 'You are an expert curriculum planner and instructional designer. Output ONLY valid JSON.';
         const stage1UserPrompt = `Analyze the user input topic: "${input.topic}".
-Formulate a focused learning thesis, target audience, and key subtopics.
+Formulate a focused learning thesis, target audience, key subtopics, and a polished educational title.
+CRITICAL: Create a NEW, professional, high-impact title (e.g. if input is "laravel basic", generate "Laravel Basics: A Complete Developer Guide"). Do NOT return raw "${input.topic}".
+
 Return ONLY valid JSON matching this schema:
 {
-  "expandedTitle": "Polished, high-impact title (e.g. Laravel Basics: A Developer Guide)",
+  "generatedTitle": "Polished, high-impact title",
   "topicThesis": "1-2 sentence core educational thesis explaining what this guide covers and why it matters",
   "targetAudience": "Specific target audience description",
   "keySubtopics": ["Subtopic 1", "Subtopic 2", "Subtopic 3", "Subtopic 4"]
@@ -218,7 +227,7 @@ Return ONLY valid JSON matching this schema:
 
       const userPrompt = `Create a comprehensive, in-depth educational topic guide based on this planned curriculum:
 
-PLANNED TITLE: "${stage1Plan.expandedTitle}"
+PLANNED TITLE: "${stage1Plan.generatedTitle || stage1Plan.expandedTitle}"
 EDUCATIONAL THESIS: "${stage1Plan.topicThesis}"
 TARGET AUDIENCE: "${stage1Plan.targetAudience}"
 PLANNED SUBTOPICS: ${JSON.stringify(stage1Plan.keySubtopics)}
@@ -235,7 +244,7 @@ STRICT LAYOUT & CONTENT REQUIREMENTS:
 Return ONLY a valid JSON object matching this TypeScript interface exactly:
 
 interface Presentation {
-  generatedTitle: string; // "${stage1Plan.expandedTitle}"
+  generatedTitle: string; // "${stage1Plan.generatedTitle || stage1Plan.expandedTitle}"
   topic: string; // "${input.topic}"
   template: string; // "${template}"
   totalChapters: number; // ${totalChapters}
@@ -289,7 +298,23 @@ interface Presentation {
         throw new Error(`Failed to parse AI JSON response: ${(parseError as Error).message}`);
       }
 
-      const aiTitle = (parsedPayload as any).generatedTitle || (parsedPayload as any).title || input.topic;
+      let aiTitle =
+        (parsedPayload as any).generatedTitle ||
+        (parsedPayload as any).title ||
+        stage1Plan.generatedTitle ||
+        stage1Plan.expandedTitle;
+
+      if (!aiTitle || aiTitle.toLowerCase().trim() === input.topic.toLowerCase().trim()) {
+        if (stage1Plan.generatedTitle && stage1Plan.generatedTitle.toLowerCase().trim() !== input.topic.toLowerCase().trim()) {
+          aiTitle = stage1Plan.generatedTitle;
+        } else if (stage1Plan.expandedTitle && stage1Plan.expandedTitle.toLowerCase().trim() !== input.topic.toLowerCase().trim()) {
+          aiTitle = stage1Plan.expandedTitle;
+        } else {
+          aiTitle = `${input.topic.charAt(0).toUpperCase() + input.topic.slice(1)}: Complete Guide`;
+        }
+      }
+
+      parsedPayload.generatedTitle = aiTitle;
 
       await prisma.generation.update({
         where: { id: generationId },

@@ -38,7 +38,7 @@ export function DeckDocumentViewer({ deck, onBackToChat }: DeckDocumentViewerPro
   const handleCopyMarkdown = () => {
     if (!payload) return;
 
-    let text = `# ${deck.topic}\n\n`;
+    let text = `# ${payload.generatedTitle || (payload as any).title || deck.topic}\n\n`;
     if (payload.targetAudience) text += `**Target Audience:** ${payload.targetAudience}\n`;
     if (payload.estimatedDurationMinutes) text += `**Estimated Duration:** ${payload.estimatedDurationMinutes} mins\n\n`;
 
@@ -165,7 +165,7 @@ export function DeckDocumentViewer({ deck, onBackToChat }: DeckDocumentViewerPro
           </div>
 
           <h1 className="text-2xl sm:text-4xl font-black text-foreground tracking-tight leading-tight">
-            {deck.topic}
+            {payload?.generatedTitle || (payload as any)?.title || deck.topic}
           </h1>
         </div>
 
