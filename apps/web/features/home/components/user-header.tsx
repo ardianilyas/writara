@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Sparkles, LogOut, User as UserIcon, Coins, Loader2 } from 'lucide-react';
+import { Sparkles, LogOut, User as UserIcon, Coins, Loader2, Presentation } from 'lucide-react';
 import { useSession, useLogout, useUserStore } from '@/features/auth';
 import { useCredits } from '@/features/credits';
 import { Button } from '@/components/ui/button';
@@ -41,6 +41,10 @@ export function UserHeader() {
 
         {/* Center Navigation Links */}
         <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-slate-600">
+          <Link href="/decks" className="hover:text-sky-600 font-bold text-sky-500 flex items-center gap-1 transition">
+            <Presentation className="h-3.5 w-3.5" />
+            <span>AI Generator</span>
+          </Link>
           <Link href="#models" className="hover:text-slate-900 transition">
             AI Models
           </Link>
@@ -61,8 +65,16 @@ export function UserHeader() {
             </div>
           ) : user ? (
             <div className="flex items-center gap-2.5">
+              {/* Direct Link to Decks */}
+              <Button size="sm" asChild className="bg-sky-500 hover:bg-sky-600 text-white gap-1.5 text-xs font-bold shadow-xs">
+                <Link href="/decks">
+                  <Presentation className="h-3.5 w-3.5" />
+                  <span>Open Decks</span>
+                </Link>
+              </Button>
+
               {/* Credits indicator pill */}
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 border border-sky-100 text-sky-600 text-xs font-semibold">
+              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 border border-sky-100 text-sky-600 text-xs font-semibold">
                 <Coins className="h-3.5 w-3.5 text-sky-500" />
                 {isCreditsLoading ? (
                   <Loader2 className="h-3 w-3 animate-spin text-sky-500" />

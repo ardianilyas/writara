@@ -58,10 +58,15 @@ export default function HomePage() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button size="lg" disabled className="bg-sky-500 text-white shadow-lg shadow-sky-500/25 px-8 gap-2 cursor-not-allowed opacity-90 h-12 text-sm font-bold">
-                <Presentation className="h-5 w-5" />
-                <span>Generating presentation deck...</span>
-              </Button>
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                <Button size="lg" asChild className="bg-sky-500 hover:bg-sky-600 text-white shadow-xl shadow-sky-500/25 px-8 gap-2 h-12 text-sm font-bold">
+                  <Link href="/decks">
+                    <Presentation className="h-5 w-5" />
+                    <span>Open AI Generator</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </motion.div>
             </div>
 
             {/* HERO 3D UNBOXING CARDS VISUAL */}
