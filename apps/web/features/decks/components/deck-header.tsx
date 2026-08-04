@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Sparkles, LayoutDashboard, MessageSquare, LogOut, ChevronDown, Coins } from 'lucide-react';
+import { Sparkles, LayoutDashboard, MessageSquare, LogOut, ChevronDown, Coins, User as UserIcon } from 'lucide-react';
 import { useSession, useLogout } from '@/features/auth';
 import { useCredits } from '@/features/credits/hooks/use-credits';
 import { Button } from '@/components/ui/button';
@@ -92,39 +92,30 @@ export function DeckHeader({ activeTab = 'ai-chat' }: DeckHeaderProps) {
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
-                  <Button variant="ghost" size="sm" className="gap-2 px-2 py-1 hover:bg-slate-100/80 rounded-full border border-slate-200/80">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">
-                      {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
-                    </div>
-                    <span className="font-bold text-xs max-w-[120px] truncate text-slate-800 hidden sm:inline-block">
-                      {user.name || 'Account'}
-                    </span>
-                    <ChevronDown className="h-3 w-3 text-slate-400" />
+                  <Button variant="outline" size="sm" className="gap-2 text-xs font-semibold">
+                    <UserIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="max-w-[120px] truncate">{user.name || 'Account'}</span>
+                    <ChevronDown className="h-3 w-3 opacity-50" />
                   </Button>
                 }
               />
-              <DropdownMenuContent align="end" className="w-60 p-2 space-y-1.5 shadow-xl rounded-xl border-slate-200">
+              <DropdownMenuContent align="end" className="w-56">
                 {/* User Profile Info Header */}
-                <DropdownMenuLabel className="font-normal p-2.5 bg-slate-50 rounded-lg space-y-0.5 border border-slate-100">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs text-slate-900 truncate">{user.name}</span>
-                    <span className="text-[9px] font-extrabold uppercase bg-sky-100 text-sky-700 px-1.5 py-0.2 rounded-xs">
-                      MEMBER
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-slate-500 truncate">{user.email}</div>
+                <DropdownMenuLabel className="font-normal text-xs space-y-0.5">
+                  <div className="font-bold text-foreground truncate">{user.name}</div>
+                  <div className="text-[11px] text-muted-foreground truncate">{user.email}</div>
                 </DropdownMenuLabel>
 
                 <DropdownMenuSeparator />
 
                 {/* Credits Info Option */}
-                <DropdownMenuItem className="text-xs cursor-pointer justify-between py-2 text-slate-700 font-medium">
+                <DropdownMenuItem className="text-xs cursor-pointer justify-between text-foreground font-medium">
                   <div className="flex items-center gap-2">
                     <Coins className="h-3.5 w-3.5 text-sky-500" />
                     <span>Credit Balance</span>
                   </div>
-                  <Badge variant="secondary" className="text-[10px] font-bold bg-sky-50 text-sky-700">
-                    {creditsBalance} Available
+                  <Badge variant="secondary" className="text-[10px] font-bold">
+                    {creditsBalance}
                   </Badge>
                 </DropdownMenuItem>
 
@@ -133,7 +124,7 @@ export function DeckHeader({ activeTab = 'ai-chat' }: DeckHeaderProps) {
                 {/* Sign Out Option with Confirmation Modal Trigger */}
                 <DropdownMenuItem
                   onClick={() => setShowSignOutDialog(true)}
-                  className="text-destructive focus:text-destructive cursor-pointer text-xs font-semibold rounded-md py-2"
+                  className="text-destructive focus:text-destructive cursor-pointer text-xs font-semibold"
                 >
                   <LogOut className="h-3.5 w-3.5 mr-2" />
                   <span>Sign Out</span>
