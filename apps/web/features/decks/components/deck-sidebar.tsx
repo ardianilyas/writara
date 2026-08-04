@@ -1,8 +1,8 @@
 'use client';
 
-import { Plus, History, Presentation, Trash2, LogOut } from 'lucide-react';
+import { Plus, History, Presentation, Trash2, LogOut, Sparkles } from 'lucide-react';
 import { useSession, useLogout } from '@/features/auth';
-import { useGetDecksSidebar, SidebarDeckItem } from '../api/use-decks';
+import { useGetDecksSidebar } from '../api/use-decks';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -42,43 +42,47 @@ export function DeckSidebar({
   const count = sidebarData?.count ?? deckItems.length;
 
   return (
-    <aside className="w-64 shrink-0 bg-muted/40 border-r border-border flex flex-col justify-between p-3 min-h-[calc(100vh-3.5rem)] select-none">
-      <div className="space-y-4">
-        {/* + New Deck Primary Shadcn Button */}
-        <Button onClick={onNewDeck} className="w-full gap-2 font-bold shadow-xs">
+    <aside className="w-64 shrink-0 bg-slate-50/80 border-r border-slate-200/80 flex flex-col justify-between p-3.5 min-h-[calc(100vh-3.5rem)] select-none">
+      <div className="space-y-5">
+        {/* + New Presentation Primary High-Contrast Button */}
+        <Button
+          onClick={onNewDeck}
+          className="w-full h-10 gap-2 font-bold bg-slate-900 text-white hover:bg-slate-800 shadow-sm transition-all text-xs"
+        >
           <Plus className="h-4 w-4" />
           <span>New Presentation</span>
         </Button>
 
-        {/* Deck History Section */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between px-2 text-xs font-semibold text-muted-foreground">
+        {/* Deck History Navigation Section */}
+        <div className="space-y-2.5">
+          <div className="flex items-center justify-between px-2 text-xs font-bold text-slate-500 uppercase tracking-wider">
             <div className="flex items-center gap-1.5">
-              <History className="h-3.5 w-3.5" />
+              <History className="h-3.5 w-3.5 text-slate-400" />
               <span>History</span>
             </div>
             {showSkeleton ? (
-              <Skeleton className="h-4 w-6 rounded-md" />
+              <Skeleton className="h-4 w-6 rounded-full" />
             ) : (
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
+              <Badge variant="secondary" className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-200/70 text-slate-700">
                 {count}
               </Badge>
             )}
           </div>
 
-          <div className="space-y-1 max-h-[calc(100vh-14rem)] overflow-y-auto pr-1">
+          <div className="space-y-1 max-h-[calc(100vh-14.5rem)] overflow-y-auto pr-1 scrollbar-thin">
             {showSkeleton ? (
               <div className="space-y-2 p-1">
                 {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="flex items-center gap-2 p-1.5">
-                    <Skeleton className="h-3.5 w-3.5 rounded-md shrink-0 bg-sky-200/50" />
+                  <div key={i} className="flex items-center gap-2 p-2">
+                    <Skeleton className="h-4 w-4 rounded-md shrink-0 bg-sky-200/40" />
                     <Skeleton className="h-3.5 w-full rounded-md" />
                   </div>
                 ))}
               </div>
             ) : deckItems.length === 0 ? (
-              <div className="p-3 text-center text-xs text-muted-foreground border border-dashed rounded-lg">
-                No presentation decks created yet.
+              <div className="p-4 text-center text-xs text-slate-500 border border-dashed border-slate-200 rounded-xl space-y-1">
+                <Presentation className="h-4 w-4 mx-auto text-slate-400 opacity-60" />
+                <p className="font-medium">No topics generated yet.</p>
               </div>
             ) : (
               deckItems.map((deck) => {
@@ -87,16 +91,21 @@ export function DeckSidebar({
                   <div
                     key={deck.id}
                     onClick={() => onSelectDeckId?.(deck.id)}
-                    className={`group flex items-center justify-between p-2 rounded-lg text-xs cursor-pointer transition-colors ${
+                    className={`group flex items-center justify-between p-2.5 rounded-xl text-xs cursor-pointer transition-all duration-150 ${
                       isActive
-                        ? 'bg-sky-50 text-sky-700 font-semibold border border-sky-200'
-                        : 'hover:bg-accent hover:text-accent-foreground text-foreground'
+                        ? 'bg-sky-50/90 text-sky-950 font-bold border border-sky-200/90 shadow-2xs'
+                        : 'hover:bg-slate-200/60 text-slate-700 hover:text-slate-900 border border-transparent'
                     }`}
                   >
-                    <div className="flex items-center gap-2 truncate">
-                      <Presentation className="h-3.5 w-3.5 text-sky-500 shrink-0" />
-                      <span className="truncate">{deck.title}</span>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div
+                        className={`w-2 h-2 rounded-full shrink-0 ${
+                          isActive ? 'bg-sky-500 animate-pulse' : 'bg-slate-300'
+                        }`}
+                      />
+                      <span className="truncate leading-tight">{deck.title}</span>
                     </div>
+
                     {onDeleteDeck && (
                       <AlertDialog>
                         <AlertDialogTrigger
@@ -105,7 +114,7 @@ export function DeckSidebar({
                               variant="ghost"
                               size="icon-xs"
                               onClick={(e) => e.stopPropagation()}
-                              className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive shrink-0"
+                              className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-destructive shrink-0 transition-opacity"
                               title="Delete presentation"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
@@ -139,18 +148,23 @@ export function DeckSidebar({
         </div>
       </div>
 
-      {/* User Footer Card with Avatar, perfect alignment & AlertDialog sign out */}
-      {user && (
-        <Card className="p-2.5 flex items-center justify-between gap-3 border-border shadow-2xs">
+      {/* Redesigned User Profile Footer Card */}
+      {user ? (
+        <Card className="p-3 bg-white border border-slate-200/80 shadow-2xs rounded-xl flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            <div className="w-8 h-8 rounded-full bg-sky-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-600 text-white font-black text-xs flex items-center justify-center shrink-0 border-2 border-white shadow-2xs">
               {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </div>
-            <div className="min-w-0 flex-1">
-              <span className="font-bold text-xs block truncate text-foreground leading-tight">
-                {user.name || 'User'}
-              </span>
-              <span className="text-[10px] text-muted-foreground block truncate leading-tight">
+            <div className="min-w-0 flex-1 space-y-0.5">
+              <div className="flex items-center gap-1">
+                <span className="font-bold text-xs truncate text-slate-900 leading-tight block">
+                  {user.name || 'User'}
+                </span>
+                <span className="text-[9px] font-extrabold uppercase bg-sky-50 text-sky-700 px-1 py-0.2 rounded-xs shrink-0">
+                  MEMBER
+                </span>
+              </div>
+              <span className="text-[10px] text-slate-500 truncate block leading-tight">
                 {user.email}
               </span>
             </div>
@@ -163,7 +177,7 @@ export function DeckSidebar({
                   variant="ghost"
                   size="icon-xs"
                   disabled={logoutMutation.isPending}
-                  className="text-muted-foreground hover:text-destructive shrink-0"
+                  className="text-slate-400 hover:text-destructive shrink-0 hover:bg-slate-100"
                   title="Sign Out"
                 >
                   <LogOut className="h-4 w-4" />
@@ -186,7 +200,15 @@ export function DeckSidebar({
             </AlertDialogContent>
           </AlertDialog>
         </Card>
-      )}
+      ) : isSessionLoading ? (
+        <Card className="p-3 bg-white border border-slate-200/80 shadow-2xs rounded-xl flex items-center gap-3">
+          <Skeleton className="w-9 h-9 rounded-full shrink-0" />
+          <div className="space-y-1.5 flex-1">
+            <Skeleton className="h-3.5 w-24 rounded-md" />
+            <Skeleton className="h-3 w-32 rounded-md" />
+          </div>
+        </Card>
+      ) : null}
     </aside>
   );
 }
