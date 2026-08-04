@@ -7,16 +7,17 @@ import {
   DeckChatInterface,
   DeckSlideViewer,
   useGetDecks,
+  useGetDeckById,
   useCreateDeck,
   useDeleteDeck,
-  GenerationRecord,
 } from '@/features/decks';
 
 export default function DecksPage() {
-  const [activeDeck, setActiveDeck] = useState<GenerationRecord | null>(null);
+  const [activeDeckId, setActiveDeckId] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  const { data: decks = [], isLoading } = useGetDecks();
+  const { data: decks = [] } = useGetDecks();
+  const { data: currentDeck } = useGetDeckById(activeDeckId);
   const createDeckMutation = useCreateDeck();
   const deleteDeckMutation = useDeleteDeck();
 
@@ -25,7 +26,7 @@ export default function DecksPage() {
       { topic, modelId },
       {
         onSuccess: (newDeck) => {
-          setActiveDeck(newDeck);
+          setActiveDeckId(newDeck.id);
         },
       }
     );
@@ -34,8 +35,8 @@ export default function DecksPage() {
   const handleDeleteDeck = (id: string) => {
     deleteDeckMutation.mutate(id, {
       onSuccess: () => {
-        if (activeDeck?.id === id) {
-          setActiveDeck(null);
+        if (activeDeckId === id) {
+          setActiveDeckId(null);
         }
       },
     });
@@ -55,19 +56,19 @@ export default function DecksPage() {
         {isSidebarOpen && (
           <DeckSidebar
             decks={decks}
-            activeDeckId={activeDeck?.id}
-            onSelectDeck={(deck) => setActiveDeck(deck)}
-            onNewDeck={() => setActiveDeck(null)}
+            activeDeckId={activeDeckId}
+            onSelectDeck={(deck) => setActiveDeckId(deck.id)}
+            onNewDeck={() => setActiveDeckId(null)}
             onDeleteDeck={handleDeleteDeck}
           />
         )}
 
         {/* Main Workspace Area */}
         <main className="flex-1 h-full min-w-0">
-          {activeDeck ? (
+          {currentDeck ? (
             <DeckSlideViewer
-              deck={activeDeck}
-              onBackToChat={() => setActiveDeck(null)}
+              deck={currentDeck}
+              onBackToChat={() => setActiveDeckId(null)}
             />
           ) : (
             <DeckChatInterface

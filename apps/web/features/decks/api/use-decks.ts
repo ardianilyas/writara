@@ -59,7 +59,39 @@ export function useGetDecks() {
       return response.data.data;
     },
     enabled: isAuthenticated,
-    staleTime: 1000 * 10,
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      const hasPending = data?.some(
+        (d) => d.status === 'PENDING' || d.status === 'GENERATING' || (d.status as string) === 'IN_PROGRESS'
+      );
+      return hasPending ? 2000 : false;
+    },
+    staleTime: 1000 * 5,
+  });
+}
+
+export function useGetDeckById(id: string | null) {
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
+
+  return useQuery({
+    queryKey: ['generations', id],
+    queryFn: async () => {
+      if (!id) return null;
+      const response = await apiClient.get<{ success: boolean; data: GenerationRecord }>(`/api/generations/${id}`);
+      return response.data.data;
+    },
+    enabled: isAuthenticated && !!id,
+    refetchInterval: (query) => {
+      const deck = query.state.data;
+      if (
+        deck &&
+        (deck.status === 'PENDING' || deck.status === 'GENERATING' || (deck.status as string) === 'IN_PROGRESS')
+      ) {
+        return 2000;
+      }
+      return false;
+    },
   });
 }
 

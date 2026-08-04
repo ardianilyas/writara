@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowLeft, ChevronLeft, ChevronRight, FileText, Sparkles } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, FileText, Sparkles, Loader2, RefreshCw } from 'lucide-react';
 import { GenerationRecord, Slide } from '../api/use-decks';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,11 @@ interface DeckSlideViewerProps {
 export function DeckSlideViewer({ deck, onBackToChat }: DeckSlideViewerProps) {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [showSpeakerNotes, setShowSpeakerNotes] = useState(true);
+
+  const isGenerating =
+    deck.status === 'PENDING' ||
+    deck.status === 'GENERATING' ||
+    (deck.status as string) === 'IN_PROGRESS';
 
   // Extract all slides from generated content chapters
   const allSlides: { slide: Slide; chapterTitle: string }[] = [];
@@ -37,6 +42,33 @@ export function DeckSlideViewer({ deck, onBackToChat }: DeckSlideViewerProps) {
   const handleNext = () => {
     setCurrentSlideIndex((prev) => Math.min(totalSlides - 1, prev + 1));
   };
+
+  if (isGenerating) {
+    return (
+      <Card className="w-full h-full flex flex-col items-center justify-center p-8 text-center bg-card border-border shadow-xs space-y-6">
+        <div className="w-16 h-16 rounded-2xl bg-sky-500/10 border border-sky-200 flex items-center justify-center text-sky-500 shadow-xs relative">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+        <div className="space-y-2 max-w-md">
+          <Badge variant="outline" className="gap-1.5 px-3 py-1 font-semibold text-xs border-sky-200 bg-sky-50 text-sky-700">
+            <Sparkles className="h-3.5 w-3.5 text-sky-500" />
+            <span>AI Reasoning In Progress</span>
+          </Badge>
+          <h2 className="text-xl font-bold text-foreground tracking-tight">
+            Structuring "{deck.topic}"
+          </h2>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Writara is building chapter layouts, speaker notes, and learning objectives. This takes a few seconds...
+          </p>
+        </div>
+
+        <Button variant="outline" size="sm" onClick={onBackToChat} className="gap-2 text-xs">
+          <ArrowLeft className="h-3.5 w-3.5" />
+          <span>Back to Chat</span>
+        </Button>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full h-full flex flex-col justify-between p-6 bg-card border-border shadow-xs">
