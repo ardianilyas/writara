@@ -83,6 +83,7 @@ export function useGetDeckById(id: string | null) {
       return response.data.data;
     },
     enabled: isAuthenticated && !!id,
+    retry: false,
     refetchInterval: (query) => {
       const deck = query.state.data;
       if (

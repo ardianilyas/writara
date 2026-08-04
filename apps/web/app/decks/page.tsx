@@ -1,7 +1,9 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import {
   DeckHeader,
   DeckSidebar,
@@ -19,11 +21,21 @@ function DecksContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeDeckId = searchParams.get('id');
+  const queryClient = useQueryClient();
 
   const { data: decks = [] } = useGetDecks();
-  const { data: currentDeck } = useGetDeckById(activeDeckId);
+  const { data: currentDeck, isError: isDeckError } = useGetDeckById(activeDeckId);
   const createDeckMutation = useCreateDeck();
   const deleteDeckMutation = useDeleteDeck();
+
+  useEffect(() => {
+    if (activeDeckId && (isDeckError || currentDeck?.status === 'FAILED')) {
+      toast.error('Generation failed or interrupted. Your credits have been automatically refunded.');
+      queryClient.invalidateQueries({ queryKey: ['generations'] });
+      queryClient.invalidateQueries({ queryKey: ['credits'] });
+      router.push('/decks');
+    }
+  }, [activeDeckId, isDeckError, currentDeck?.status, queryClient, router]);
 
   const handleSelectDeck = (deck: GenerationRecord) => {
     router.push(`/decks?id=${deck.id}`);
@@ -39,6 +51,10 @@ function DecksContent() {
       {
         onSuccess: (newDeck) => {
           router.push(`/decks?id=${newDeck.id}`);
+        },
+        onError: (err: any) => {
+          const msg = err?.response?.data?.message || err?.message || 'Failed to start presentation generation.';
+          toast.error(msg);
         },
       }
     );

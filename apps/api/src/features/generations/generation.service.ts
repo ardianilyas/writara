@@ -259,7 +259,14 @@ interface Presentation {
         `Refund for failed generation "${input.topic}"`
       );
 
-      logger.error({ generationId, error: errorMessage }, 'Generation failed and credits refunded');
+      // Delete failed generation record from DB as requested
+      await prisma.generation.delete({
+        where: { id: generationId },
+      }).catch((delErr) => {
+        logger.error({ generationId, error: delErr.message }, 'Failed to delete failed generation record');
+      });
+
+      logger.error({ generationId, error: errorMessage }, 'Generation failed, credits refunded, and record removed from DB');
     }
   }
 
@@ -275,6 +282,11 @@ interface Presentation {
       throw new NotFoundError('Generation record not found.');
     }
 
+    if (generation.status === GenerationStatus.FAILED) {
+      await prisma.generation.delete({ where: { id } }).catch(() => {});
+      throw new NotFoundError('Generation failed and was removed.');
+    }
+
     return generation;
   }
 
@@ -282,8 +294,18 @@ interface Presentation {
    * Retrieve list of generation records for user.
    */
   async getUserGenerations(userId: string) {
+    await prisma.generation.deleteMany({
+      where: {
+        userId,
+        status: GenerationStatus.FAILED,
+      },
+    }).catch(() => {});
+
     return prisma.generation.findMany({
-      where: { userId },
+      where: {
+        userId,
+        status: { not: GenerationStatus.FAILED },
+      },
       orderBy: { createdAt: 'desc' },
     });
   }
