@@ -44,10 +44,21 @@ export function DeckChatInterface({ onSubmitTopic, isGenerating = false }: DeckC
   const { data: creditData } = useCredits();
   const [topic, setTopic] = useState('');
   const [selectedModel, setSelectedModel] = useState<'deepseek-v4-flash' | 'nemotron-30b'>('deepseek-v4-flash');
-  const [chaptersLimit, setChaptersLimit] = useState(10);
+  const [chaptersLimit, setChaptersLimit] = useState(5);
 
   const userName = session?.user?.name?.split(' ')[0] || 'Creator';
   const creditsBalance = creditData?.totalCredits ?? 3;
+
+  const handleModelChange = (model: 'deepseek-v4-flash' | 'nemotron-30b') => {
+    setSelectedModel(model);
+    if (model === 'nemotron-30b' && chaptersLimit > 5) {
+      setChaptersLimit(5);
+    }
+  };
+
+  const availableChapterOptions = selectedModel === 'nemotron-30b'
+    ? [3, 4, 5]
+    : [3, 5, 8, 10, 12, 15];
 
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -57,47 +68,16 @@ export function DeckChatInterface({ onSubmitTopic, isGenerating = false }: DeckC
 
   return (
     <Card className="w-full h-full flex flex-col justify-between p-6 bg-card border-border shadow-xs relative overflow-hidden">
-      {/* Top Controls: Model Selector & Credits */}
+      {/* Top Controls: Header Info & Credits */}
       <div className="flex items-center justify-between z-10 border-b border-border pb-4">
-        {/* Model Selector Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger render={
-            <Button variant="outline" size="sm" className="gap-2 font-semibold text-xs">
-              {selectedModel === 'deepseek-v4-flash' ? (
-                <>
-                  <Zap className="h-3.5 w-3.5 text-sky-500" />
-                  <span>DeepSeek V4 Flash</span>
-                </>
-              ) : (
-                <>
-                  <Cpu className="h-3.5 w-3.5 text-amber-500" />
-                  <span>Nemotron 30B Nano</span>
-                </>
-              )}
-              <ChevronDown className="h-3.5 w-3.5 opacity-50" />
-            </Button>
-          } />
-          <DropdownMenuContent align="start" className="w-60">
-            <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">Select AI Model</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setSelectedModel('deepseek-v4-flash')} className="flex flex-col items-start gap-0.5 cursor-pointer">
-              <div className="flex items-center gap-1.5 font-semibold text-xs">
-                <Zap className="h-3.5 w-3.5 text-sky-500" />
-                <span>DeepSeek V4 Flash</span>
-              </div>
-              <span className="text-[10px] text-muted-foreground">5 Credits · 20 Chapters & Speaker Notes</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setSelectedModel('nemotron-30b')} className="flex flex-col items-start gap-0.5 cursor-pointer">
-              <div className="flex items-center gap-1.5 font-semibold text-xs">
-                <Cpu className="h-3.5 w-3.5 text-amber-500" />
-                <span>Nemotron 30B Nano</span>
-              </div>
-              <span className="text-[10px] text-muted-foreground">1 Credit · 5 Chapters Quick Outline</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="gap-1.5 px-2.5 py-1 text-xs font-semibold bg-muted/60">
+            <Presentation className="h-3.5 w-3.5 text-sky-500" />
+            <span>Writara AI Generator</span>
+          </Badge>
+        </div>
 
-        {/* Credit Badge */}
+        {/* Credit Balance Badge */}
         <Badge variant="outline" className="gap-1.5 px-3 py-1 font-semibold text-xs border-sky-200 bg-sky-50 text-sky-700">
           <Sparkles className="h-3.5 w-3.5 text-sky-500" />
           <span>{creditsBalance} Trial Credits</span>
@@ -114,7 +94,7 @@ export function DeckChatInterface({ onSubmitTopic, isGenerating = false }: DeckC
             Welcome, {userName}
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
-            Script your topic or pick a template below to generate a presentation deck.
+            Type your topic below or select a template starter card to generate an educational topic guide.
           </p>
         </div>
 
@@ -133,7 +113,7 @@ export function DeckChatInterface({ onSubmitTopic, isGenerating = false }: DeckC
         </div>
       </div>
 
-      {/* Bottom Prompt Textarea Box */}
+      {/* Bottom Chat Prompt Textarea Box */}
       <div className="max-w-3xl mx-auto w-full space-y-2">
         <form onSubmit={handleSubmit} className="bg-background border border-border rounded-xl p-3 space-y-3 shadow-xs">
           <textarea
@@ -145,31 +125,106 @@ export function DeckChatInterface({ onSubmitTopic, isGenerating = false }: DeckC
                 handleSubmit();
               }
             }}
-            placeholder="Type your presentation topic..."
+            placeholder="Type your educational topic (e.g. 'Laravel Basics', 'Quantum Computing Intro')..."
             rows={2}
             className="w-full text-xs text-foreground placeholder:text-muted-foreground bg-transparent border-none outline-none resize-none leading-relaxed"
           />
 
-          <div className="flex items-center justify-between pt-2 border-t border-border">
-            {/* Chapters Selector Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger render={
-                <Button variant="ghost" size="xs" className="gap-1.5 text-xs text-muted-foreground font-medium">
-                  <SlidersHorizontal className="h-3 w-3" />
-                  <span>{chaptersLimit} Chapters</span>
-                  <ChevronDown className="h-3 w-3 opacity-50" />
-                </Button>
-              } />
-              <DropdownMenuContent align="start">
-                <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">Chapter Count</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {[5, 10, 15, 20].map((num) => (
-                  <DropdownMenuItem key={num} onClick={() => setChaptersLimit(num)} className="text-xs cursor-pointer">
-                    {num} Chapters
+          <div className="flex items-center justify-between pt-2 border-t border-border flex-wrap gap-2">
+            <div className="flex items-center gap-2">
+              {/* Model Selector Dropdown inside Chat Section */}
+              <DropdownMenu>
+                <DropdownMenuTrigger render={
+                  <Button variant="outline" size="sm" className="gap-2 text-xs font-semibold border-border bg-muted/30 hover:bg-muted/60 text-foreground">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[11px] text-muted-foreground font-normal">Model:</span>
+                      {selectedModel === 'deepseek-v4-flash' ? (
+                        <>
+                          <Zap className="h-3.5 w-3.5 text-sky-500 shrink-0" />
+                          <span className="font-bold">DeepSeek V4 Flash</span>
+                          <Badge variant="secondary" className="text-[9px] px-1 py-0 bg-sky-100 text-sky-700 font-bold border-none">Pro</Badge>
+                        </>
+                      ) : (
+                        <>
+                          <Cpu className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                          <span className="font-bold">Nemotron 30B Nano</span>
+                          <Badge variant="secondary" className="text-[9px] px-1 py-0 bg-amber-100 text-amber-700 font-bold border-none">Free</Badge>
+                        </>
+                      )}
+                    </div>
+                    <ChevronDown className="h-3.5 w-3.5 opacity-50 ml-1" />
+                  </Button>
+                } />
+                <DropdownMenuContent align="start" className="w-72 p-2">
+                  <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground px-2 py-1">Select AI Generation Model</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => handleModelChange('deepseek-v4-flash')}
+                    className={`flex flex-col items-start gap-1 p-2 cursor-pointer rounded-lg ${
+                      selectedModel === 'deepseek-v4-flash' ? 'bg-sky-50 text-sky-900 font-medium border border-sky-200' : ''
+                    }`}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center gap-1.5 font-bold text-xs">
+                        <Zap className="h-3.5 w-3.5 text-sky-500" />
+                        <span>DeepSeek V4 Flash</span>
+                      </div>
+                      <Badge variant="secondary" className="text-[9px] px-1.5 py-0 bg-sky-100 text-sky-700 font-bold">Pro · Paid</Badge>
+                    </div>
+                    <span className="text-[10px] text-muted-foreground leading-snug">
+                      Unlocks up to 15 deep chapters with extended 12k token explanations & speaker scripts.
+                    </span>
                   </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+
+                  <DropdownMenuItem
+                    onClick={() => handleModelChange('nemotron-30b')}
+                    className={`flex flex-col items-start gap-1 p-2 cursor-pointer rounded-lg mt-1 ${
+                      selectedModel === 'nemotron-30b' ? 'bg-amber-50 text-amber-900 font-medium border border-amber-200' : ''
+                    }`}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center gap-1.5 font-bold text-xs">
+                        <Cpu className="h-3.5 w-3.5 text-amber-500" />
+                        <span>Nemotron 30B Nano</span>
+                      </div>
+                      <Badge variant="secondary" className="text-[9px] px-1.5 py-0 bg-amber-100 text-amber-700 font-bold">Free</Badge>
+                    </div>
+                    <span className="text-[10px] text-muted-foreground leading-snug">
+                      Standard queue free model. Capped at max 5 chapters per generation.
+                    </span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Chapters Count Selector Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger render={
+                  <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-muted-foreground font-medium hover:text-foreground">
+                    <SlidersHorizontal className="h-3.5 w-3.5" />
+                    <span>{chaptersLimit} Chapters</span>
+                    {selectedModel === 'nemotron-30b' && (
+                      <span className="text-[10px] text-amber-600 font-semibold">(Max 5)</span>
+                    )}
+                    <ChevronDown className="h-3 w-3 opacity-50" />
+                  </Button>
+                } />
+                <DropdownMenuContent align="start">
+                  <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground">
+                    {selectedModel === 'nemotron-30b' ? 'Chapter Count (Free Model Max 5)' : 'Chapter Count'}
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {availableChapterOptions.map((num) => (
+                    <DropdownMenuItem
+                      key={num}
+                      onClick={() => setChaptersLimit(num)}
+                      className={`text-xs cursor-pointer ${chaptersLimit === num ? 'font-bold text-sky-600 bg-sky-50' : ''}`}
+                    >
+                      {num} Chapters
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
 
             {/* Submit Button */}
             <Button
@@ -185,7 +240,7 @@ export function DeckChatInterface({ onSubmitTopic, isGenerating = false }: DeckC
                 </>
               ) : (
                 <>
-                  <span>Generate Deck</span>
+                  <span>Generate Guide</span>
                   <Send className="h-3.5 w-3.5" />
                 </>
               )}

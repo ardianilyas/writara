@@ -157,8 +157,8 @@ export function DeckDocumentViewer({ deck, onBackToChat }: DeckDocumentViewerPro
             )}
 
             {payload?.targetAudience && (
-              <Badge variant="outline" className="text-xs font-medium text-muted-foreground gap-1">
-                <Users className="h-3 w-3" />
+              <Badge variant="outline" className="text-xs font-medium text-muted-foreground gap-1.5 h-auto py-1 max-w-full text-wrap text-left break-words leading-relaxed">
+                <Users className="h-3.5 w-3.5 shrink-0 text-sky-500" />
                 <span>Target: {payload.targetAudience}</span>
               </Badge>
             )}

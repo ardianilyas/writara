@@ -206,17 +206,17 @@ Return ONLY valid JSON matching this schema:
       // STAGE 2: Deep Educational Content Generation using Stage 1 Plan
       const systemPrompt = [
         'You are an expert educator, technical author, and master presenter.',
-        'Your mission is to generate REAL, HIGHLY INFORMATIVE, EDUCATIONAL CONTENT for the requested topic thesis.',
+        'Your mission is to generate REAL, DEEP, HIGHLY INFORMATIVE, EDUCATIONAL CONTENT for the requested topic thesis.',
         'CRITICAL CONTENT RULES:',
         '1. DO NOT write meta-advice about how a speaker should behave (e.g. do NOT write "The speaker should pause here" or "The speaker should look confident").',
-        '2. DO write ACTUAL EDUCATIONAL EXPLANATIONS that explain the topic directly to the reader/audience.',
-        '3. For every section heading (e.g. "1. What is Laravel?"), write a clear 1-2 sentence explanation defining the core concept directly.',
-        '4. Under explanation, provide 2-4 concrete keyPoints with factual details.',
-        '5. In speakerScript, write the EXACT verbal explanation the speaker should say out loud to teach the concept.',
+        '2. DO write DETAILED EDUCATIONAL EXPLANATIONS that explain the topic thoroughly to the reader/audience.',
+        '3. For every section heading (e.g. "1. What is Laravel?"), write a comprehensive 3 to 5 sentence detailed explanation defining the core concept, architecture, and practical use cases.',
+        '4. Under explanation, provide 3 to 5 concrete keyPoints with factual details and technical advantages.',
+        '5. In speakerScript, write 2 to 3 complete verbal sentences guiding the presenter on the exact talking points to explain out loud.',
         '6. Output ONLY valid, parseable JSON matching the exact schema.',
       ].join('\n');
 
-      const userPrompt = `Create a comprehensive educational topic guide based on this planned curriculum:
+      const userPrompt = `Create a comprehensive, in-depth educational topic guide based on this planned curriculum:
 
 PLANNED TITLE: "${stage1Plan.expandedTitle}"
 EDUCATIONAL THESIS: "${stage1Plan.topicThesis}"
@@ -225,12 +225,12 @@ PLANNED SUBTOPICS: ${JSON.stringify(stage1Plan.keySubtopics)}
 
 STRICT LAYOUT & CONTENT REQUIREMENTS:
 - Generate exactly ${totalChapters} chapters, aligning with the planned subtopics.
-- Each chapter MUST contain 2 to 4 detailed sections explaining key subtopics directly.
+- Each chapter MUST contain 2 to 4 detailed sections explaining key subtopics thoroughly.
 - Every section MUST include:
   - heading: Clear question or subtopic name (e.g. "1. What is Laravel?", "2. Why Use Laravel?", "3. Model-View-Controller Architecture").
-  - explanation: 1 to 2 informative sentences explaining the concept directly to the audience.
-  - keyPoints: 2 to 4 punchy bullet points providing specific facts, features, or benefits.
-  - speakerScript: 1 to 2 verbal sentences for the presenter to say out loud to teach the concept.
+  - explanation: A detailed 3 to 5 sentence explanation unpacking the concept, core mechanics, and real-world application.
+  - keyPoints: 3 to 5 punchy bullet points providing specific facts, features, or benefits.
+  - speakerScript: 2 to 3 detailed verbal sentences for the presenter to say out loud to teach the concept effectively.
 
 Return ONLY a valid JSON object matching this TypeScript interface exactly:
 
@@ -269,7 +269,7 @@ interface Presentation {
               { role: 'system', content: systemPrompt },
               { role: 'user', content: userPrompt },
             ],
-            maxTokens: 8192,
+            maxTokens: 12288,
           },
         });
       } finally {
