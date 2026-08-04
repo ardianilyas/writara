@@ -46,31 +46,37 @@ export function DeckDocumentViewer({ deck, onBackToChat }: DeckDocumentViewerPro
       text += `## Chapter ${ch.chapterNumber}: ${ch.title}\n\n`;
       if (ch.summary) text += `${ch.summary}\n\n`;
 
-      if (ch.learningObjectives?.length) {
-        text += `### Learning Objectives:\n`;
-        ch.learningObjectives.forEach((obj) => (text += `- ${obj}\n`));
-        text += `\n`;
+      if (ch.sections?.length) {
+        ch.sections.forEach((sec) => {
+          text += `### ${sec.heading}\n`;
+          if (sec.explanation) text += `${sec.explanation}\n\n`;
+          sec.keyPoints?.forEach((pt) => (text += `- ${pt}\n`));
+          if (sec.speakerScript) {
+            text += `\n> **Presenter Script:** ${sec.speakerScript}\n\n`;
+          }
+        });
+      } else if (ch.slides?.length) {
+        ch.slides.forEach((slide) => {
+          text += `### ${slide.title}\n`;
+          if (slide.subtitle) text += `*${slide.subtitle}*\n\n`;
+
+          const points =
+            slide.bulletPoints ||
+            slide.leftColumnContent ||
+            slide.rightColumnContent ||
+            [];
+          points.forEach((pt) => (text += `- ${pt}\n`));
+
+          if (slide.speakerNotes) {
+            text += `\n> **Speaker Notes:** ${slide.speakerNotes}\n\n`;
+          }
+        });
       }
 
-      ch.slides?.forEach((slide) => {
-        text += `### ${slide.title}\n`;
-        if (slide.subtitle) text += `*${slide.subtitle}*\n\n`;
-
-        const points =
-          slide.bulletPoints ||
-          slide.leftColumnContent ||
-          slide.rightColumnContent ||
-          [];
-        points.forEach((pt) => (text += `- ${pt}\n`));
-
-        if (slide.speakerNotes) {
-          text += `\n> **Speaker Notes:** ${slide.speakerNotes}\n\n`;
-        }
-      });
-
-      if (ch.keyTakeaways?.length) {
+      const takeaways = ch.chapterTakeaways || ch.keyTakeaways;
+      if (takeaways?.length) {
         text += `### Key Takeaways:\n`;
-        ch.keyTakeaways.forEach((tk) => (text += `- ${tk}\n`));
+        takeaways.forEach((tk) => (text += `- ${tk}\n`));
         text += `\n`;
       }
     });
@@ -164,14 +170,14 @@ export function DeckDocumentViewer({ deck, onBackToChat }: DeckDocumentViewerPro
         </div>
 
         {/* Executive Summary Card */}
-        {payload?.chapters?.[0]?.summary && (
+        {(payload?.executiveSummary || payload?.chapters?.[0]?.summary) && (
           <Card className="p-5 bg-sky-50/50 border-sky-200/80 space-y-2">
             <div className="flex items-center gap-2 text-xs font-bold text-sky-700">
               <Sparkles className="h-4 w-4" />
               <span>Executive Overview</span>
             </div>
             <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-              {payload.chapters[0].summary}
+              {payload.executiveSummary || payload.chapters?.[0]?.summary}
             </p>
           </Card>
         )}
@@ -196,74 +202,97 @@ export function DeckDocumentViewer({ deck, onBackToChat }: DeckDocumentViewerPro
                   )}
                 </div>
 
-                {/* Learning Objectives */}
-                {chapter.learningObjectives && chapter.learningObjectives.length > 0 && (
-                  <div className="bg-muted/50 border border-border/80 rounded-xl p-4 space-y-2">
-                    <span className="text-xs font-bold text-foreground block">Key Learning Objectives</span>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-muted-foreground">
-                      {chapter.learningObjectives.map((obj, idx) => (
-                        <div key={idx} className="flex items-start gap-2">
-                          <CheckCircle2 className="h-3.5 w-3.5 text-sky-500 mt-0.5 shrink-0" />
-                          <span>{obj}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Chapter Topic Sections & Explanations */}
-                {chapter.slides?.map((slide, slideIdx) => {
-                  const points =
-                    slide.bulletPoints ||
-                    slide.leftColumnContent ||
-                    slide.rightColumnContent ||
-                    [];
-
-                  return (
-                    <div key={slideIdx} className="space-y-3 bg-card border border-border/80 rounded-xl p-4 sm:p-5 shadow-2xs">
-                      <div>
+                {/* New Educational Sections Format */}
+                {chapter.sections && chapter.sections.length > 0 ? (
+                  <div className="space-y-5">
+                    {chapter.sections.map((sec, secIdx) => (
+                      <div key={secIdx} className="space-y-3 bg-card border border-border/80 rounded-xl p-5 shadow-2xs">
                         <h3 className="text-sm sm:text-base font-bold text-foreground">
-                          {slide.title}
+                          {sec.heading}
                         </h3>
-                        {slide.subtitle && (
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {slide.subtitle}
+
+                        {sec.explanation && (
+                          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                            {sec.explanation}
                           </p>
                         )}
-                      </div>
 
-                      {/* Bullet points / content items */}
-                      {points.length > 0 && (
-                        <ul className="space-y-2 text-xs text-slate-700 pt-1">
-                          {points.map((pt, ptIdx) => (
-                            <li key={ptIdx} className="flex items-start gap-2.5">
-                              <div className="w-1.5 h-1.5 rounded-full bg-sky-500 mt-1.5 shrink-0" />
-                              <span className="leading-relaxed">{pt}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
+                        {sec.keyPoints && sec.keyPoints.length > 0 && (
+                          <ul className="space-y-2 text-xs text-slate-700 pt-1">
+                            {sec.keyPoints.map((pt, ptIdx) => (
+                              <li key={ptIdx} className="flex items-start gap-2.5">
+                                <div className="w-1.5 h-1.5 rounded-full bg-sky-500 mt-1.5 shrink-0" />
+                                <span className="leading-relaxed">{pt}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
 
-                      {/* Presenter / Speaker Script Callout */}
-                      {slide.speakerNotes && (
-                        <div className="mt-3 bg-amber-50/70 border border-amber-200/80 rounded-lg p-3 text-xs text-amber-900 flex items-start gap-2.5">
-                          <MessageSquareQuote className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-                          <div className="space-y-0.5">
-                            <span className="font-bold text-[11px] uppercase tracking-wider text-amber-700 block">Presenter Talking Script</span>
-                            <p className="leading-relaxed italic">{slide.speakerNotes}</p>
+                        {sec.speakerScript && (
+                          <div className="mt-3 bg-amber-50/70 border border-amber-200/80 rounded-lg p-3 text-xs text-amber-900 flex items-start gap-2.5">
+                            <MessageSquareQuote className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                            <div className="space-y-0.5">
+                              <span className="font-bold text-[11px] uppercase tracking-wider text-amber-700 block">Presenter Talking Points</span>
+                              <p className="leading-relaxed italic">{sec.speakerScript}</p>
+                            </div>
                           </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  /* Legacy Slides Fallback */
+                  chapter.slides?.map((slide, slideIdx) => {
+                    const points =
+                      slide.bulletPoints ||
+                      slide.leftColumnContent ||
+                      slide.rightColumnContent ||
+                      [];
+
+                    return (
+                      <div key={slideIdx} className="space-y-3 bg-card border border-border/80 rounded-xl p-4 sm:p-5 shadow-2xs">
+                        <div>
+                          <h3 className="text-sm sm:text-base font-bold text-foreground">
+                            {slide.title}
+                          </h3>
+                          {slide.subtitle && (
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {slide.subtitle}
+                            </p>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
+
+                        {points.length > 0 && (
+                          <ul className="space-y-2 text-xs text-slate-700 pt-1">
+                            {points.map((pt, ptIdx) => (
+                              <li key={ptIdx} className="flex items-start gap-2.5">
+                                <div className="w-1.5 h-1.5 rounded-full bg-sky-500 mt-1.5 shrink-0" />
+                                <span className="leading-relaxed">{pt}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+
+                        {slide.speakerNotes && (
+                          <div className="mt-3 bg-amber-50/70 border border-amber-200/80 rounded-lg p-3 text-xs text-amber-900 flex items-start gap-2.5">
+                            <MessageSquareQuote className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                            <div className="space-y-0.5">
+                              <span className="font-bold text-[11px] uppercase tracking-wider text-amber-700 block">Presenter Talking Script</span>
+                              <p className="leading-relaxed italic">{slide.speakerNotes}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
 
                 {/* Chapter Key Takeaways */}
-                {chapter.keyTakeaways && chapter.keyTakeaways.length > 0 && (
+                {(chapter.chapterTakeaways?.length || chapter.keyTakeaways?.length) && (
                   <div className="bg-emerald-50/60 border border-emerald-200/80 rounded-xl p-4 space-y-2">
                     <span className="text-xs font-bold text-emerald-900 block">Chapter Takeaways</span>
                     <ul className="space-y-1.5 text-xs text-emerald-800">
-                      {chapter.keyTakeaways.map((takeaway, tkIdx) => (
+                      {(chapter.chapterTakeaways || chapter.keyTakeaways)?.map((takeaway, tkIdx) => (
                         <li key={tkIdx} className="flex items-start gap-2">
                           <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 mt-0.5 shrink-0" />
                           <span>{takeaway}</span>

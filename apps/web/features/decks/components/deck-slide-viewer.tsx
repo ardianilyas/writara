@@ -26,12 +26,12 @@ export function DeckSlideViewer({ deck, onBackToChat }: DeckSlideViewerProps) {
   const allSlides: { slide: Slide; chapterTitle: string; chapterSummary?: string; keyTakeaways?: string[]; learningObjectives?: string[] }[] = [];
   if (payload?.chapters) {
     payload.chapters.forEach((chapter) => {
-      chapter.slides.forEach((slide) => {
+      chapter.slides?.forEach((slide) => {
         allSlides.push({
           slide,
           chapterTitle: chapter.title,
           chapterSummary: chapter.summary,
-          keyTakeaways: chapter.keyTakeaways,
+          keyTakeaways: chapter.keyTakeaways || chapter.chapterTakeaways,
           learningObjectives: chapter.learningObjectives,
         });
       });

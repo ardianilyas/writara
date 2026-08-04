@@ -153,70 +153,50 @@ export class GenerationService {
       const template = input.template || GenerationTemplate.PRESENTATION;
 
       const systemPrompt = [
-        'You are an elite executive presentation designer and expert presenter.',
-        'Your goal is to build rich, professional, presentation-ready slide content with ZERO missing fields or empty arrays.',
-        'RULES:',
-        '1. Output ONLY valid JSON. No markdown fences, no explanation, no text outside JSON.',
-        '2. Every string value must be properly escaped.',
-        '3. Do NOT truncate or abbreviate the output. Complete all chapters and slides fully.',
-        '4. Every slide MUST have a clear title, descriptive subtitle, and bulletPoints.',
+        'You are an expert educator, technical author, and master presenter.',
+        'Your mission is to generate REAL, HIGHLY INFORMATIVE, EDUCATIONAL CONTENT for the requested topic.',
+        'CRITICAL CONTENT RULES:',
+        '1. DO NOT write meta-advice about how a speaker should behave (e.g. do NOT write "The speaker should pause here" or "The speaker should look confident").',
+        '2. DO write ACTUAL EDUCATIONAL EXPLANATIONS that explain the topic directly to the reader/audience.',
+        '3. For every section heading (e.g. "1. What is Laravel?"), write a clear 1-2 sentence explanation defining the core concept directly.',
+        '4. Under explanation, provide 2-4 concrete keyPoints with factual details.',
+        '5. In speakerScript, write the EXACT verbal explanation the speaker should say out loud to teach the audience.',
+        '6. Output ONLY valid, parseable JSON matching the exact schema.',
       ].join('\n');
 
-      const userPrompt = `Create an elite presentation deck on the topic: "${input.topic}"
+      const userPrompt = `Create a comprehensive, educational topic guide on: "${input.topic}"
 
-STRICT LAYOUT CONTENT REQUIREMENTS:
-- Generate exactly ${totalChapters} chapters, each with 2 to 3 slides.
-- Use a single layout per slide, chosen from: "TITLE", "BULLET_POINTS", "TWO_COLUMN", "KEY_METRIC", "SUMMARY".
-- Chapter 1, slide 1 MUST use "TITLE" layout.
-- The final chapter's last slide MUST use "SUMMARY" layout.
-
-FIELD POPULATION RULES PER LAYOUT:
-1. "TITLE" layout:
-   - subtitle: Clear value proposition / core theme of presentation.
-   - bulletPoints: 3 key agenda items / presentation overview points.
-2. "BULLET_POINTS" layout:
-   - subtitle: Section thesis statement.
-   - bulletPoints: 3 to 4 punchy items formatted as "**Heading:** Explanation sentence".
-3. "TWO_COLUMN" layout:
-   - subtitle: Comparison or dual-perspective overview.
-   - leftColumnContent: Exactly 2 to 3 detailed items for Column 1.
-   - rightColumnContent: Exactly 2 to 3 detailed items for Column 2.
-   - bulletPoints: 3 overview items combining both columns.
-4. "KEY_METRIC" layout:
-   - subtitle: Context behind the metric benchmark.
-   - keyMetric: Object { "value": "$4.2M" or "99.9%" or "10x", "label": "Clear Metric Description" }.
-   - bulletPoints: 2 to 3 supporting points explaining how this metric was achieved.
-5. "SUMMARY" layout:
-   - subtitle: Executive summary & final conclusions.
-   - bulletPoints: 3 to 4 actionable key takeaways for the audience.
+STRICT LAYOUT & CONTENT REQUIREMENTS:
+- Generate exactly ${totalChapters} chapters.
+- Each chapter MUST contain 2 to 4 detailed sections explaining key subtopics directly.
+- Every section MUST include:
+  - heading: Clear question or subtopic name (e.g. "1. What is Laravel?", "2. Why Use Laravel?", "3. Model-View-Controller Architecture").
+  - explanation: 1 to 2 informative sentences explaining the concept directly to the audience.
+  - keyPoints: 2 to 4 punchy bullet points providing specific facts, features, or benefits.
+  - speakerScript: 1 to 2 verbal sentences for the presenter to say out loud to teach the concept.
 
 Return ONLY a valid JSON object matching this TypeScript interface exactly:
 
 interface Presentation {
-  generatedTitle: string; // Polished, high-impact AI generated title for this presentation (e.g. "Quantum Computing Demystified")
+  generatedTitle: string; // Polished AI title (e.g. "Laravel Basics: A Complete Developer Guide")
   topic: string; // "${input.topic}"
   template: string; // "${template}"
   totalChapters: number; // ${totalChapters}
   estimatedDurationMinutes: number;
   targetAudience: string;
+  executiveSummary: string;
   chapters: Array<{
     chapterNumber: number;
     title: string;
     summary: string;
-    learningObjectives: string[];
-    slides: Array<{
-      slideNumber: number;
-      title: string;
-      subtitle: string;
-      layout: "TITLE" | "BULLET_POINTS" | "TWO_COLUMN" | "KEY_METRIC" | "SUMMARY";
-      bulletPoints: string[];
-      leftColumnContent?: string[];
-      rightColumnContent?: string[];
-      keyMetric?: { value: string; label: string };
-      speakerNotes: string;
-      visualSuggestion: string;
+    sections: Array<{
+      sectionNumber: number;
+      heading: string;
+      explanation: string;
+      keyPoints: string[];
+      speakerScript: string;
     }>;
-    keyTakeaways: string[];
+    chapterTakeaways: string[];
   }>;
 }`;
 
