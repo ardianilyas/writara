@@ -1,0 +1,92 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiClient } from '@/lib/api-client';
+import { useSession } from '@/features/auth';
+
+export interface Slide {
+  slideNumber: number;
+  title: string;
+  subtitle?: string;
+  layout: 'TITLE' | 'BULLET_POINTS' | 'TWO_COLUMN' | 'KEY_METRIC' | 'SUMMARY';
+  bulletPoints?: string[];
+  leftColumnContent?: string[];
+  rightColumnContent?: string[];
+  keyMetric?: { value: string; label: string };
+  speakerNotes: string;
+  visualSuggestion?: string;
+}
+
+export interface Chapter {
+  chapterNumber: number;
+  title: string;
+  summary: string;
+  learningObjectives: string[];
+  slides: Slide[];
+  keyTakeaways: string[];
+}
+
+export interface GeneratedContentPayload {
+  topic: string;
+  template: string;
+  totalChapters: number;
+  estimatedDurationMinutes: number;
+  targetAudience: string;
+  chapters: Chapter[];
+}
+
+export interface GenerationRecord {
+  id: string;
+  userId: string;
+  topic: string;
+  template: string;
+  modelId: string;
+  modelTier: 'FREE' | 'PAID';
+  status: 'PENDING' | 'GENERATING' | 'COMPLETED' | 'FAILED' | 'REFUNDED';
+  generatedContent: GeneratedContentPayload | null;
+  errorMessage?: string | null;
+  creditsUsed: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function useGetDecks() {
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
+
+  return useQuery({
+    queryKey: ['generations'],
+    queryFn: async () => {
+      const response = await apiClient.get<{ success: boolean; data: GenerationRecord[] }>('/api/generations');
+      return response.data.data;
+    },
+    enabled: isAuthenticated,
+    staleTime: 1000 * 10,
+  });
+}
+
+export function useCreateDeck() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: { topic: string; modelId?: string; template?: string }) => {
+      const response = await apiClient.post<{ success: boolean; data: GenerationRecord }>('/api/generations', payload);
+      return response.data.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['generations'] });
+      queryClient.invalidateQueries({ queryKey: ['credits'] });
+    },
+  });
+}
+
+export function useDeleteDeck() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await apiClient.delete(`/api/generations/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['generations'] });
+    },
+  });
+}
