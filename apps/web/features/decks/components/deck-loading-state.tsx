@@ -10,9 +10,6 @@ import {
   FileText,
   MessageSquareQuote,
   Clock,
-  Play,
-  RotateCcw,
-  Pause,
   ArrowLeft,
   Zap,
 } from 'lucide-react';
@@ -91,7 +88,7 @@ export function DeckLoadingState({
   };
 
   const [seconds, setSeconds] = useState(getInitialSeconds);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying] = useState(true);
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [tipIndex, setTipIndex] = useState(0);
 
@@ -136,19 +133,12 @@ export function DeckLoadingState({
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleReset = () => {
-    setSeconds(0);
-    setActiveStepIndex(0);
-    setTipIndex(0);
-    setIsPlaying(true);
-  };
-
   const currentTip = MICRO_TIPS[tipIndex] || MICRO_TIPS[0];
 
   return (
-    <Card className="w-full h-full flex flex-col justify-between p-6 sm:p-8 bg-card text-foreground border-border shadow-sm max-w-3xl mx-auto space-y-8 select-none min-h-[560px] rounded-xl relative">
-      {/* Top Header & Test Controls */}
-      <div className="flex items-center justify-between border-b border-border pb-4 z-10">
+    <div className="w-full h-full flex flex-col justify-between p-6 sm:p-10 bg-white text-slate-900 border border-slate-200 shadow-xs rounded-2xl space-y-8 select-none min-h-full relative overflow-hidden">
+      {/* Top Header Badge */}
+      <div className="flex items-center justify-between border-b border-slate-100 pb-4 z-10">
         <div className="flex items-center gap-3">
           {onBack && (
             <Button
@@ -169,32 +159,19 @@ export function DeckLoadingState({
             <span>AI Reasoning Command Center</span>
           </Badge>
         </div>
-
-        {/* Demo Animation Control Toolbar */}
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleReset}
-            className="text-xs font-medium gap-1 text-muted-foreground hover:text-foreground"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-            <span>Restart</span>
-          </Button>
-        </div>
       </div>
 
-      {/* Main Hero Header (Clean Light Mode) */}
-      <div className="text-center space-y-3 max-w-md mx-auto z-10">
-        <div className="w-14 h-14 rounded-2xl bg-sky-50 border border-sky-200 text-sky-500 flex items-center justify-center mx-auto shadow-2xs">
-          <Loader2 className="h-7 w-7 animate-spin text-sky-500" />
+      {/* Main Hero Header (Full Page White Background) */}
+      <div className="text-center space-y-3 max-w-lg mx-auto z-10 my-auto">
+        <div className="w-16 h-16 rounded-2xl bg-sky-50 border border-sky-200 text-sky-500 flex items-center justify-center mx-auto shadow-2xs">
+          <Loader2 className="h-8 w-8 animate-spin text-sky-500" />
         </div>
 
         <div className="space-y-1">
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
             Synthesizing "{topic}"
           </h2>
-          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground font-mono">
+          <div className="flex items-center justify-center gap-2 text-xs text-slate-500 font-mono">
             <Clock className="h-3.5 w-3.5 text-sky-500" />
             <span>Elapsed: {formatTime(seconds)}</span>
             <span>•</span>
@@ -204,8 +181,8 @@ export function DeckLoadingState({
       </div>
 
       {/* Single Accent Progress Bar */}
-      <div className="space-y-1.5 z-10">
-        <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden relative border border-border">
+      <div className="space-y-1.5 z-10 max-w-3xl mx-auto w-full">
+        <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden relative border border-slate-200">
           <div
             className="h-full bg-sky-500 transition-all duration-500 ease-out rounded-full"
             style={{ width: `${progressPercent}%` }}
@@ -213,8 +190,8 @@ export function DeckLoadingState({
         </div>
       </div>
 
-      {/* 4-Step Pipeline Cards Grid (Strict 2-Color Light Palette) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 z-10">
+      {/* 4-Step Pipeline Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 z-10 max-w-3xl mx-auto w-full">
         {PIPELINE_STEPS.map((step, idx) => {
           const isDone = idx < activeStepIndex;
           const isActive = idx === activeStepIndex;
@@ -224,12 +201,12 @@ export function DeckLoadingState({
             <div
               key={step.id}
               onClick={() => setActiveStepIndex(idx)}
-              className={`p-3.5 rounded-xl border text-left transition-all duration-200 cursor-pointer ${
+              className={`p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer ${
                 isActive
-                  ? 'bg-sky-50/80 border-sky-300 ring-1 ring-sky-300 shadow-2xs'
+                  ? 'bg-sky-50/90 border-sky-300 ring-1 ring-sky-300 shadow-2xs'
                   : isDone
-                  ? 'bg-muted/50 border-border opacity-90'
-                  : 'bg-card border-border/60 opacity-50'
+                  ? 'bg-slate-50 border-slate-200 opacity-90'
+                  : 'bg-white border-slate-200 opacity-50'
               }`}
             >
               <div className="flex items-start gap-3">
@@ -239,7 +216,7 @@ export function DeckLoadingState({
                       ? 'bg-sky-500 text-white shadow-2xs'
                       : isDone
                       ? 'bg-slate-900 text-white'
-                      : 'bg-muted text-muted-foreground'
+                      : 'bg-slate-100 text-slate-400'
                   }`}
                 >
                   {isDone ? (
@@ -255,7 +232,7 @@ export function DeckLoadingState({
                   <div className="flex items-center justify-between gap-1">
                     <span
                       className={`text-xs font-bold ${
-                        isActive ? 'text-sky-950' : 'text-foreground'
+                        isActive ? 'text-sky-950' : 'text-slate-900'
                       }`}
                     >
                       {step.title}
@@ -266,7 +243,7 @@ export function DeckLoadingState({
                       </span>
                     )}
                   </div>
-                  <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">
+                  <p className="text-[11px] text-slate-500 leading-relaxed line-clamp-2">
                     {step.description}
                   </p>
                 </div>
@@ -276,14 +253,14 @@ export function DeckLoadingState({
         })}
       </div>
 
-      {/* Rotating Micro-Tips Banner (Clean Slate/Sky Palette) */}
-      <Card className="p-4 bg-slate-50 border-slate-200 space-y-1.5 transition-all duration-300 z-10 shadow-2xs">
+      {/* Rotating Micro-Tips Banner */}
+      <Card className="p-4 bg-slate-50 border-slate-200 space-y-1.5 transition-all duration-300 z-10 shadow-2xs max-w-3xl mx-auto w-full">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-sky-600">
             <Zap className="h-3.5 w-3.5 text-sky-500" />
             <span>{currentTip?.category}</span>
           </div>
-          <span className="text-[10px] text-muted-foreground font-mono">
+          <span className="text-[10px] text-slate-400 font-mono">
             {tipIndex + 1} / {MICRO_TIPS.length}
           </span>
         </div>
@@ -291,6 +268,6 @@ export function DeckLoadingState({
           "{currentTip?.text}"
         </p>
       </Card>
-    </Card>
+    </div>
   );
 }
