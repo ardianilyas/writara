@@ -152,22 +152,79 @@ export class GenerationService {
 
       const template = input.template || GenerationTemplate.PRESENTATION;
 
+      // STAGE 1: Fast Intent & Scope Expansion
+      let stage1Plan = {
+        expandedTitle: input.topic,
+        topicThesis: `A comprehensive educational guide covering core concepts and practical implementation of ${input.topic}.`,
+        targetAudience: 'Developers and learners seeking a clear topic walkthrough.',
+        keySubtopics: [] as string[],
+      };
+
+      try {
+        const stage1SystemPrompt = 'You are an expert curriculum planner and instructional designer. Output ONLY valid JSON.';
+        const stage1UserPrompt = `Analyze the user input topic: "${input.topic}".
+Formulate a focused learning thesis, target audience, and key subtopics.
+Return ONLY valid JSON matching this schema:
+{
+  "expandedTitle": "Polished, high-impact title (e.g. Laravel Basics: A Developer Guide)",
+  "topicThesis": "1-2 sentence core educational thesis explaining what this guide covers and why it matters",
+  "targetAudience": "Specific target audience description",
+  "keySubtopics": ["Subtopic 1", "Subtopic 2", "Subtopic 3", "Subtopic 4"]
+}`;
+
+        const stage1Controller = new AbortController();
+        const stage1Timeout = setTimeout(() => stage1Controller.abort(), 15000);
+
+        let stage1Result: any;
+        try {
+          stage1Result = await openRouter.chat.send({
+            chatRequest: {
+              model,
+              messages: [
+                { role: 'system', content: stage1SystemPrompt },
+                { role: 'user', content: stage1UserPrompt },
+              ],
+              maxTokens: 512,
+            },
+          });
+        } finally {
+          clearTimeout(stage1Timeout);
+        }
+
+        const stage1Text = (stage1Result as any).choices?.[0]?.message?.content || '';
+        if (stage1Text.trim()) {
+          const parsedPlan = this.extractJsonFromResponse(stage1Text);
+          if (parsedPlan) {
+            stage1Plan = { ...stage1Plan, ...parsedPlan };
+            logger.info({ generationId, stage1Plan }, 'Stage 1 intent planning succeeded');
+          }
+        }
+      } catch (stage1Err: any) {
+        logger.warn({ generationId, error: stage1Err.message }, 'Stage 1 intent planning skipped, proceeding to Stage 2');
+      }
+
+      // STAGE 2: Deep Educational Content Generation using Stage 1 Plan
       const systemPrompt = [
         'You are an expert educator, technical author, and master presenter.',
-        'Your mission is to generate REAL, HIGHLY INFORMATIVE, EDUCATIONAL CONTENT for the requested topic.',
+        'Your mission is to generate REAL, HIGHLY INFORMATIVE, EDUCATIONAL CONTENT for the requested topic thesis.',
         'CRITICAL CONTENT RULES:',
         '1. DO NOT write meta-advice about how a speaker should behave (e.g. do NOT write "The speaker should pause here" or "The speaker should look confident").',
         '2. DO write ACTUAL EDUCATIONAL EXPLANATIONS that explain the topic directly to the reader/audience.',
         '3. For every section heading (e.g. "1. What is Laravel?"), write a clear 1-2 sentence explanation defining the core concept directly.',
         '4. Under explanation, provide 2-4 concrete keyPoints with factual details.',
-        '5. In speakerScript, write the EXACT verbal explanation the speaker should say out loud to teach the audience.',
+        '5. In speakerScript, write the EXACT verbal explanation the speaker should say out loud to teach the concept.',
         '6. Output ONLY valid, parseable JSON matching the exact schema.',
       ].join('\n');
 
-      const userPrompt = `Create a comprehensive, educational topic guide on: "${input.topic}"
+      const userPrompt = `Create a comprehensive educational topic guide based on this planned curriculum:
+
+PLANNED TITLE: "${stage1Plan.expandedTitle}"
+EDUCATIONAL THESIS: "${stage1Plan.topicThesis}"
+TARGET AUDIENCE: "${stage1Plan.targetAudience}"
+PLANNED SUBTOPICS: ${JSON.stringify(stage1Plan.keySubtopics)}
 
 STRICT LAYOUT & CONTENT REQUIREMENTS:
-- Generate exactly ${totalChapters} chapters.
+- Generate exactly ${totalChapters} chapters, aligning with the planned subtopics.
 - Each chapter MUST contain 2 to 4 detailed sections explaining key subtopics directly.
 - Every section MUST include:
   - heading: Clear question or subtopic name (e.g. "1. What is Laravel?", "2. Why Use Laravel?", "3. Model-View-Controller Architecture").
@@ -178,13 +235,13 @@ STRICT LAYOUT & CONTENT REQUIREMENTS:
 Return ONLY a valid JSON object matching this TypeScript interface exactly:
 
 interface Presentation {
-  generatedTitle: string; // Polished AI title (e.g. "Laravel Basics: A Complete Developer Guide")
+  generatedTitle: string; // "${stage1Plan.expandedTitle}"
   topic: string; // "${input.topic}"
   template: string; // "${template}"
   totalChapters: number; // ${totalChapters}
   estimatedDurationMinutes: number;
-  targetAudience: string;
-  executiveSummary: string;
+  targetAudience: string; // "${stage1Plan.targetAudience}"
+  executiveSummary: string; // "${stage1Plan.topicThesis}"
   chapters: Array<{
     chapterNumber: number;
     title: string;
