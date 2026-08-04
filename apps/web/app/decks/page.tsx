@@ -1,56 +1,26 @@
 'use client';
 
-import { Suspense, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import {
   DeckHeader,
   DeckSidebar,
   DeckChatInterface,
-  DeckSlideViewer,
-  useGetDecks,
-  useGetDeckById,
   useCreateDeck,
   useDeleteDeck,
-  GenerationRecord,
 } from '@/features/decks';
-import { Loader2 } from 'lucide-react';
 
-function DecksContent() {
+export default function DecksNewPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const activeDeckId = searchParams.get('id');
-  const queryClient = useQueryClient();
-
-  const { data: decks = [] } = useGetDecks();
-  const { data: currentDeck, isError: isDeckError } = useGetDeckById(activeDeckId);
   const createDeckMutation = useCreateDeck();
   const deleteDeckMutation = useDeleteDeck();
-
-  useEffect(() => {
-    if (activeDeckId && (isDeckError || currentDeck?.status === 'FAILED')) {
-      toast.error('Generation failed or interrupted. Your credits have been automatically refunded.');
-      queryClient.invalidateQueries({ queryKey: ['generations'] });
-      queryClient.invalidateQueries({ queryKey: ['credits'] });
-      router.push('/decks');
-    }
-  }, [activeDeckId, isDeckError, currentDeck?.status, queryClient, router]);
-
-  const handleSelectDeck = (deck: GenerationRecord) => {
-    router.push(`/decks?id=${deck.id}`);
-  };
-
-  const handleNewDeck = () => {
-    router.push('/decks');
-  };
 
   const handleCreateDeck = (topic: string, modelId: string) => {
     createDeckMutation.mutate(
       { topic, modelId },
       {
         onSuccess: (newDeck) => {
-          router.push(`/decks?id=${newDeck.id}`);
+          router.push(`/decks/${newDeck.id}`);
         },
         onError: (err: any) => {
           const msg = err?.response?.data?.message || err?.message || 'Failed to start presentation generation.';
@@ -61,13 +31,7 @@ function DecksContent() {
   };
 
   const handleDeleteDeck = (id: string) => {
-    deleteDeckMutation.mutate(id, {
-      onSuccess: () => {
-        if (activeDeckId === id) {
-          router.push('/decks');
-        }
-      },
-    });
+    deleteDeckMutation.mutate(id);
   };
 
   return (
@@ -79,43 +43,19 @@ function DecksContent() {
       <div className="flex-1 flex max-w-[1600px] w-full mx-auto p-3 sm:p-4 gap-4 h-[calc(100vh-3.5rem)]">
         {/* Left Sidebar */}
         <DeckSidebar
-          decks={decks}
-          activeDeckId={activeDeckId}
-          onSelectDeck={handleSelectDeck}
-          onNewDeck={handleNewDeck}
+          onSelectDeckId={(selectedId) => router.push(`/decks/${selectedId}`)}
+          onNewDeck={() => router.push('/decks')}
           onDeleteDeck={handleDeleteDeck}
         />
 
         {/* Main Workspace Area */}
         <main className="flex-1 h-full min-w-0">
-          {activeDeckId && currentDeck ? (
-            <DeckSlideViewer
-              deck={currentDeck}
-              onBackToChat={handleNewDeck}
-            />
-          ) : (
-            <DeckChatInterface
-              onSubmitTopic={handleCreateDeck}
-              isGenerating={createDeckMutation.isPending}
-            />
-          )}
+          <DeckChatInterface
+            onSubmitTopic={handleCreateDeck}
+            isGenerating={createDeckMutation.isPending}
+          />
         </main>
       </div>
     </div>
-  );
-}
-
-export default function DecksPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex flex-col items-center justify-center space-y-3 text-muted-foreground">
-          <Loader2 className="h-6 w-6 animate-spin text-sky-500" />
-          <p className="text-xs font-semibold">Loading Writara Decks...</p>
-        </div>
-      }
-    >
-      <DecksContent />
-    </Suspense>
   );
 }

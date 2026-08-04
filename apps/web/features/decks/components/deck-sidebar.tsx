@@ -2,7 +2,7 @@
 
 import { Plus, History, Presentation, Trash2, LogOut } from 'lucide-react';
 import { useSession, useLogout } from '@/features/auth';
-import { GenerationRecord } from '../api/use-decks';
+import { useGetDecksSidebar, SidebarDeckItem } from '../api/use-decks';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -19,23 +19,25 @@ import {
 } from '@/components/ui/alert-dialog';
 
 interface DeckSidebarProps {
-  decks?: GenerationRecord[];
   activeDeckId?: string | null;
-  onSelectDeck?: (deck: GenerationRecord) => void;
+  onSelectDeckId?: (id: string) => void;
   onNewDeck?: () => void;
   onDeleteDeck?: (id: string) => void;
 }
 
 export function DeckSidebar({
-  decks = [],
   activeDeckId,
-  onSelectDeck,
+  onSelectDeckId,
   onNewDeck,
   onDeleteDeck,
 }: DeckSidebarProps) {
   const { data: session } = useSession();
   const logoutMutation = useLogout();
+  const { data: sidebarData } = useGetDecksSidebar();
   const user = session?.user;
+
+  const deckItems = sidebarData?.items || [];
+  const count = sidebarData?.count ?? deckItems.length;
 
   return (
     <aside className="w-64 shrink-0 bg-muted/40 border-r border-border flex flex-col justify-between p-3 min-h-[calc(100vh-3.5rem)] select-none">
@@ -54,22 +56,22 @@ export function DeckSidebar({
               <span>History</span>
             </div>
             <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
-              {decks.length}
+              {count}
             </Badge>
           </div>
 
           <div className="space-y-1 max-h-[calc(100vh-14rem)] overflow-y-auto pr-1">
-            {decks.length === 0 ? (
+            {deckItems.length === 0 ? (
               <div className="p-3 text-center text-xs text-muted-foreground border border-dashed rounded-lg">
                 No presentation decks created yet.
               </div>
             ) : (
-              decks.map((deck) => {
+              deckItems.map((deck) => {
                 const isActive = activeDeckId === deck.id;
                 return (
                   <div
                     key={deck.id}
-                    onClick={() => onSelectDeck?.(deck)}
+                    onClick={() => onSelectDeckId?.(deck.id)}
                     className={`group flex items-center justify-between p-2 rounded-lg text-xs cursor-pointer transition-colors ${
                       isActive
                         ? 'bg-sky-50 text-sky-700 font-semibold border border-sky-200'
@@ -78,7 +80,7 @@ export function DeckSidebar({
                   >
                     <div className="flex items-center gap-2 truncate">
                       <Presentation className="h-3.5 w-3.5 text-sky-500 shrink-0" />
-                      <span className="truncate">{deck.topic}</span>
+                      <span className="truncate">{deck.title}</span>
                     </div>
                     {onDeleteDeck && (
                       <Button

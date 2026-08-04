@@ -153,29 +153,48 @@ export class GenerationService {
       const template = input.template || GenerationTemplate.PRESENTATION;
 
       const systemPrompt = [
-        'You are a senior instructional designer who creates structured presentation decks.',
+        'You are an elite executive presentation designer and expert presenter.',
+        'Your goal is to build rich, professional, presentation-ready slide content with ZERO missing fields or empty arrays.',
         'RULES:',
         '1. Output ONLY valid JSON. No markdown fences, no explanation, no text outside JSON.',
         '2. Every string value must be properly escaped.',
-        '3. Do NOT truncate or abbreviate the output. Complete all chapters and slides.',
+        '3. Do NOT truncate or abbreviate the output. Complete all chapters and slides fully.',
+        '4. Every slide MUST have a clear title, descriptive subtitle, and bulletPoints.',
       ].join('\n');
 
-      const userPrompt = `Create an educational presentation on the topic: "${input.topic}"
+      const userPrompt = `Create an elite presentation deck on the topic: "${input.topic}"
 
-REQUIREMENTS:
+STRICT LAYOUT CONTENT REQUIREMENTS:
 - Generate exactly ${totalChapters} chapters, each with 2 to 3 slides.
 - Use a single layout per slide, chosen from: "TITLE", "BULLET_POINTS", "TWO_COLUMN", "KEY_METRIC", "SUMMARY".
-- Chapter 1, slide 1 MUST use the "TITLE" layout.
-- The final chapter's last slide MUST use the "SUMMARY" layout.
-- For speakerNotes: Provide 1-2 complete sentences for the presenter to say.
-- For bulletPoints: Provide 3-5 short, punchy items (max 12 words each).
-- For visualSuggestion: Provide a brief description of a supporting graphic.
-- DO NOT use placeholders like "..." or truncate the output. Generate the FULL content.
+- Chapter 1, slide 1 MUST use "TITLE" layout.
+- The final chapter's last slide MUST use "SUMMARY" layout.
+
+FIELD POPULATION RULES PER LAYOUT:
+1. "TITLE" layout:
+   - subtitle: Clear value proposition / core theme of presentation.
+   - bulletPoints: 3 key agenda items / presentation overview points.
+2. "BULLET_POINTS" layout:
+   - subtitle: Section thesis statement.
+   - bulletPoints: 3 to 4 punchy items formatted as "**Heading:** Explanation sentence".
+3. "TWO_COLUMN" layout:
+   - subtitle: Comparison or dual-perspective overview.
+   - leftColumnContent: Exactly 2 to 3 detailed items for Column 1.
+   - rightColumnContent: Exactly 2 to 3 detailed items for Column 2.
+   - bulletPoints: 3 overview items combining both columns.
+4. "KEY_METRIC" layout:
+   - subtitle: Context behind the metric benchmark.
+   - keyMetric: Object { "value": "$4.2M" or "99.9%" or "10x", "label": "Clear Metric Description" }.
+   - bulletPoints: 2 to 3 supporting points explaining how this metric was achieved.
+5. "SUMMARY" layout:
+   - subtitle: Executive summary & final conclusions.
+   - bulletPoints: 3 to 4 actionable key takeaways for the audience.
 
 Return ONLY a valid JSON object matching this TypeScript interface exactly:
 
 interface Presentation {
-  topic: string;
+  generatedTitle: string; // Polished, high-impact AI generated title for this presentation (e.g. "Quantum Computing Demystified")
+  topic: string; // "${input.topic}"
   template: string; // "${template}"
   totalChapters: number; // ${totalChapters}
   estimatedDurationMinutes: number;
@@ -188,10 +207,14 @@ interface Presentation {
     slides: Array<{
       slideNumber: number;
       title: string;
-      layout: string;
-      bulletPoints?: string[];
+      subtitle: string;
+      layout: "TITLE" | "BULLET_POINTS" | "TWO_COLUMN" | "KEY_METRIC" | "SUMMARY";
+      bulletPoints: string[];
+      leftColumnContent?: string[];
+      rightColumnContent?: string[];
+      keyMetric?: { value: string; label: string };
       speakerNotes: string;
-      visualSuggestion?: string;
+      visualSuggestion: string;
     }>;
     keyTakeaways: string[];
   }>;
@@ -229,27 +252,22 @@ interface Presentation {
         throw new Error(`Failed to parse AI JSON response: ${(parseError as Error).message}`);
       }
 
+      const aiTitle = (parsedPayload as any).generatedTitle || (parsedPayload as any).title || input.topic;
+
       await prisma.generation.update({
         where: { id: generationId },
         data: {
+          topic: aiTitle,
           status: GenerationStatus.COMPLETED,
           content: parsedPayload as unknown as Prisma.InputJsonValue,
         },
       });
 
-      logger.info({ generationId, model, totalChapters }, 'Generation completed successfully');
+      logger.info({ generationId, model, totalChapters, aiTitle }, 'Generation completed successfully with AI title');
     } catch (error: any) {
       const errorMessage = error.name === 'AbortError'
         ? 'AI generation timed out after 2 minutes'
         : error.message || 'Generation failed';
-
-      await prisma.generation.update({
-        where: { id: generationId },
-        data: {
-          status: GenerationStatus.FAILED,
-          errorMessage,
-        },
-      });
 
       // Automatically refund deducted credits on generation failure
       await creditService.refundCredits(
@@ -258,6 +276,14 @@ interface Presentation {
         deduction.purchasedDeducted,
         `Refund for failed generation "${input.topic}"`
       );
+
+      await prisma.generation.update({
+        where: { id: generationId },
+        data: {
+          status: GenerationStatus.FAILED,
+          errorMessage,
+        },
+      });
 
       // Delete failed generation record from DB as requested
       await prisma.generation.delete({
@@ -288,6 +314,42 @@ interface Presentation {
     }
 
     return generation;
+  }
+
+  /**
+   * Retrieve lightweight sidebar items (title, count, status) for logged-in user.
+   */
+  async getUserGenerationsSidebar(userId: string) {
+    await prisma.generation.deleteMany({
+      where: {
+        userId,
+        status: GenerationStatus.FAILED,
+      },
+    }).catch(() => {});
+
+    const items = await prisma.generation.findMany({
+      where: {
+        userId,
+        status: { not: GenerationStatus.FAILED },
+      },
+      select: {
+        id: true,
+        topic: true,
+        status: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return {
+      count: items.length,
+      items: items.map((i) => ({
+        id: i.id,
+        title: i.topic,
+        status: i.status,
+        createdAt: i.createdAt,
+      })),
+    };
   }
 
   /**

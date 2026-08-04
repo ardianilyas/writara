@@ -49,6 +49,40 @@ export interface GenerationRecord {
   updatedAt: string;
 }
 
+export interface SidebarDeckItem {
+  id: string;
+  title: string;
+  status: string;
+  createdAt: string;
+}
+
+export interface SidebarDecksResponse {
+  count: number;
+  items: SidebarDeckItem[];
+}
+
+export function useGetDecksSidebar() {
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
+
+  return useQuery({
+    queryKey: ['generations-sidebar'],
+    queryFn: async () => {
+      const response = await apiClient.get<{ success: boolean; data: SidebarDecksResponse }>('/api/generations/sidebar');
+      return response.data.data;
+    },
+    enabled: isAuthenticated,
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      const hasPending = data?.items?.some(
+        (d) => d.status === 'PENDING' || d.status === 'GENERATING' || d.status === 'IN_PROGRESS'
+      );
+      return hasPending ? 2000 : false;
+    },
+    staleTime: 1000 * 5,
+  });
+}
+
 export function useGetDecks() {
   const { data: session } = useSession();
   const isAuthenticated = !!session?.user;
@@ -107,6 +141,7 @@ export function useCreateDeck() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['generations'] });
+      queryClient.invalidateQueries({ queryKey: ['generations-sidebar'] });
       queryClient.invalidateQueries({ queryKey: ['credits'] });
     },
   });
@@ -121,6 +156,7 @@ export function useDeleteDeck() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['generations'] });
+      queryClient.invalidateQueries({ queryKey: ['generations-sidebar'] });
     },
   });
 }

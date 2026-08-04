@@ -29,6 +29,16 @@ export class GenerationController {
     }
   }
 
+  async getUserGenerationsSidebar(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user!.id;
+      const data = await generationService.getUserGenerationsSidebar(userId);
+      sendSuccess(res, data);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getUserGenerations(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;

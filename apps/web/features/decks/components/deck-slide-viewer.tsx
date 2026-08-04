@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowLeft, ChevronLeft, ChevronRight, FileText, Sparkles, Loader2, RefreshCw } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, FileText, Sparkles, Loader2, CheckCircle2 } from 'lucide-react';
 import { GenerationRecord, Slide } from '../api/use-decks';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,11 +23,17 @@ export function DeckSlideViewer({ deck, onBackToChat }: DeckSlideViewerProps) {
 
   // Extract all slides from generated content chapters
   const payload = deck.content || deck.generatedContent;
-  const allSlides: { slide: Slide; chapterTitle: string }[] = [];
+  const allSlides: { slide: Slide; chapterTitle: string; chapterSummary?: string; keyTakeaways?: string[]; learningObjectives?: string[] }[] = [];
   if (payload?.chapters) {
     payload.chapters.forEach((chapter) => {
       chapter.slides.forEach((slide) => {
-        allSlides.push({ slide, chapterTitle: chapter.title });
+        allSlides.push({
+          slide,
+          chapterTitle: chapter.title,
+          chapterSummary: chapter.summary,
+          keyTakeaways: chapter.keyTakeaways,
+          learningObjectives: chapter.learningObjectives,
+        });
       });
     });
   }
@@ -42,6 +48,42 @@ export function DeckSlideViewer({ deck, onBackToChat }: DeckSlideViewerProps) {
 
   const handleNext = () => {
     setCurrentSlideIndex((prev) => Math.min(totalSlides - 1, prev + 1));
+  };
+
+  // Helper to extract rich slide content & fallback points
+  const getSlideContent = (slide: Slide, chapter: { chapterSummary?: string; keyTakeaways?: string[]; learningObjectives?: string[] }) => {
+    const rawPoints: string[] = [];
+
+    if (slide.bulletPoints?.length) rawPoints.push(...slide.bulletPoints);
+    if (slide.leftColumnContent?.length) rawPoints.push(...slide.leftColumnContent);
+    if (slide.rightColumnContent?.length) rawPoints.push(...slide.rightColumnContent);
+    if (chapter.keyTakeaways?.length) rawPoints.push(...chapter.keyTakeaways);
+    if (chapter.learningObjectives?.length) rawPoints.push(...chapter.learningObjectives);
+
+    // Fallback: If rawPoints is still empty, derive sentences from speakerNotes or subtitle
+    if (rawPoints.length === 0) {
+      if (slide.speakerNotes) {
+        const sentences = slide.speakerNotes.split(/(?<=[.?!])\s+/).filter(Boolean);
+        rawPoints.push(...sentences);
+      }
+      if (slide.subtitle) {
+        rawPoints.push(slide.subtitle);
+      }
+      if (chapter.chapterSummary) {
+        rawPoints.push(chapter.chapterSummary);
+      }
+    }
+
+    // Deduplicate
+    const points = Array.from(new Set(rawPoints)).filter(Boolean);
+
+    // Ensure at least 2 points
+    if (points.length === 0) {
+      points.push(`Key Insights & Best Practices for ${slide.title}`);
+      points.push(`Implementation & Execution Strategy`);
+    }
+
+    return points;
   };
 
   if (isGenerating) {
@@ -139,42 +181,106 @@ export function DeckSlideViewer({ deck, onBackToChat }: DeckSlideViewerProps) {
                 )}
               </div>
 
-              {currentSlide.layout === 'BULLET_POINTS' && currentSlide.bulletPoints && (
-                <ul className="space-y-2 text-xs text-slate-300">
-                  {currentSlide.bulletPoints.map((point, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-sky-400 mt-1.5 shrink-0" />
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
+              {/* TWO_COLUMN layout with robust fallbacks */}
+              {currentSlide.layout === 'TWO_COLUMN' && (() => {
+                const points = getSlideContent(currentSlide, currentItem);
+                const leftItems = currentSlide.leftColumnContent?.length
+                  ? currentSlide.leftColumnContent
+                  : points.slice(0, Math.ceil(points.length / 2));
+                const rightItems = currentSlide.rightColumnContent?.length
+                  ? currentSlide.rightColumnContent
+                  : points.slice(Math.ceil(points.length / 2));
 
-              {currentSlide.layout === 'TWO_COLUMN' && (
-                <div className="grid grid-cols-2 gap-4 text-xs pt-2">
-                  <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 space-y-1">
-                    {currentSlide.leftColumnContent?.map((item, i) => (
-                      <p key={i} className="text-slate-300">{item}</p>
-                    ))}
+                return (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs pt-2">
+                    <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-sky-400 block mb-1">Architecture & Mechanism</span>
+                      {leftItems.map((item, i) => (
+                        <div key={i} className="flex items-start gap-2 text-slate-200">
+                          <div className="w-1.5 h-1.5 rounded-full bg-sky-400 mt-1.5 shrink-0" />
+                          <span className="leading-relaxed">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 block mb-1">Impact & Implementation</span>
+                      {(rightItems.length ? rightItems : leftItems).map((item, i) => (
+                        <div key={i} className="flex items-start gap-2 text-slate-200">
+                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0" />
+                          <span className="leading-relaxed">{item}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 space-y-1">
-                    {currentSlide.rightColumnContent?.map((item, i) => (
-                      <p key={i} className="text-sky-300">{item}</p>
-                    ))}
-                  </div>
-                </div>
-              )}
+                );
+              })()}
 
-              {currentSlide.layout === 'KEY_METRIC' && currentSlide.keyMetric && (
-                <div className="bg-sky-500/10 border border-sky-500/20 rounded-xl p-6 text-center space-y-1">
-                  <span className="text-4xl font-black text-sky-400 block tracking-tight">
-                    {currentSlide.keyMetric.value}
-                  </span>
-                  <span className="text-xs font-semibold text-slate-300">
-                    {currentSlide.keyMetric.label}
-                  </span>
-                </div>
-              )}
+              {/* SUMMARY layout */}
+              {currentSlide.layout === 'SUMMARY' && (() => {
+                const points = getSlideContent(currentSlide, currentItem);
+                return (
+                  <div className="bg-emerald-950/40 border border-emerald-800/60 rounded-2xl p-5 space-y-4">
+                    <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 border-b border-emerald-800/40 pb-2">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                      <span>Executive Summary & Key Takeaways</span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-200">
+                      {points.map((point, i) => (
+                        <div key={i} className="flex items-start gap-2.5 bg-slate-900/60 border border-slate-800 p-3 rounded-xl">
+                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 mt-0.5 shrink-0" />
+                          <span className="leading-relaxed">{point}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* KEY_METRIC layout with robust fallbacks */}
+              {currentSlide.layout === 'KEY_METRIC' && (() => {
+                const points = getSlideContent(currentSlide, currentItem);
+                const metricValue = currentSlide.keyMetric?.value || (points[0]?.match(/\d+[\%\w\$\+]*/)?.[0]) || "Benchmark";
+                const metricLabel = currentSlide.keyMetric?.label || currentSlide.subtitle || currentSlide.title;
+                const supportingPoints = currentSlide.keyMetric ? points : points.slice(1);
+
+                return (
+                  <div className="space-y-4">
+                    <div className="bg-sky-500/10 border border-sky-500/20 rounded-2xl p-6 text-center space-y-1">
+                      <span className="text-4xl sm:text-5xl font-black text-sky-400 block tracking-tight">
+                        {metricValue}
+                      </span>
+                      <span className="text-xs font-semibold text-slate-300 block">
+                        {metricLabel}
+                      </span>
+                    </div>
+                    {supportingPoints.length > 0 && (
+                      <div className="space-y-2 text-xs text-slate-300 pt-2">
+                        {supportingPoints.map((point, i) => (
+                          <div key={i} className="flex items-start gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-sky-400 mt-1.5 shrink-0" />
+                            <span className="leading-relaxed">{point}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+
+              {/* BULLET_POINTS or default fallback */}
+              {(currentSlide.layout === 'BULLET_POINTS' || currentSlide.layout === 'TITLE' || !['TWO_COLUMN', 'SUMMARY', 'KEY_METRIC'].includes(currentSlide.layout)) && (() => {
+                const points = getSlideContent(currentSlide, currentItem);
+                return (
+                  <ul className="space-y-2.5 text-xs text-slate-300">
+                    {points.map((point, i) => (
+                      <li key={i} className="flex items-start gap-2.5 bg-slate-900/50 border border-slate-800/80 p-3 rounded-xl">
+                        <div className="w-2 h-2 rounded-full bg-sky-400 mt-1.5 shrink-0" />
+                        <span className="leading-relaxed">{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                );
+              })()}
             </div>
 
             {currentSlide.visualSuggestion && (
